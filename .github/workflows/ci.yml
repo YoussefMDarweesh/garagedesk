@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore GarageDesk.sln
+
+      - name: Build
+        run: dotnet build GarageDesk.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test GarageDesk.sln --configuration Release --no-build
