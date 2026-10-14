@@ -30,6 +30,10 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
 
     public DbSet<ShopLogo> ShopLogos => Set<ShopLogo>();
 
+    public DbSet<Customer> Customers => Set<Customer>();
+
+    public DbSet<Vehicle> Vehicles => Set<Vehicle>();
+
     // Read by the query filters below. EF evaluates it per context instance, i.e. per request.
     private int? CurrentShopId => _currentShop.ShopId;
 
@@ -52,6 +56,27 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             logo.HasIndex(l => l.ShopId).IsUnique();
             logo.Property(l => l.ContentType).HasMaxLength(50);
             logo.HasOne<Shop>().WithMany().HasForeignKey(l => l.ShopId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<Customer>(customer =>
+        {
+            customer.Property(c => c.Name).HasMaxLength(100);
+            customer.Property(c => c.Phone).HasMaxLength(20);
+            customer.Property(c => c.Notes).HasMaxLength(1000);
+            customer.HasIndex(c => new { c.ShopId, c.Phone });
+            customer.HasOne<Shop>().WithMany().HasForeignKey(c => c.ShopId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<Vehicle>(vehicle =>
+        {
+            vehicle.Property(v => v.Plate).HasMaxLength(20);
+            vehicle.Property(v => v.PlateKey).HasMaxLength(20);
+            vehicle.Property(v => v.Vin).HasMaxLength(17);
+            vehicle.Property(v => v.Make).HasMaxLength(50);
+            vehicle.Property(v => v.Model).HasMaxLength(50);
+            vehicle.HasIndex(v => new { v.ShopId, v.PlateKey });
+            vehicle.HasOne(v => v.Customer).WithMany(c => c.Vehicles).HasForeignKey(v => v.CustomerId).OnDelete(DeleteBehavior.Restrict);
+            vehicle.HasOne<Shop>().WithMany().HasForeignKey(v => v.ShopId).OnDelete(DeleteBehavior.Restrict);
         });
 
         // THE PATTERN: every entity that implements IShopOwned gets the same filter automatically.
