@@ -23,8 +23,8 @@ I run an automotive software business and manage a fleet of cars, so I've been o
 - [x] M2 — Customers & vehicles
 - [x] M3 — Job cards
 - [x] M4 — Service history
-- [ ] M5 — Reminders + WhatsApp
-- [ ] M6 — Printable invoice
+- [x] M5 — Reminders + WhatsApp
+- [x] M6 — Printable invoice
 - [ ] M7 — Demo data & deployment
 - [ ] M8 — Screenshots, demo video, final README
 
