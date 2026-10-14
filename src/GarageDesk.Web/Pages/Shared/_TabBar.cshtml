@@ -1,0 +1,18 @@
+@* The phone version of the rail: a bottom tab bar with the five everyday pages. (Shop settings is in the user menu.) *@
+@model GarageDesk.Web.Services.ShellModel
+<nav class="tabbar" aria-label="@L["Main navigation"]">
+    @foreach (var item in Model.Items.Where(i => i.Page != "/ShopSettings"))
+    {
+        var active = item.Page == "/Index"
+            ? Model.CurrentPage == "/Index"
+            : Model.CurrentPage.StartsWith(item.Prefix, StringComparison.Ordinal);
+        <a class="tab-link @(active ? "active" : "")" asp-area="" asp-page="@item.Page" aria-current="@(active ? "page" : null)">
+            <partial name="_Icon" model="item.Icon" />
+            <span>@item.Label</span>
+            @if (item.Badge > 0)
+            {
+                <span class="count num">@item.Badge</span>
+            }
+        </a>
+    }
+</nav>

@@ -25,13 +25,19 @@ public class AppUserClaimsPrincipalFactory(
 
             // This runs while the cookie is being built, before the shop_id claim exists, so the shop
             // query filter would hide the row. We read exactly the user's own shop, nothing else.
-            var shopName = await db.Shops.IgnoreQueryFilters()
+            var shop = await db.Shops.IgnoreQueryFilters()
                 .Where(s => s.Id == shopId)
-                .Select(s => s.Name)
+                .Select(s => new { s.Name, s.AccentColor })
                 .FirstOrDefaultAsync();
-            if (shopName is not null)
+            if (shop is not null)
             {
-                identity.AddClaim(new Claim(CurrentShop.NameClaimType, shopName));
+                identity.AddClaim(new Claim(CurrentShop.NameClaimType, shop.Name));
+
+                // Only a known preset is ever carried; the default needs no claim.
+                if (Accents.IsPreset(shop.AccentColor) && shop.AccentColor != Accents.Default)
+                {
+                    identity.AddClaim(new Claim(CurrentShop.AccentClaimType, shop.AccentColor!));
+                }
             }
 
             // Same reasoning: only a "has a logo, and which version" marker, never the image itself.

@@ -1,0 +1,11 @@
+@* EN | العربية. Posts to /SetCulture and comes back to the same page. The model is the URL to return to. *@
+@model string
+@using GarageDesk.Web.Services
+@{
+    var current = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+}
+<form asp-area="" asp-page="/SetCulture" method="post" class="lang-switch" aria-label="@L["Language"]">
+    <input type="hidden" name="returnUrl" value="@Model" />
+    <button type="submit" name="culture" value="en" lang="en" aria-pressed="@(current == "en" ? "true" : "false")">EN</button>
+    <button type="submit" name="culture" value="ar" lang="ar" aria-pressed="@(current == "ar" ? "true" : "false")">العربية</button>
+</form>
