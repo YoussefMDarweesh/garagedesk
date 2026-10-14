@@ -22,12 +22,13 @@
             <span class="ltr num">@job.DateIn.ToString("yyyy-MM-dd")</span> &middot; @vehicle?.Make @vehicle?.Model
         </p>
     </div>
-    @if (!job.IsLocked)
-    {
-        <div class="page-actions">
+    <div class="page-actions">
+        <a class="btn @(job.IsLocked ? "btn-primary" : "btn-outline-secondary")" asp-page="Invoice" asp-route-id="@job.Id"><partial name="_Icon" model='"file-text"' />@L["Invoice / Print"]</a>
+        @if (!job.IsLocked)
+        {
             <a class="btn btn-outline-secondary" asp-page="Edit" asp-route-id="@job.Id"><partial name="_Icon" model='"edit"' />@L["Edit"]</a>
-        </div>
-    }
+        }
+    </div>
 </div>
 
 @* Server messages become toasts (site.js); without JavaScript they stay readable in place. *@
