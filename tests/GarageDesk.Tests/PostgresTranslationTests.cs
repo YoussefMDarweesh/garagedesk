@@ -37,6 +37,37 @@ public class PostgresTranslationTests
     }
 
     [Theory]
+    [InlineData("ABC-1234")]
+    [InlineData("Ahmed")]
+    [InlineData("#12")]
+    [InlineData("")]
+    public void The_job_card_list_and_search_translate_to_postgresql(string query)
+    {
+        using var db = NewPostgresContext();
+
+        var sql = db.JobCards.AsNoTracking().Search(query)
+            .Where(j => j.Status == GarageDesk.Web.Models.JobStatus.Done)
+            .Include(j => j.Vehicle).ThenInclude(v => v!.Customer)
+            .Include(j => j.Lines)
+            .OrderByDescending(j => j.DateIn).ThenByDescending(j => j.Id)
+            .Take(101)
+            .ToQueryString();
+
+        Assert.Contains("\"JobCards\"", sql);
+        Assert.Contains("\"ShopId\"", sql);
+    }
+
+    [Fact]
+    public void The_open_job_count_translates_to_postgresql()
+    {
+        using var db = NewPostgresContext();
+
+        var sql = db.JobCards.Where(j => j.Status != GarageDesk.Web.Models.JobStatus.Paid).ToQueryString();
+
+        Assert.Contains("\"Status\"", sql);
+    }
+
+    [Theory]
     [InlineData("Skoda")]
     [InlineData("XYZ 999")]
     [InlineData("")]
