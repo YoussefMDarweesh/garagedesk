@@ -24,9 +24,43 @@ public class ShopSettingsModel(
 
     public bool HasLogo { get; private set; }
 
+    /// <summary>The shop's accent colour preset (Accents.Default when none was chosen).</summary>
+    public string Accent { get; private set; } = Accents.Default;
+
     public async Task OnGetAsync()
     {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
         HasLogo = await db.ShopLogos.AnyAsync();
+        var accent = await db.Shops.Select(s => s.AccentColor).FirstOrDefaultAsync();
+        Accent = Accents.IsPreset(accent) ? accent! : Accents.Default;
+    }
+
+    public async Task<IActionResult> OnPostAccentAsync(string? accent)
+    {
+        // Only one of the known presets is accepted; anything else is ignored.
+        if (!Accents.IsPreset(accent))
+        {
+            await LoadAsync();
+            ModelState.AddModelError(string.Empty, localizer["Choose one of the colours."]);
+            return Page();
+        }
+
+        var shop = await db.Shops.FirstOrDefaultAsync(); // the query filter limits this to the signed-in user's shop
+        if (shop is null)
+        {
+            return NotFound();
+        }
+
+        shop.AccentColor = accent == Accents.Default ? null : accent;
+        await db.SaveChangesAsync();
+
+        await RefreshLoginAsync();
+        StatusMessage = localizer["Accent colour updated."];
+        return RedirectToPage();
     }
 
     public async Task<IActionResult> OnPostUploadAsync(IFormFile? upload)

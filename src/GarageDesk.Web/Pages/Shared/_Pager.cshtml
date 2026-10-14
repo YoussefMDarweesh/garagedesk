@@ -1,0 +1,60 @@
+@* "Showing 1-20 of 57" plus previous / numbers / next. Links keep the search text and filters. *@
+@model GarageDesk.Web.Services.PagerModel
+@using GarageDesk.Web.Services
+@{
+    string Link(int page)
+    {
+        var values = new RouteValueDictionary();
+        foreach (var (key, value) in Model.Route)
+        {
+            if (!string.IsNullOrEmpty(value)) { values[key] = value; }
+        }
+        if (page > 1) { values["p"] = page; }
+        return Url.Page(Model.PageName, values) ?? "#";
+    }
+
+    // A window of page numbers around the current one.
+    var from = Math.Max(1, Model.Page - 2);
+    var to = Math.Min(Model.PageCount, Model.Page + 2);
+}
+@if (Model.Total > 0)
+{
+    <div class="pager">
+        <span class="num">@L["Showing {0}–{1} of {2}", Model.FirstItem, Model.LastItem, Model.Total]</span>
+
+        @if (Model.PageCount > 1)
+        {
+            <nav class="pager-links" aria-label="@L["Pagination"]">
+                @if (Model.Page > 1)
+                {
+                    <a href="@Link(Model.Page - 1)" aria-label="@L["Previous page"]"><partial name="_Icon" model='"chevron-left"' /></a>
+                }
+                else
+                {
+                    <span class="disabled" aria-hidden="true"><partial name="_Icon" model='"chevron-left"' /></span>
+                }
+
+                @for (var number = from; number <= to; number++)
+                {
+                    if (number == Model.Page)
+                    {
+                        <span class="current num" aria-current="page">@number</span>
+                    }
+                    else
+                    {
+                        <a class="num" href="@Link(number)">@number</a>
+                    }
+                }
+
+                @if (Model.Page < Model.PageCount)
+                {
+                    <a href="@Link(Model.Page + 1)" aria-label="@L["Next page"]"><partial name="_Icon" model='"chevron-right"' /></a>
+                }
+                else
+                {
+                    <span class="disabled" aria-hidden="true"><partial name="_Icon" model='"chevron-right"' /></span>
+                }
+            </nav>
+        }
+    </div>
+}

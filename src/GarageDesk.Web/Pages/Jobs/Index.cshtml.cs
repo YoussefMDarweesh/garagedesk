@@ -9,7 +9,7 @@ namespace GarageDesk.Web.Pages.Jobs;
 
 public class IndexModel(ApplicationDbContext db) : PageModel
 {
-    public const int PageSize = 100;
+    public const int PageSize = 20;
 
     [BindProperty(SupportsGet = true)]
     public string? Q { get; set; }
@@ -18,31 +18,41 @@ public class IndexModel(ApplicationDbContext db) : PageModel
     [BindProperty(SupportsGet = true)]
     public string? Status { get; set; }
 
+    [BindProperty(SupportsGet = true)]
+    public int P { get; set; } = 1;
+
     public JobStatus? StatusFilter =>
         Enum.TryParse<JobStatus>(Status, ignoreCase: true, out var status) && Enum.IsDefined(status) ? status : null;
 
     public List<JobCard> Jobs { get; private set; } = [];
 
-    public bool HasMore { get; private set; }
+    public int Total { get; private set; }
+
+    public int PageCount { get; private set; } = 1;
+
+    public PagerModel Pager => new(P, PageCount, Total, PageSize, "/Jobs/Index",
+        new Dictionary<string, string?> { ["q"] = Q, ["status"] = StatusFilter?.ToString() });
 
     public async Task OnGetAsync()
     {
-        var jobs = db.JobCards.AsNoTracking().Search(Q);
+        var query = db.JobCards.AsNoTracking().Search(Q);
 
         if (StatusFilter is JobStatus status)
         {
-            jobs = jobs.Where(j => j.Status == status);
+            query = query.Where(j => j.Status == status);
         }
 
+        Total = await query.CountAsync();
+        PageCount = PagerModel.CountPages(Total, PageSize);
+        P = Math.Clamp(P, 1, PageCount);
+
         // Totals are worked out in memory from the lines (see JobCard.Total), so the lines are loaded too.
-        var found = await jobs
+        Jobs = await query
             .Include(j => j.Vehicle).ThenInclude(v => v!.Customer)
             .Include(j => j.Lines)
             .OrderByDescending(j => j.DateIn).ThenByDescending(j => j.Id)
-            .Take(PageSize + 1)
+            .Skip((P - 1) * PageSize)
+            .Take(PageSize)
             .ToListAsync();
-
-        HasMore = found.Count > PageSize;
-        Jobs = found.Take(PageSize).ToList();
     }
 }
