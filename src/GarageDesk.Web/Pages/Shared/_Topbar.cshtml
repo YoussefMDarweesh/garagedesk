@@ -7,18 +7,22 @@
     <p class="topbar-title">@Model.Section</p>
     <span class="topbar-spacer"></span>
 
-    <form class="topbar-search" asp-area="" asp-page="/Customers/Index" method="get" role="search">
-        <partial name="_Icon" model='"search"' />
-        <input type="search" name="q" placeholder="@L["Search customers, phones, plates"]" aria-label="@L["Search customers, phones, plates"]" autocomplete="off" />
-    </form>
+    @* Customer search and reminders are for owners and cashiers: a technician must never reach phone numbers. *@
+    @if (Model.Role != GarageDesk.Web.Models.ShopRole.Technician)
+    {
+        <form class="topbar-search" asp-area="" asp-page="/Customers/Index" method="get" role="search">
+            <partial name="_Icon" model='"search"' />
+            <input type="search" name="q" placeholder="@L["Search customers, phones, plates"]" aria-label="@L["Search customers, phones, plates"]" autocomplete="off" />
+        </form>
 
-    <a class="icon-btn" asp-area="" asp-page="/Reminders/Index" title="@L["Reminders"]" aria-label="@L["Reminders"]">
-        <partial name="_Icon" model='"bell"' />
-        @if (Model.DueCount > 0)
-        {
-            <span class="count num">@(Model.DueCount > 99 ? "99+" : Model.DueCount.ToString())</span>
-        }
-    </a>
+        <a class="icon-btn" asp-area="" asp-page="/Reminders/Index" title="@L["Reminders"]" aria-label="@L["Reminders"]">
+            <partial name="_Icon" model='"bell"' />
+            @if (Model.DueCount > 0)
+            {
+                <span class="count num">@(Model.DueCount > 99 ? "99+" : Model.DueCount.ToString())</span>
+            }
+        </a>
+    }
 
     <span class="desktop-only"><partial name="_LanguageSwitch" model="Model.ReturnUrl" /></span>
     <span class="desktop-only"><partial name="_ThemeToggle" /></span>
@@ -31,7 +35,10 @@
         <ul class="dropdown-menu dropdown-menu-end">
             <li><span class="dropdown-item-text small text-secondary">@L["Signed in as"]<br /><strong class="text-body">@Model.UserName</strong></span></li>
             <li><hr class="dropdown-divider" /></li>
-            <li><a class="dropdown-item" asp-area="" asp-page="/ShopSettings"><partial name="_Icon" model='"sliders"' />@L["Shop settings"]</a></li>
+            @if (Model.Role == GarageDesk.Web.Models.ShopRole.Owner)
+            {
+                <li><a class="dropdown-item" asp-area="" asp-page="/ShopSettings"><partial name="_Icon" model='"sliders"' />@L["Shop settings"]</a></li>
+            }
             <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index"><partial name="_Icon" model='"user"' />@L["Account settings"]</a></li>
             <li class="d-md-none"><hr class="dropdown-divider" /></li>
             <li class="d-md-none px-2 py-1 d-flex align-items-center justify-content-between gap-2">

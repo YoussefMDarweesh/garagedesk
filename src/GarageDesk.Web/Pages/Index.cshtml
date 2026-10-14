@@ -108,6 +108,8 @@ else
     }
 
     <div class="row g-3 g-lg-4 mb-4">
+        @if (Model.CanSeeReports)
+        {
         <div class="col-6 col-xl">
             <a class="stat-card" asp-page="/Jobs/Index" asp-route-status="Paid">
                 <div class="stat-top"><span class="stat-label">@L["Revenue this month"]</span><span class="icon-tile"><partial name="_Icon" model='"coins"' /></span></div>
@@ -125,6 +127,7 @@ else
                 </p>
             </a>
         </div>
+        }
         <div class="col-6 col-xl">
             <a class="stat-card" asp-page="/Jobs/Index">
                 <div class="stat-top"><span class="stat-label">@L["Open job cards"]</span><span class="icon-tile"><partial name="_Icon" model='"clipboard"' /></span></div>
@@ -156,6 +159,8 @@ else
     </div>
 
     <div class="row g-3 g-lg-4 mb-4">
+        @if (Model.CanSeeReports)
+        {
         <div class="col-xl-8">
             <section class="panel panel-pad h-100" aria-labelledby="activity-heading">
                 <div class="panel-head">
@@ -211,8 +216,9 @@ else
                 }
             </section>
         </div>
+        }
 
-        <div class="col-xl-4">
+        <div class="@(Model.CanSeeReports ? "col-xl-4" : "col-xl-12")">
             <section class="panel h-100" aria-labelledby="due-heading">
                 <div class="panel-pad pb-0">
                     <div class="panel-head mb-2">

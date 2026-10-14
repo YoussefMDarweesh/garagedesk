@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using GarageDesk.Web.Services;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace GarageDesk.Web.Pages;
 
 /// <summary>Target of the navbar language switcher: remembers the chosen language in a cookie, then goes back.</summary>
+[AllowAnonymous]
 public class SetCultureModel : PageModel
 {
     public IActionResult OnGet() => LocalRedirect("/");

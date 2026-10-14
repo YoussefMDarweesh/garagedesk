@@ -12,7 +12,7 @@ namespace GarageDesk.Web.Pages;
 
 // Signed in, and (via RequireShopPageFilter) a shop must exist. All reads and writes below are
 // automatically limited to the current shop by the DbContext's query filter.
-[Authorize]
+[Authorize(Policy = Policies.Owner)]
 public class ShopSettingsModel(
     ApplicationDbContext db,
     UserManager<AppUser> userManager,

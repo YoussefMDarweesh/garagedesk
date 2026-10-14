@@ -489,4 +489,8 @@
   <data name="Message in English" xml:space="preserve"><value>الرسالة بالإنجليزية</value></data>
   <data name="Message in Arabic" xml:space="preserve"><value>الرسالة بالعربية</value></data>
   <data name="The message must include {link} and be at most 500 characters." xml:space="preserve"><value>يجب أن تتضمن الرسالة {link} ولا تزيد عن 500 حرف.</value></data>
+
+  <!-- v1-3-team: roles, staff, technicians, commissions, history. New keys of this branch are appended below. -->
+  <data name="Access denied" xml:space="preserve"><value>غير مسموح</value></data>
+  <data name="Your role does not allow you to open this page. Ask the shop owner if you need access." xml:space="preserve"><value>دورك لا يسمح لك بفتح هذه الصفحة. اطلب من صاحب الورشة إن كنت بحاجة إلى الوصول.</value></data>
 </root>

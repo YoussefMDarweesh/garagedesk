@@ -23,6 +23,51 @@ public static partial class TestData
         return (user.Id, user.ShopId!.Value);
     }
 
+    /// <summary>A second (third, ...) login in an existing shop, with the given role. Returns the user id.</summary>
+    public static async Task<string> CreateStaffAsync(
+        GarageDeskWebFactory factory, int shopId, ShopRole role, bool active = true, string? fullName = null, decimal commissionPercent = 0)
+    {
+        using var scope = factory.Services.CreateScope();
+        var users = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+        var email = $"{role.ToString().ToLowerInvariant()}-{Guid.NewGuid():N}@example.com";
+        var user = new AppUser
+        {
+            UserName = email,
+            Email = email,
+            ShopId = shopId,
+            Role = role,
+            IsActive = active,
+            FullName = fullName,
+            CommissionPercent = commissionPercent,
+        };
+        Assert.True((await users.CreateAsync(user)).Succeeded);
+        return user.Id;
+    }
+
+    /// <summary>One customer, one vehicle and one job card with a priced part and a priced labor line. Returns the job id.</summary>
+    public static async Task<int> SeedJobAsync(
+        GarageDeskWebFactory factory, int shopId, JobStatus status = JobStatus.Booked,
+        string plate = "SEC 100", string customerName = "Hidden Customer", string phone = "+201000000077",
+        decimal partPrice = 123.45m, decimal laborPrice = 80m, DateOnly? dateIn = null)
+    {
+        using var db = factory.CreateContextFor(shopId);
+        var customer = new Customer { Name = customerName, Phone = phone };
+        var vehicle = new Vehicle { Customer = customer, Plate = plate, PlateKey = plate.Replace(" ", ""), Make = "Skoda", Model = "Octavia", Year = 2020, Mileage = 1000 };
+        var job = new JobCard
+        {
+            Vehicle = vehicle,
+            DateIn = dateIn ?? new DateOnly(2026, 3, 1),
+            MileageAtVisit = 1000,
+            Status = status,
+            Notes = "internal note",
+        };
+        job.Lines.Add(new JobLine { Type = JobLineType.Part, Description = "Oil filter", Quantity = 1, UnitPrice = partPrice });
+        job.Lines.Add(new JobLine { Type = JobLineType.Labor, Description = "Fit filter", Quantity = 1, UnitPrice = laborPrice });
+        db.JobCards.Add(job);
+        await db.SaveChangesAsync();
+        return job.Id;
+    }
+
     public static async Task<string> CreateUserWithoutShopAsync(GarageDeskWebFactory factory)
     {
         using var scope = factory.Services.CreateScope();

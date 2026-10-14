@@ -30,6 +30,10 @@ namespace GarageDesk.Web.Data.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
+                    b.Property<decimal>("CommissionPercent")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
@@ -39,6 +43,13 @@ namespace GarageDesk.Web.Data.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("FullName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("LockoutEnabled")
@@ -64,6 +75,11 @@ namespace GarageDesk.Web.Data.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
@@ -86,7 +102,7 @@ namespace GarageDesk.Web.Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.HasIndex("ShopId");
+                    b.HasIndex("ShopId", "Role");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });

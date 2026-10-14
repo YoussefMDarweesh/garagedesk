@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using GarageDesk.Web.Data;
 using GarageDesk.Web.Models;
 using GarageDesk.Web.Services;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GarageDesk.Web.Pages.Customers;
 
+[Authorize(Policy = Policies.Staff)]
 public class IndexModel(ApplicationDbContext db) : PageModel
 {
     public const int PageSize = 20;

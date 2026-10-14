@@ -1,3 +1,5 @@
+using GarageDesk.Web.Models;
+
 namespace GarageDesk.Web.Services;
 
 /// <summary>One entry of the main navigation (sidebar and mobile tab bar).</summary>
@@ -6,7 +8,8 @@ namespace GarageDesk.Web.Services;
 /// <param name="Label">Already translated.</param>
 /// <param name="Icon">A name from the _Icon partial.</param>
 /// <param name="Badge">A count to show on the entry (0 = none).</param>
-public sealed record NavItem(string Page, string Prefix, string Label, string Icon, int Badge = 0);
+/// <param name="OwnerOnly">An Owner-only admin page: kept off the phone tab bar, which only has room for the everyday pages.</param>
+public sealed record NavItem(string Page, string Prefix, string Label, string Icon, int Badge = 0, bool OwnerOnly = false);
 
 /// <summary>Everything the app shell partials need, worked out once in the layout.</summary>
 public sealed record ShellModel(
@@ -17,4 +20,5 @@ public sealed record ShellModel(
     string? ShopName,
     string? LogoVersion,
     string? UserName,
-    string ReturnUrl);
+    string ReturnUrl,
+    ShopRole Role = ShopRole.Owner);

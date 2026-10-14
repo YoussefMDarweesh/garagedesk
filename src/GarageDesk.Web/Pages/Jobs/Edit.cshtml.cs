@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using GarageDesk.Web.Data;
 using GarageDesk.Web.Models;
 using GarageDesk.Web.Services;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Localization;
 
 namespace GarageDesk.Web.Pages.Jobs;
 
+[Authorize(Policy = Policies.Staff)]
 public class EditModel(ApplicationDbContext db, IStringLocalizer<SharedResource> localizer) : PageModel
 {
     [BindProperty]

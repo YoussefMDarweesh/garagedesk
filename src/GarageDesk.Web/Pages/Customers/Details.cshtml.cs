@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using GarageDesk.Web.Services;
 using GarageDesk.Web.Data;
 using GarageDesk.Web.Models;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GarageDesk.Web.Pages.Customers;
 
+[Authorize(Policy = Policies.Staff)]
 public class DetailsModel(ApplicationDbContext db) : PageModel
 {
     public Customer Customer { get; private set; } = null!;

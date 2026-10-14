@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace GarageDesk.Web.Pages;
 
-[Authorize]
+[Authorize(Policy = Policies.SignedIn)]
 public class CreateShopModel(
     UserManager<AppUser> userManager,
     SignInManager<AppUser> signInManager,

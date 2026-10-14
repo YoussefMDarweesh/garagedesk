@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using GarageDesk.Web.Data;
 using GarageDesk.Web.Services;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -5,6 +6,7 @@ using Microsoft.Extensions.Localization;
 
 namespace GarageDesk.Web.Pages.Receivables;
 
+[Authorize(Policy = Policies.Staff)]
 public class IndexModel(ApplicationDbContext db, IStringLocalizer<SharedResource> localizer) : PageModel
 {
     public List<CustomerBalance> Balances { get; private set; } = [];

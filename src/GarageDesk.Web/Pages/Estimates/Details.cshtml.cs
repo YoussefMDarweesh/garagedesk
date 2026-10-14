@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using GarageDesk.Web.Data;
 using GarageDesk.Web.Models;
 using GarageDesk.Web.Pages.Jobs;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Localization;
 
 namespace GarageDesk.Web.Pages.Estimates;
 
+[Authorize(Policy = Policies.Staff)]
 public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResource> localizer, ShareLinkService shares) : PageModel
 {
     public Estimate Estimate { get; private set; } = null!;

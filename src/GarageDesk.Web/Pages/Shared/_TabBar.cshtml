@@ -1,7 +1,7 @@
 @* The phone version of the rail: a bottom tab bar with the five everyday pages. (Shop settings is in the user menu.) *@
 @model GarageDesk.Web.Services.ShellModel
 <nav class="tabbar" aria-label="@L["Main navigation"]">
-    @foreach (var item in Model.Items.Where(i => i.Page != "/ShopSettings"))
+    @foreach (var item in Model.Items.Where(i => !i.OwnerOnly))
     {
         var active = item.Page == "/Index"
             ? Model.CurrentPage == "/Index"

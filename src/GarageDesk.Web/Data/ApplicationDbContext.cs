@@ -63,6 +63,16 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             .HasForeignKey(u => u.ShopId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // v1.3: role, active flag, name and commission percent (the migration backfills existing users as active Owners).
+        builder.Entity<AppUser>(user =>
+        {
+            user.Property(u => u.Role).HasConversion<string>().HasMaxLength(20);
+            user.Property(u => u.FullName).HasMaxLength(100);
+            user.Property(u => u.CommissionPercent).HasPrecision(5, 2);
+            user.HasIndex(u => new { u.ShopId, u.Role });
+            user.Ignore(u => u.DisplayLabel);
+        });
+
         // A user can only ever see their own shop row.
         builder.Entity<Shop>(shop =>
         {

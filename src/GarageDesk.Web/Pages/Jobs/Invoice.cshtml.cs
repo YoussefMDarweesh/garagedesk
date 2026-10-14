@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using GarageDesk.Web.Data;
 using GarageDesk.Web.Models;
 using GarageDesk.Web.Services;
@@ -12,6 +13,7 @@ namespace GarageDesk.Web.Pages.Jobs;
 /// The printable invoice of one job card. It shows exactly what the job card page shows: the totals come from
 /// JobCard.Total / PartsTotal / LaborTotal (the same code), never from a second calculation.
 /// </summary>
+[Authorize(Policy = Policies.Staff)]
 public class InvoiceModel(ApplicationDbContext db, ShareLinkService shares, IStringLocalizer<SharedResource> localizer) : PageModel
 {
     public JobCard Job { get; private set; } = null!;

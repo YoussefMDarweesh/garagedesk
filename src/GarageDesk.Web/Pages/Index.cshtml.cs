@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using System.Globalization;
 using System.Text.Json;
 using GarageDesk.Web.Data;
 using GarageDesk.Web.Models;
 using GarageDesk.Web.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +13,8 @@ namespace GarageDesk.Web.Pages;
 /// <summary>One month on the activity chart.</summary>
 public sealed record MonthPoint(string Key, decimal Revenue, int Jobs);
 
-public class IndexModel(ApplicationDbContext db) : PageModel
+[AllowAnonymous]
+public class IndexModel(ApplicationDbContext db, ICurrentStaff currentStaff) : PageModel
 {
     public const int ChartMonths = 12;
 
@@ -67,13 +70,30 @@ public class IndexModel(ApplicationDbContext db) : PageModel
     public int? RevenueChangePercent =>
         RevenueLastMonth > 0 ? (int)Math.Round((RevenueThisMonth - RevenueLastMonth) / RevenueLastMonth * 100) : null;
 
-    public async Task OnGetAsync()
+    /// <summary>Revenue and the activity chart are reports: owners only.</summary>
+    public bool CanSeeReports { get; private set; }
+
+    public async Task<IActionResult> OnGetAsync()
     {
         if (User.Identity?.IsAuthenticated != true)
         {
-            return;
+            return Page();
         }
 
+        var staff = await currentStaff.GetAsync();
+        if (staff is null || !staff.IsActive)
+        {
+            return Forbid();
+        }
+
+        // This page is anonymous (the landing page), so the dashboard guards itself: a technician's home is "My jobs".
+        // A user with no shop yet is sent to CreateShop by RequireShopPageFilter before they get here.
+        if (staff.IsTechnician)
+        {
+            return Forbid();
+        }
+
+        CanSeeReports = staff.IsOwner;
         Today = ShopClock.Today();
         ShopName = await db.Shops.Select(s => s.Name).FirstOrDefaultAsync();
 
@@ -89,7 +109,10 @@ public class IndexModel(ApplicationDbContext db) : PageModel
         OutstandingTotal = owed.Sum(b => b.Owed);
         OutstandingCustomers = owed.Count;
 
-        await LoadActivityAsync();
+        if (CanSeeReports)
+        {
+            await LoadActivityAsync();
+        }
         await LoadRemindersAsync();
 
         RecentJobs = await db.JobCards.AsNoTracking()
@@ -98,6 +121,7 @@ public class IndexModel(ApplicationDbContext db) : PageModel
             .OrderByDescending(j => j.DateIn).ThenByDescending(j => j.Id)
             .Take(6)
             .ToListAsync();
+        return Page();
     }
 
     private async Task LoadActivityAsync()
