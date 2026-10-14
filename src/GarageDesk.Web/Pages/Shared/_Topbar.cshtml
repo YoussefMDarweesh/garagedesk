@@ -38,6 +38,7 @@
             @if (Model.Role == GarageDesk.Web.Models.ShopRole.Owner)
             {
                 <li><a class="dropdown-item" asp-area="" asp-page="/ShopSettings"><partial name="_Icon" model='"sliders"' />@L["Shop settings"]</a></li>
+                <li><a class="dropdown-item" asp-area="" asp-page="/Staff/Index"><partial name="_Icon" model='"users"' />@L["My team"]</a></li>
             }
             <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index"><partial name="_Icon" model='"user"' />@L["Account settings"]</a></li>
             <li class="d-md-none"><hr class="dropdown-divider" /></li>

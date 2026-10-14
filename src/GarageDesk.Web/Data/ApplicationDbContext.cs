@@ -50,6 +50,8 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
 
     public DbSet<ShareLink> ShareLinks => Set<ShareLink>();
 
+    public DbSet<StaffInvite> StaffInvites => Set<StaffInvite>();
+
     // Read by the query filters below. EF evaluates it per context instance, i.e. per request.
     private int? CurrentShopId => _currentShop.ShopId;
 
@@ -199,6 +201,19 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             link.HasIndex(l => l.TokenHash).IsUnique();
             link.HasIndex(l => new { l.ShopId, l.Kind, l.TargetId });
             link.HasOne<Shop>().WithMany().HasForeignKey(l => l.ShopId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<StaffInvite>(invite =>
+        {
+            invite.Property(i => i.TokenHash).HasMaxLength(64);
+            invite.Property(i => i.Role).HasConversion<string>().HasMaxLength(20);
+            invite.Property(i => i.FullName).HasMaxLength(100);
+            invite.Property(i => i.Phone).HasMaxLength(30);
+            invite.Property(i => i.CreatedByUserId).HasMaxLength(450);
+            invite.Property(i => i.UsedByUserId).HasMaxLength(450);
+            invite.HasIndex(i => i.TokenHash).IsUnique();
+            invite.HasIndex(i => new { i.ShopId, i.UsedAtUtc, i.RevokedAtUtc });
+            invite.HasOne<Shop>().WithMany().HasForeignKey(i => i.ShopId).OnDelete(DeleteBehavior.Restrict);
         });
 
         // THE PATTERN: every entity that implements IShopOwned gets the same filter automatically.

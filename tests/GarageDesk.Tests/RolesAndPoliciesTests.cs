@@ -21,6 +21,7 @@ public class RolesAndPoliciesTests(GarageDeskWebFactory factory) : IClassFixture
         "/Privacy",
         "/Error",
         "/SetCulture", // the language switcher works before sign-in
+        "/Join",       // an invited person has no account yet; the link's secret token is the credential
     };
 
     // Pages of the Identity UI package that carry no attribute at all. This one only prints a fixed message

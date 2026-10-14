@@ -582,6 +582,66 @@ namespace GarageDesk.Web.Data.Migrations
                     b.ToTable("ShopLogos");
                 });
 
+            modelBuilder.Entity("GarageDesk.Web.Models.StaffInvite", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<DateTime>("ExpiresAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FullName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<DateTime?>("RevokedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime?>("UsedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UsedByUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("ShopId", "UsedAtUtc", "RevokedAtUtc");
+
+                    b.ToTable("StaffInvites");
+                });
+
             modelBuilder.Entity("GarageDesk.Web.Models.Vehicle", b =>
                 {
                     b.Property<int>("Id")
@@ -911,6 +971,15 @@ namespace GarageDesk.Web.Data.Migrations
                 });
 
             modelBuilder.Entity("GarageDesk.Web.Models.ShopLogo", b =>
+                {
+                    b.HasOne("GarageDesk.Web.Models.Shop", null)
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("GarageDesk.Web.Models.StaffInvite", b =>
                 {
                     b.HasOne("GarageDesk.Web.Models.Shop", null)
                         .WithMany()

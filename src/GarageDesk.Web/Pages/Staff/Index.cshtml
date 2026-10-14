@@ -1,0 +1,159 @@
+@page
+@using GarageDesk.Web.Models
+@using GarageDesk.Web.Services
+@model GarageDesk.Web.Pages.Staff.IndexModel
+@{
+    ViewData["Title"] = L["My team"].Value;
+}
+
+<div class="page-head">
+    <div>
+        <p class="eyebrow mb-1">@L["Owner only"]</p>
+        <h1>@L["My team"]</h1>
+        <p class="page-sub">@L["Who can sign in to your shop, and what each person may do."]</p>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.StatusMessage))
+{
+    <div class="toast-source" data-toast="success" role="status">@Model.StatusMessage</div>
+}
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="toast-source" data-toast="danger" role="alert">@Model.ErrorMessage</div>
+}
+
+@if (Model.NewInviteLink is not null)
+{
+    <section class="panel panel-pad offer mb-4" aria-labelledby="new-invite-heading" data-new-invite>
+        <h2 id="new-invite-heading" class="panel-title">@L["Invitation ready"]</h2>
+        <p class="text-secondary">
+            @L["Send this link to the new {0}. It works once and expires in 7 days. It is shown only now: if you lose it, create a new invitation.", Model.NewInviteRoleLabel ?? ""]
+        </p>
+        <label class="form-label small text-secondary" for="invite-link">@L["Invitation link"]</label>
+        <input id="invite-link" class="form-control ltr" type="text" readonly value="@Model.NewInviteLink" onfocus="this.select()" />
+        @if (Model.NewInviteWhatsApp is not null)
+        {
+            <a class="btn btn-primary mt-3" href="@Model.NewInviteWhatsApp" target="_blank" rel="noopener"><partial name="_Icon" model='"whatsapp"' />@L["Send on WhatsApp"]</a>
+        }
+    </section>
+}
+
+<section class="panel panel-pad mb-4" aria-labelledby="members-heading">
+    <div class="panel-head"><h2 id="members-heading" class="panel-title">@L["Team members"]</h2></div>
+    <div class="data-table-wrap">
+        <table class="data-table" data-members>
+            <thead>
+                <tr>
+                    <th scope="col">@L["Name"]</th>
+                    <th scope="col">@L["Role"]</th>
+                    <th scope="col">@L["Status"]</th>
+                    <th scope="col"><span class="visually-hidden">@L["Actions"]</span></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var m in Model.Members)
+            {
+                <tr data-member="@m.Email">
+                    <td>
+                        <div class="fw-semibold">@m.Name @if (m.IsSelf) { <span class="chip">@L["You"]</span> }</div>
+                        <div class="small text-secondary ltr">@m.Email</div>
+                    </td>
+                    <td>
+                        <form method="post" asp-page-handler="Role" asp-route-id="@m.Id" class="d-flex gap-2 align-items-center">
+                            <select name="role" class="form-select form-select-sm" aria-label="@L["Role"]" style="min-width: 8rem">
+                                @foreach (var role in StaffRules.Assignable)
+                                {
+                                    <option value="@role" selected="@(role == m.Role)">@Model.RoleLabel(role)</option>
+                                }
+                            </select>
+                            <button type="submit" class="btn btn-outline-secondary btn-sm">@L["Save"]</button>
+                        </form>
+                    </td>
+                    <td><span class="chip @(m.IsActive ? "chip-ok" : "")">@(m.IsActive ? L["Active"] : L["Deactivated"])</span></td>
+                    <td class="cell-end">
+                        @if (m.IsActive && !m.IsSelf)
+                        {
+                            <form method="post" asp-page-handler="Active" asp-route-id="@m.Id" asp-route-active="false"
+                                  data-confirm="@L["Deactivate this person? They are signed out and cannot sign in until you activate them again."]">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">@L["Deactivate"]</button>
+                            </form>
+                        }
+                        else if (!m.IsActive)
+                        {
+                            <form method="post" asp-page-handler="Active" asp-route-id="@m.Id" asp-route-active="true">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">@L["Activate"]</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<div class="row g-3 g-lg-4">
+    <div class="col-lg-6">
+        <section class="panel panel-pad h-100" aria-labelledby="invite-heading">
+            <div class="panel-head"><h2 id="invite-heading" class="panel-title">@L["Invite someone"]</h2></div>
+            <p class="text-secondary small">@L["They choose their own email and password. You never see or set their password."]</p>
+            <form method="post" asp-page-handler="Invite" novalidate>
+                <div class="mb-3">
+                    <label asp-for="Invite.FullName" class="form-label"></label>
+                    <input asp-for="Invite.FullName" class="form-control" autocomplete="off" />
+                    <span asp-validation-for="Invite.FullName"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Invite.Phone" class="form-label"></label>
+                    <input asp-for="Invite.Phone" class="form-control ltr" inputmode="tel" autocomplete="off" />
+                    <div class="form-text">@L["Optional. Only used to open WhatsApp with the invitation ready to send."]</div>
+                    <span asp-validation-for="Invite.Phone"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Invite.Role" class="form-label"></label>
+                    <select asp-for="Invite.Role" class="form-select">
+                        @foreach (var role in StaffRules.Assignable)
+                        {
+                            <option value="@role">@Model.RoleLabel(role)</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Invite.Role"></span>
+                </div>
+                <button type="submit" class="btn btn-primary">@L["Create invitation link"]</button>
+            </form>
+        </section>
+    </div>
+
+    <div class="col-lg-6">
+        <section class="panel panel-pad h-100" aria-labelledby="pending-heading">
+            <div class="panel-head"><h2 id="pending-heading" class="panel-title">@L["Pending invitations"]</h2></div>
+            @if (Model.PendingInvites.Count == 0)
+            {
+                <p class="text-secondary mb-0">@L["No invitations waiting."]</p>
+            }
+            else
+            {
+                <ul class="list-unstyled mb-0" data-pending-invites>
+                    @foreach (var invite in Model.PendingInvites)
+                    {
+                        <li class="d-flex justify-content-between align-items-center gap-2 py-2 border-bottom">
+                            <span>
+                                <span class="fw-semibold">@(invite.FullName ?? L["Someone"].Value)</span>
+                                <span class="chip">@Model.RoleLabel(invite.Role)</span><br />
+                                <span class="small text-secondary">@L["Expires"] <span class="ltr num">@invite.ExpiresAtUtc.ToString("yyyy-MM-dd")</span></span>
+                            </span>
+                            <form method="post" asp-page-handler="Revoke" asp-route-id="@invite.Id" data-confirm="@L["Cancel this invitation?"]">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">@L["Cancel"]</button>
+                            </form>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

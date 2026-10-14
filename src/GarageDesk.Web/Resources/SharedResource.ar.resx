@@ -493,4 +493,45 @@
   <!-- v1-3-team: roles, staff, technicians, commissions, history. New keys of this branch are appended below. -->
   <data name="Access denied" xml:space="preserve"><value>غير مسموح</value></data>
   <data name="Your role does not allow you to open this page. Ask the shop owner if you need access." xml:space="preserve"><value>دورك لا يسمح لك بفتح هذه الصفحة. اطلب من صاحب الورشة إن كنت بحاجة إلى الوصول.</value></data>
+  <data name="My team" xml:space="preserve"><value>فريقي</value></data>
+  <data name="Owner only" xml:space="preserve"><value>لصاحب الورشة فقط</value></data>
+  <data name="Who can sign in to your shop, and what each person may do." xml:space="preserve"><value>من يمكنه تسجيل الدخول إلى ورشتك، وما الذي يُسمح لكل شخص بفعله.</value></data>
+  <data name="Team members" xml:space="preserve"><value>أعضاء الفريق</value></data>
+  <data name="Role" xml:space="preserve"><value>الدور</value></data>
+  <data name="Cashier" xml:space="preserve"><value>أمين الصندوق</value></data>
+  <data name="Technician" xml:space="preserve"><value>فني</value></data>
+  <data name="Actions" xml:space="preserve"><value>إجراءات</value></data>
+  <data name="You" xml:space="preserve"><value>أنت</value></data>
+  <data name="Active" xml:space="preserve"><value>نشط</value></data>
+  <data name="Deactivated" xml:space="preserve"><value>معطّل</value></data>
+  <data name="Activate" xml:space="preserve"><value>تفعيل</value></data>
+  <data name="Deactivate" xml:space="preserve"><value>تعطيل</value></data>
+  <data name="Deactivate this person? They are signed out and cannot sign in until you activate them again." xml:space="preserve"><value>تعطيل هذا الشخص؟ سيتم تسجيل خروجه ولن يستطيع الدخول حتى تعيد تفعيله.</value></data>
+  <data name="Team updated." xml:space="preserve"><value>تم تحديث الفريق.</value></data>
+  <data name="Invite someone" xml:space="preserve"><value>دعوة شخص</value></data>
+  <data name="They choose their own email and password. You never see or set their password." xml:space="preserve"><value>يختار بريده الإلكتروني وكلمة مروره بنفسه. أنت لا ترى كلمة مروره ولا تحددها.</value></data>
+  <data name="Optional. Only used to open WhatsApp with the invitation ready to send." xml:space="preserve"><value>اختياري. يُستخدم فقط لفتح واتساب والدعوة جاهزة للإرسال.</value></data>
+  <data name="Choose a role." xml:space="preserve"><value>اختر دورًا.</value></data>
+  <data name="Enter a valid Egyptian phone number." xml:space="preserve"><value>أدخل رقم هاتف مصريًا صحيحًا.</value></data>
+  <data name="Create invitation link" xml:space="preserve"><value>إنشاء رابط الدعوة</value></data>
+  <data name="Invitation ready" xml:space="preserve"><value>الدعوة جاهزة</value></data>
+  <data name="Send this link to the new {0}. It works once and expires in 7 days. It is shown only now: if you lose it, create a new invitation." xml:space="preserve"><value>أرسل هذا الرابط إلى {0} الجديد. يعمل مرة واحدة وينتهي بعد 7 أيام. يظهر الآن فقط: إن فقدته فأنشئ دعوة جديدة.</value></data>
+  <data name="Invitation link" xml:space="preserve"><value>رابط الدعوة</value></data>
+  <data name="Hello {0}, you are invited to join {1} on GarageDesk as {2}. Open this link to create your login: {3}" xml:space="preserve"><value>مرحبًا {0}، تمت دعوتك للانضمام إلى {1} على GarageDesk بصفة {2}. افتح هذا الرابط لإنشاء حسابك: {3}</value></data>
+  <data name="Pending invitations" xml:space="preserve"><value>دعوات قيد الانتظار</value></data>
+  <data name="No invitations waiting." xml:space="preserve"><value>لا توجد دعوات قيد الانتظار.</value></data>
+  <data name="Someone" xml:space="preserve"><value>شخص ما</value></data>
+  <data name="Expires" xml:space="preserve"><value>ينتهي</value></data>
+  <data name="Cancel this invitation?" xml:space="preserve"><value>إلغاء هذه الدعوة؟</value></data>
+  <data name="Invitation cancelled." xml:space="preserve"><value>تم إلغاء الدعوة.</value></data>
+  <data name="Join the team" xml:space="preserve"><value>الانضمام إلى الفريق</value></data>
+  <data name="You are invited as {0}. Choose your email and password to create your login." xml:space="preserve"><value>تمت دعوتك بصفة {0}. اختر بريدك الإلكتروني وكلمة مرورك لإنشاء حسابك.</value></data>
+  <data name="Create my login" xml:space="preserve"><value>إنشاء حسابي</value></data>
+  <data name="This invitation link does not work" xml:space="preserve"><value>رابط الدعوة هذا لا يعمل</value></data>
+  <data name="It may have expired, been used already or been cancelled. Ask the shop owner for a new one." xml:space="preserve"><value>ربما انتهت صلاحيته أو استُخدم من قبل أو أُلغي. اطلب من صاحب الورشة رابطًا جديدًا.</value></data>
+  <data name="You cannot deactivate your own account." xml:space="preserve"><value>لا يمكنك تعطيل حسابك بنفسك.</value></data>
+  <data name="A shop needs at least one active owner." xml:space="preserve"><value>لا بد أن يبقى للورشة مالك نشط واحد على الأقل.</value></data>
+  <data name="That change could not be saved." xml:space="preserve"><value>تعذّر حفظ هذا التغيير.</value></data>
+  <data name="You are already signed in" xml:space="preserve"><value>أنت مسجّل الدخول بالفعل</value></data>
+  <data name="Log out first, then open the invitation link again." xml:space="preserve"><value>سجّل الخروج أولًا ثم افتح رابط الدعوة مرة أخرى.</value></data>
 </root>
