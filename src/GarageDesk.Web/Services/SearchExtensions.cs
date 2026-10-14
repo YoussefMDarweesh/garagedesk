@@ -24,6 +24,32 @@ public static class SearchExtensions
             || (plate != "" && c.Vehicles.Any(v => v.PlateKey.Contains(plate))));
     }
 
+    /// <summary>Job cards by plate, owner name, or job number ("12" or "#12").</summary>
+    public static IQueryable<JobCard> Search(this IQueryable<JobCard> jobs, string? query)
+    {
+        var text = query?.Trim();
+        if (string.IsNullOrEmpty(text))
+        {
+            return jobs;
+        }
+
+        // "#12" means job number 12 and nothing else (a plate key would drop the "#" and match any plate with a 12 in it).
+        if (text.StartsWith('#'))
+        {
+            var jobNumber = int.TryParse(text.TrimStart('#').Trim(), out var wanted) ? wanted : -1;
+            return jobs.Where(j => j.Id == jobNumber);
+        }
+
+        var lower = text.ToLowerInvariant();
+        var plate = PlateNormalizer.Key(text);
+        var number = int.TryParse(text, out var parsed) ? parsed : -1;
+
+        return jobs.Where(j =>
+            j.Id == number
+            || (plate != "" && j.Vehicle!.PlateKey.Contains(plate))
+            || j.Vehicle!.Customer!.Name.ToLower().Contains(lower));
+    }
+
     /// <summary>Vehicles by plate, make, model, VIN or owner name.</summary>
     public static IQueryable<Vehicle> Search(this IQueryable<Vehicle> vehicles, string? query)
     {

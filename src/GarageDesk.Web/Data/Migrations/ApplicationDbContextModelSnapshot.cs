@@ -123,6 +123,87 @@ namespace GarageDesk.Web.Data.Migrations
                     b.ToTable("Customers");
                 });
 
+            modelBuilder.Entity("GarageDesk.Web.Models.JobCard", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly>("DateIn")
+                        .HasColumnType("date");
+
+                    b.Property<int>("MileageAtVisit")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VehicleId");
+
+                    b.HasIndex("ShopId", "Status");
+
+                    b.HasIndex("ShopId", "VehicleId");
+
+                    b.ToTable("JobCards");
+                });
+
+            modelBuilder.Entity("GarageDesk.Web.Models.JobLine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("JobCardId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobCardId");
+
+                    b.HasIndex("ShopId");
+
+                    b.ToTable("JobLines");
+                });
+
             modelBuilder.Entity("GarageDesk.Web.Models.Shop", b =>
                 {
                     b.Property<int>("Id")
@@ -390,6 +471,40 @@ namespace GarageDesk.Web.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("GarageDesk.Web.Models.JobCard", b =>
+                {
+                    b.HasOne("GarageDesk.Web.Models.Shop", null)
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GarageDesk.Web.Models.Vehicle", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("GarageDesk.Web.Models.JobLine", b =>
+                {
+                    b.HasOne("GarageDesk.Web.Models.JobCard", "JobCard")
+                        .WithMany("Lines")
+                        .HasForeignKey("JobCardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GarageDesk.Web.Models.Shop", null)
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("JobCard");
+                });
+
             modelBuilder.Entity("GarageDesk.Web.Models.ShopLogo", b =>
                 {
                     b.HasOne("GarageDesk.Web.Models.Shop", null)
@@ -470,6 +585,11 @@ namespace GarageDesk.Web.Data.Migrations
             modelBuilder.Entity("GarageDesk.Web.Models.Customer", b =>
                 {
                     b.Navigation("Vehicles");
+                });
+
+            modelBuilder.Entity("GarageDesk.Web.Models.JobCard", b =>
+                {
+                    b.Navigation("Lines");
                 });
 #pragma warning restore 612, 618
         }

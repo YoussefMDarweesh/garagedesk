@@ -34,6 +34,10 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
 
     public DbSet<Vehicle> Vehicles => Set<Vehicle>();
 
+    public DbSet<JobCard> JobCards => Set<JobCard>();
+
+    public DbSet<JobLine> JobLines => Set<JobLine>();
+
     // Read by the query filters below. EF evaluates it per context instance, i.e. per request.
     private int? CurrentShopId => _currentShop.ShopId;
 
@@ -77,6 +81,29 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             vehicle.HasIndex(v => new { v.ShopId, v.PlateKey });
             vehicle.HasOne(v => v.Customer).WithMany(c => c.Vehicles).HasForeignKey(v => v.CustomerId).OnDelete(DeleteBehavior.Restrict);
             vehicle.HasOne<Shop>().WithMany().HasForeignKey(v => v.ShopId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<JobCard>(job =>
+        {
+            job.Property(j => j.Status).HasConversion<string>().HasMaxLength(20);
+            job.Property(j => j.Notes).HasMaxLength(2000);
+            job.HasIndex(j => new { j.ShopId, j.Status });
+            job.HasIndex(j => new { j.ShopId, j.VehicleId });
+            job.HasOne(j => j.Vehicle).WithMany().HasForeignKey(j => j.VehicleId).OnDelete(DeleteBehavior.Restrict);
+            job.HasOne<Shop>().WithMany().HasForeignKey(j => j.ShopId).OnDelete(DeleteBehavior.Restrict);
+            // The totals are worked out from the lines, never stored.
+            job.Ignore(j => j.PartsTotal).Ignore(j => j.LaborTotal).Ignore(j => j.Total).Ignore(j => j.IsLocked);
+        });
+
+        builder.Entity<JobLine>(line =>
+        {
+            line.Property(l => l.Type).HasConversion<string>().HasMaxLength(20);
+            line.Property(l => l.Description).HasMaxLength(200);
+            line.Property(l => l.Quantity).HasPrecision(10, 2);
+            line.Property(l => l.UnitPrice).HasPrecision(12, 2);
+            line.HasOne(l => l.JobCard).WithMany(j => j.Lines).HasForeignKey(l => l.JobCardId).OnDelete(DeleteBehavior.Cascade);
+            line.HasOne<Shop>().WithMany().HasForeignKey(l => l.ShopId).OnDelete(DeleteBehavior.Restrict);
+            line.Ignore(l => l.LineTotal);
         });
 
         // THE PATTERN: every entity that implements IShopOwned gets the same filter automatically.
