@@ -1,173 +1,310 @@
 @page
+@using GarageDesk.Web.Models
 @using GarageDesk.Web.Services
 @model IndexModel
 @{
     ViewData["Title"] = Model.ShopName ?? L["Home"].Value;
+    var signedIn = User.Identity?.IsAuthenticated == true;
 }
 
-@if (User.Identity?.IsAuthenticated == true)
+@if (!signedIn)
 {
-    var logoVersion = User.FindFirst(CurrentShop.LogoClaimType)?.Value;
-    <div class="mb-5 d-flex align-items-center gap-3">
-        @if (logoVersion is not null)
-        {
-            <img src="@Url.Content("~" + ShopLogoEndpoint.Path)?v=@logoVersion" alt="@Model.ShopName" class="shop-logo shop-logo-lg" />
-        }
+    @* ------------------------------------------------ visitors: the landing page ------------------------------------------------ *@
+    <section class="landing-hero">
         <div>
-            <p class="eyebrow mb-1">@L["Your shop"]</p>
-            <h1 class="display-6 fw-bold">@(Model.ShopName ?? L["Welcome"].Value)</h1>
-            <p class="text-secondary mb-0">@L["Your shop is set up and ready."]</p>
-        </div>
-    </div>
-
-    <section class="mb-5" aria-labelledby="due-heading">
-        <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-3">
-            <h2 id="due-heading" class="h4 fw-bold mb-0">@L["Reminders due"]</h2>
-            <a asp-page="/Reminders/Index">@L["See all reminders"]</a>
-        </div>
-
-        @if (Model.DueReminders.Count == 0)
-        {
-            <div class="card"><div class="card-body p-4 text-center text-secondary">
-                <p class="mb-3">@L["Nothing is due in the next 14 days. Nice work."]</p>
-                <a class="btn btn-outline-secondary btn-sm" asp-page="/Reminders/Create">@L["Add reminder"]</a>
-            </div></div>
-        }
-        else
-        {
-            var dashboardReturn = Url.Page("/Index");
-            <div class="card">
-                <ul class="list-group list-group-flush">
-                    @foreach (var reminder in Model.DueReminders)
-                    {
-                        <partial name="_ReminderRow" model="new GarageDesk.Web.Pages.Reminders.ReminderRowModel(reminder, Model.Today, dashboardReturn!, Model.ReminderShopName)" />
-                    }
-                </ul>
+            <p class="eyebrow">@L["For small car service shops"]</p>
+            <h1 class="mb-3">@L["One place for every job, car and customer."]</h1>
+            <p class="lead mb-4">
+                @L["Replace paper job cards, WhatsApp scrolling and Excel sheets with a simple workshop manager. Know what was done, what it cost, and when each car is due back."]
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-primary btn-lg" asp-area="Identity" asp-page="/Account/Register">@L["Create your shop"]</a>
+                <a class="btn btn-lg" style="color:#fff;border:1px solid rgba(255,255,255,.3)" asp-area="Identity" asp-page="/Account/Login">@L["Log in"]</a>
             </div>
-        }
+        </div>
+        <div class="landing-car"><partial name="_CarSilhouette" /></div>
     </section>
 
-    <div class="row g-4 mb-4">
-        <div class="col-sm-4">
-            <a class="card h-100 text-decoration-none" asp-page="/Customers/Index">
-                <div class="card-body p-4">
-                    <p class="text-secondary mb-1">@L["Customers"]</p>
-                    <p class="display-6 fw-bold mb-0 text-body">@Model.CustomerCount</p>
+    <section class="mt-5">
+        <h2 class="h4 fw-bold text-center mb-4">@L["What GarageDesk does"]</h2>
+        <div class="row g-4">
+            @{
+                var features = new (string Icon, string Title, string Text, bool Live)[]
+                {
+                    ("shield", L["Shop accounts"].Value, L["Every shop is its own private space. One shop never sees another shop's data."].Value, true),
+                    ("users", L["Customers & vehicles"].Value, L["Find any customer or car in seconds by name, phone or plate number."].Value, true),
+                    ("clipboard", L["Job cards"].Value, L["Parts and labor lines with totals worked out for you, from booked to paid."].Value, true),
+                    ("clock", L["Service history"].Value, L["Every visit for a car, newest first, with mileage and what was done."].Value, true),
+                    ("bell", L["Reminders"].Value, L["See who is due or overdue and message them on WhatsApp in one tap."].Value, true),
+                    ("file-text", L["Invoices"].Value, L["Clean A4 invoices in EGP, ready to print or save as PDF."].Value, false),
+                };
+            }
+            @foreach (var feature in features)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-tile">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="icon-tile"><partial name="_Icon" model="feature.Icon" /></span>
+                            <span class="chip @(feature.Live ? "chip-ok" : "")">@(feature.Live ? L["Available"] : L["Coming soon"])</span>
+                        </div>
+                        <h3 class="h6 fw-bold">@feature.Title</h3>
+                        <p class="text-secondary mb-0">@feature.Text</p>
+                    </div>
                 </div>
-            </a>
+            }
         </div>
-        <div class="col-sm-4">
-            <a class="card h-100 text-decoration-none" asp-page="/Vehicles/Index">
-                <div class="card-body p-4">
-                    <p class="text-secondary mb-1">@L["Vehicles"]</p>
-                    <p class="display-6 fw-bold mb-0 text-body">@Model.VehicleCount</p>
-                </div>
-            </a>
-        </div>
-        <div class="col-sm-4">
-            <a class="card h-100 text-decoration-none" asp-page="/Jobs/Index">
-                <div class="card-body p-4">
-                    <p class="text-secondary mb-1">@L["Open job cards"]</p>
-                    <p class="display-6 fw-bold mb-0 text-body">@Model.OpenJobCount</p>
-                </div>
-            </a>
-        </div>
-    </div>
-
-    var firstCustomerAndCarDone = Model.CustomerCount > 0 && Model.VehicleCount > 0;
-    <div class="card">
-        <div class="card-body p-4">
-            <h2 class="h5 mb-3">@L["Getting started"]</h2>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                    @L["Create your account"]
-                    <span class="badge text-bg-success">@L["Done"]</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                    @L["Set up your shop"]
-                    <span class="badge text-bg-success">@L["Done"]</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                    @if (firstCustomerAndCarDone)
-                    {
-                        <span>@L["Add your first customer and car"]</span>
-                        <span class="badge text-bg-success">@L["Done"]</span>
-                    }
-                    else
-                    {
-                        <a asp-page="/Customers/Create">@L["Add your first customer and car"]</a>
-                        <span class="badge bg-body-secondary border text-secondary">@L["To do"]</span>
-                    }
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                    @if (Model.JobCount > 0)
-                    {
-                        <span>@L["Open your first job card"]</span>
-                        <span class="badge text-bg-success">@L["Done"]</span>
-                    }
-                    else
-                    {
-                        <a asp-page="/Jobs/Create">@L["Open your first job card"]</a>
-                        <span class="badge bg-body-secondary border text-secondary">@L["To do"]</span>
-                    }
-                </li>
-            </ul>
-        </div>
-    </div>
+    </section>
 }
 else
 {
-    <section class="text-center py-4 py-md-5">
-        <p class="eyebrow">@L["For small car service shops"]</p>
-        <h1 class="display-5 fw-bold mb-3">@L["One place for every job, car and customer."]</h1>
-        <p class="lead text-secondary narrow mx-auto">
-            @L["Replace paper job cards, WhatsApp scrolling and Excel sheets with a simple workshop manager. Know what was done, what it cost, and when each car is due back."]
-        </p>
-        <div class="d-flex flex-wrap gap-2 justify-content-center mt-4">
-            <a class="btn btn-primary btn-lg" asp-area="Identity" asp-page="/Account/Register">@L["Create your shop"]</a>
-            <a class="btn btn-outline-secondary btn-lg" asp-area="Identity" asp-page="/Account/Login">@L["Log in"]</a>
-        </div>
-    </section>
+    @* ------------------------------------------------ the dashboard ------------------------------------------------ *@
+    var firstSteps = Model.CustomerCount == 0 || Model.VehicleCount == 0 || Model.JobCount == 0;
 
-    <section class="pt-5 mt-4 border-top">
-        <h2 class="h4 text-center mb-4">@L["What GarageDesk does"]</h2>
-        <div class="row g-4">
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100"><div class="card-body p-4">
-                    <h3 class="h6 d-flex justify-content-between gap-2">@L["Shop accounts"] <span class="badge text-bg-success align-self-start">@L["Available"]</span></h3>
-                    <p class="text-secondary mb-0">@L["Every shop is its own private space. One shop never sees another shop's data."]</p>
-                </div></div>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100"><div class="card-body p-4">
-                    <h3 class="h6 d-flex justify-content-between gap-2">@L["Customers & vehicles"] <span class="badge bg-body-secondary border text-secondary align-self-start">@L["Coming soon"]</span></h3>
-                    <p class="text-secondary mb-0">@L["Find any customer or car in seconds by name, phone or plate number."]</p>
-                </div></div>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100"><div class="card-body p-4">
-                    <h3 class="h6 d-flex justify-content-between gap-2">@L["Job cards"] <span class="badge bg-body-secondary border text-secondary align-self-start">@L["Coming soon"]</span></h3>
-                    <p class="text-secondary mb-0">@L["Parts and labor lines with totals worked out for you, from booked to paid."]</p>
-                </div></div>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100"><div class="card-body p-4">
-                    <h3 class="h6 d-flex justify-content-between gap-2">@L["Service history"] <span class="badge bg-body-secondary border text-secondary align-self-start">@L["Coming soon"]</span></h3>
-                    <p class="text-secondary mb-0">@L["Every visit for a car, newest first, with mileage and what was done."]</p>
-                </div></div>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100"><div class="card-body p-4">
-                    <h3 class="h6 d-flex justify-content-between gap-2">@L["Reminders"] <span class="badge bg-body-secondary border text-secondary align-self-start">@L["Coming soon"]</span></h3>
-                    <p class="text-secondary mb-0">@L["See who is due or overdue and message them on WhatsApp in one tap."]</p>
-                </div></div>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100"><div class="card-body p-4">
-                    <h3 class="h6 d-flex justify-content-between gap-2">@L["Invoices"] <span class="badge bg-body-secondary border text-secondary align-self-start">@L["Coming soon"]</span></h3>
-                    <p class="text-secondary mb-0">@L["Clean A4 invoices in EGP, ready to print or save as PDF."]</p>
-                </div></div>
-            </div>
+    <div class="page-head">
+        <div>
+            <p class="eyebrow mb-1">@L["Your shop"]</p>
+            <h1>@(Model.ShopName ?? L["Welcome"].Value)</h1>
+            <p class="page-sub">@L["Here's what is happening in your garage today."]</p>
         </div>
-    </section>
+        <div class="page-actions">
+            <a class="btn btn-outline-secondary" asp-page="/Customers/Create"><partial name="_Icon" model='"plus"' />@L["Add customer"]</a>
+            <a class="btn btn-primary" asp-page="/Jobs/Create"><partial name="_Icon" model='"plus"' />@L["New job card"]</a>
+        </div>
+    </div>
+
+    @if (firstSteps)
+    {
+        <section class="panel panel-pad mb-4" aria-labelledby="getting-started">
+            <div class="panel-head">
+                <h2 id="getting-started" class="panel-title">@L["Getting started"]</h2>
+                <span class="chip chip-accent">@L["3 quick steps"]</span>
+            </div>
+            <ol class="list-unstyled d-grid gap-3 mb-0">
+                @{
+                    var steps = new (bool Done, string Text, string Page)[]
+                    {
+                        (Model.CustomerCount > 0, L["Add your first customer"].Value, "/Customers/Create"),
+                        (Model.VehicleCount > 0, L["Add their vehicle"].Value, "/Vehicles/Create"),
+                        (Model.JobCount > 0, L["Open your first job card"].Value, "/Jobs/Create"),
+                    };
+                }
+                @foreach (var step in steps)
+                {
+                    <li class="d-flex align-items-center gap-3">
+                        <span class="tl-dot @(step.Done ? "ok" : "")"><partial name="_Icon" model='step.Done ? "check" : "plus"' /></span>
+                        @if (step.Done)
+                        {
+                            <span class="text-secondary text-decoration-line-through">@step.Text</span>
+                        }
+                        else
+                        {
+                            <a class="fw-bold" asp-page="@step.Page">@step.Text</a>
+                        }
+                    </li>
+                }
+            </ol>
+        </section>
+    }
+
+    <div class="row g-3 g-lg-4 mb-4">
+        <div class="col-6 col-xl-3">
+            <a class="stat-card" asp-page="/Jobs/Index" asp-route-status="Paid">
+                <div class="stat-top"><span class="stat-label">@L["Revenue this month"]</span><span class="icon-tile"><partial name="_Icon" model='"coins"' /></span></div>
+                <p class="stat-value"><span class="ltr">@MoneyFormat.Amount(Model.RevenueThisMonth)</span> <small class="fs-6 text-secondary">@L["EGP"]</small></p>
+                <p class="stat-sub">
+                    @if (Model.RevenueChangePercent is int change)
+                    {
+                        <span class="@(change >= 0 ? "trend-up" : "trend-down")"><span class="ltr">@(change >= 0 ? "+" : "")@change%</span></span>
+                        @L["vs last month"]
+                    }
+                    else
+                    {
+                        @L["From {0} paid job cards", Model.PaidThisMonthCount]
+                    }
+                </p>
+            </a>
+        </div>
+        <div class="col-6 col-xl-3">
+            <a class="stat-card" asp-page="/Jobs/Index">
+                <div class="stat-top"><span class="stat-label">@L["Open job cards"]</span><span class="icon-tile"><partial name="_Icon" model='"clipboard"' /></span></div>
+                <p class="stat-value">@Model.OpenJobCount</p>
+                <p class="stat-sub">@L["{0} booked · {1} in progress · {2} done", Model.BookedCount, Model.InProgressCount, Model.DoneCount]</p>
+            </a>
+        </div>
+        <div class="col-6 col-xl-3">
+            <a class="stat-card" asp-page="/Customers/Index">
+                <div class="stat-top"><span class="stat-label">@L["Customers"]</span><span class="icon-tile"><partial name="_Icon" model='"users"' /></span></div>
+                <p class="stat-value">@Model.CustomerCount</p>
+                <p class="stat-sub">@L["Registered in your shop"]</p>
+            </a>
+        </div>
+        <div class="col-6 col-xl-3">
+            <a class="stat-card" asp-page="/Vehicles/Index">
+                <div class="stat-top"><span class="stat-label">@L["Vehicles"]</span><span class="icon-tile"><partial name="_Icon" model='"car"' /></span></div>
+                <p class="stat-value">@Model.VehicleCount</p>
+                <p class="stat-sub">@L["Across {0} customers", Model.CustomerCount]</p>
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-3 g-lg-4 mb-4">
+        <div class="col-xl-8">
+            <section class="panel panel-pad h-100" aria-labelledby="activity-heading">
+                <div class="panel-head">
+                    <h2 id="activity-heading" class="panel-title">@L["Activity"]</h2>
+                    @if (Model.HasChartData)
+                    {
+                        <div class="d-flex flex-wrap gap-2">
+                            <div class="range-pills" role="group" aria-label="@L["What to chart"]" data-chart-controls>
+                                <button type="button" data-metric="revenue" aria-pressed="true">@L["Revenue"]</button>
+                                <button type="button" data-metric="jobs" aria-pressed="false">@L["Job cards"]</button>
+                            </div>
+                            <div class="range-pills" role="group" aria-label="@L["Time range"]">
+                                <button type="button" data-range="3" aria-pressed="false">@L["3M"]</button>
+                                <button type="button" data-range="6" aria-pressed="false">@L["6M"]</button>
+                                <button type="button" data-range="12" aria-pressed="true">@L["1Y"]</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (Model.HasChartData)
+                {
+                    <div data-chart data-currency="@L["EGP"]" data-label-revenue="@L["Revenue"]" data-label-jobs="@L["Job cards"]">
+                        <div class="chart-wrap" dir="ltr">
+                            <div class="chart-canvas" tabindex="0" aria-label="@L["Activity chart. Use the left and right arrow keys to move between months."]">
+                                <div class="skeleton" style="height: 15rem"></div>
+                            </div>
+                            <div class="chart-tip" aria-hidden="true"></div>
+                        </div>
+                        <script type="application/json">@Html.Raw(Model.ChartJson)</script>
+                        <table class="visually-hidden">
+                            <caption>@L["Revenue and job cards by month"]</caption>
+                            <thead><tr><th>@L["Month"]</th><th>@L["Revenue"]</th><th>@L["Job cards"]</th></tr></thead>
+                            <tbody>
+                                @foreach (var month in Model.Months)
+                                {
+                                    <tr><td>@month.Key</td><td>@MoneyFormat.Amount(month.Revenue)</td><td>@month.Jobs</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty">
+                        <span class="icon-tile"><partial name="_Icon" model='"trending-up"' /></span>
+                        <h3>@L["Your activity will show up here"]</h3>
+                        <p>@L["Open a few job cards and this chart fills in with your revenue and workload by month."]</p>
+                        <a class="btn btn-primary btn-sm mt-2" asp-page="@(Model.VehicleCount > 0 ? "/Jobs/Create" : "/Customers/Create")">
+                            @(Model.VehicleCount > 0 ? L["New job card"] : L["Add customer"])
+                        </a>
+                    </div>
+                }
+            </section>
+        </div>
+
+        <div class="col-xl-4">
+            <section class="panel h-100" aria-labelledby="due-heading">
+                <div class="panel-pad pb-0">
+                    <div class="panel-head mb-2">
+                        <h2 id="due-heading" class="panel-title">@L["Reminders due"]</h2>
+                        <a class="small fw-bold" asp-page="/Reminders/Index">@L["See all reminders"]</a>
+                    </div>
+                </div>
+
+                @if (Model.DueReminders.Count == 0)
+                {
+                    <div class="empty">
+                        <span class="icon-tile"><partial name="_Icon" model='"check-circle"' /></span>
+                        <h3>@L["All caught up"]</h3>
+                        <p>@L["Nothing is due in the next 14 days. Nice work."]</p>
+                        <a class="btn btn-outline-secondary btn-sm mt-2" asp-page="/Reminders/Create">@L["Add reminder"]</a>
+                    </div>
+                }
+                else
+                {
+                    var dashboardReturn = Url.Page("/Index");
+                    <ul class="list-group list-group-flush">
+                        @foreach (var reminder in Model.DueReminders)
+                        {
+                            <partial name="_ReminderRow" model="new GarageDesk.Web.Pages.Reminders.ReminderRowModel(reminder, Model.Today, dashboardReturn!, Model.ReminderShopName, Compact: true)" />
+                        }
+                    </ul>
+                }
+            </section>
+        </div>
+    </div>
+
+    <div class="row g-3 g-lg-4">
+        <div class="col-xl-8">
+            <section class="panel panel-pad h-100" aria-labelledby="history-heading">
+                <div class="panel-head">
+                    <h2 id="history-heading" class="panel-title">@L["Recent service history"]</h2>
+                    <a class="small fw-bold" asp-page="/Jobs/Index">@L["All job cards"]</a>
+                </div>
+
+                @if (Model.RecentJobs.Count == 0)
+                {
+                    <div class="empty">
+                        <span class="icon-tile"><partial name="_Icon" model='"clock"' /></span>
+                        <h3>@L["No service history yet"]</h3>
+                        <p>@L["Every job card you open appears here, newest first."]</p>
+                    </div>
+                }
+                else
+                {
+                    <ul class="timeline">
+                        @foreach (var job in Model.RecentJobs)
+                        {
+                            var dot = job.Status switch
+                            {
+                                JobStatus.Paid => "ok",
+                                JobStatus.Done => "info",
+                                JobStatus.InProgress => "accent",
+                                _ => "",
+                            };
+                            var icon = job.Status switch
+                            {
+                                JobStatus.Paid => "check",
+                                JobStatus.Done => "check-circle",
+                                JobStatus.InProgress => "tool",
+                                _ => "calendar",
+                            };
+                            var summary = job.Lines.Count == 0
+                                ? $"{L["Job card"]} #{job.Id}"
+                                : string.Join(", ", job.Lines.Take(2).Select(l => l.Description))
+                                  + (job.Lines.Count > 2 ? $" +{job.Lines.Count - 2}" : "");
+                            <li>
+                                <span class="tl-dot @dot"><partial name="_Icon" model="icon" /></span>
+                                <div class="min-w-0">
+                                    <p class="tl-title"><a class="text-reset" asp-page="/Jobs/Details" asp-route-id="@job.Id">@summary</a></p>
+                                    <p class="tl-meta">
+                                        <span class="plate" dir="auto">@job.Vehicle?.Plate</span>
+                                        @job.Vehicle?.Make @job.Vehicle?.Model &middot; @job.Vehicle?.Customer?.Name
+                                    </p>
+                                </div>
+                                <div class="tl-aside">
+                                    <partial name="_StatusBadge" model="job.Status" />
+                                    <p class="tl-meta mb-0"><span class="ltr">@job.DateIn.ToString("yyyy-MM-dd")</span> &middot; <partial name="_Money" model="job.Total" /></p>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+            </section>
+        </div>
+
+        <div class="col-xl-4">
+            <section class="panel panel-pad h-100" aria-labelledby="quick-heading">
+                <div class="panel-head"><h2 id="quick-heading" class="panel-title">@L["Quick actions"]</h2></div>
+                <div class="quick-actions">
+                    <a class="quick-action" asp-page="/Jobs/Create"><span class="icon-tile"><partial name="_Icon" model='"clipboard"' /></span>@L["New job card"]</a>
+                    <a class="quick-action" asp-page="/Customers/Create"><span class="icon-tile"><partial name="_Icon" model='"users"' /></span>@L["Add customer"]</a>
+                    <a class="quick-action" asp-page="/Vehicles/Create"><span class="icon-tile"><partial name="_Icon" model='"car"' /></span>@L["Add vehicle"]</a>
+                    <a class="quick-action" asp-page="/Reminders/Create"><span class="icon-tile"><partial name="_Icon" model='"bell"' /></span>@L["Add reminder"]</a>
+                </div>
+            </section>
+        </div>
+    </div>
 }

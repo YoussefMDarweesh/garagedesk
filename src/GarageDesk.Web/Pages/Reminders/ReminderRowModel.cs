@@ -8,5 +8,6 @@ namespace GarageDesk.Web.Pages.Reminders;
 /// <param name="ReturnUrl">Where the Done and Reopen buttons come back to (a local URL).</param>
 /// <param name="ShopName">Used in the WhatsApp message.</param>
 /// <param name="ShowVehicle">False on a vehicle's own page, where the vehicle is obvious.</param>
+/// <param name="Compact">A tighter row with icon buttons, for the dashboard.</param>
 public sealed record ReminderRowModel(
-    Reminder Reminder, DateOnly Today, string ReturnUrl, string? ShopName, bool ShowVehicle = true);
+    Reminder Reminder, DateOnly Today, string ReturnUrl, string? ShopName, bool ShowVehicle = true, bool Compact = false);

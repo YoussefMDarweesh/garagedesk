@@ -1,0 +1,4 @@
+@* A round avatar with initials, coloured from the name. Model: the person's name. Use class "avatar-sm" via ViewData["Size"]. *@
+@model string
+@using GarageDesk.Web.Services
+<span class="avatar @(ViewData["Size"] as string)" style="--hue: @Avatars.Hue(Model)" aria-hidden="true">@Avatars.Initials(Model)</span>
