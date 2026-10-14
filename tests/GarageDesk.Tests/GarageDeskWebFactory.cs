@@ -1,4 +1,5 @@
 using GarageDesk.Web.Data;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
@@ -38,7 +39,29 @@ public class GarageDeskWebFactory : WebApplicationFactory<Program>
             }
 
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_connection));
+
+            // Tests sign in by sending headers (see TestAuthHandler) instead of using the login form.
+            services.AddAuthentication()
+                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.SchemeName, _ => { });
+            services.PostConfigure<AuthenticationOptions>(options =>
+            {
+                options.DefaultScheme = TestAuthHandler.SchemeName;
+                options.DefaultAuthenticateScheme = TestAuthHandler.SchemeName;
+                options.DefaultChallengeScheme = TestAuthHandler.SchemeName;
+            });
         });
+    }
+
+    /// <summary>A client that is signed in as the given user (and, optionally, has that shop in its claims).</summary>
+    public HttpClient CreateClientFor(string userId, int? shopId = null)
+    {
+        var client = CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        client.DefaultRequestHeaders.Add(TestAuthHandler.UserHeader, userId);
+        if (shopId is not null)
+        {
+            client.DefaultRequestHeaders.Add(TestAuthHandler.ShopHeader, shopId.Value.ToString());
+        }
+        return client;
     }
 
     protected override IHost CreateHost(IHostBuilder builder)
