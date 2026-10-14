@@ -46,8 +46,13 @@ Each shop is a separate tenant. One shop must never see another shop's data.
 ### M7 — Ship
 - Deployed online, demo shop with seed data, README with screenshots and a short demo video.
 
+### UI — Arabic and dark mode
+- English is the default language. Arabic (right-to-left) is chosen with the navbar switcher; the choice is kept in a cookie and anything unsupported falls back to English.
+- Light and dark themes: the theme follows the OS setting by default, and a navbar toggle overrides it and is remembered in the browser.
+- **Done when:** switching to Arabic flips the pages to right-to-left with translated text and validation messages, and the theme can be switched (and survives a reload) without a flash.
+
 ## 4. Not in the MVP
-Online payments, inventory/stock, multi-branch, staff roles, mobile app, Arabic UI (planned later), SMS, email notifications.
+Online payments, inventory/stock, multi-branch, staff roles, mobile app, SMS, email notifications.
 
 ## 5. Tech decisions (all free)
 | Area | Choice | Why |
@@ -56,6 +61,8 @@ Online payments, inventory/stock, multi-branch, staff roles, mobile app, Arabic 
 | Data | EF Core + PostgreSQL on Neon (free plan) | Same database in dev and production, no install |
 | Auth | ASP.NET Core Identity (individual accounts) | Built in, no extra service |
 | UI | Bootstrap 5 (comes with the template) | No frontend build step |
+| Languages | Built-in ASP.NET Core localization, one `.resx` table (English default, Arabic) | No extra packages |
+| Theme | Bootstrap 5.3 `data-bs-theme` (light/dark) | No extra CSS framework |
 | Multi-tenancy | `ShopId` on every shop-owned table + EF Core global query filter | Simplest safe SaaS pattern |
 | Hosting | Azure App Service Free (F1) | Free, native .NET, deploys from GitHub Actions |
 | CI | GitHub Actions: build + test on every push | Free for public repos |
