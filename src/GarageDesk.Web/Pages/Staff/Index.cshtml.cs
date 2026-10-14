@@ -137,6 +137,32 @@ public class IndexModel(
 
     public async Task<IActionResult> OnPostActiveAsync(string id, bool active) => await ChangeAsync(id, null, active);
 
+    /// <summary>The commission percent (0 to 100) applied to the labor of this person's paid jobs. Owners only (the page is).</summary>
+    public async Task<IActionResult> OnPostCommissionAsync(string id, decimal percent)
+    {
+        if (percent is < 0 or > 100)
+        {
+            return Fail("Enter a commission between 0 and 100.");
+        }
+
+        // Only people of THIS shop can be found here, whatever id was posted.
+        var target = await db.MembersOf(currentShop.ShopId!.Value).FirstOrDefaultAsync(u => u.Id == id);
+        if (target is null)
+        {
+            return NotFound();
+        }
+
+        target.CommissionPercent = Math.Round(percent, 2, MidpointRounding.AwayFromZero);
+        var result = await userManager.UpdateAsync(target);
+        if (!result.Succeeded)
+        {
+            return Fail("That change could not be saved.");
+        }
+
+        StatusMessage = localizer["Commission saved."];
+        return RedirectToPage();
+    }
+
     /// <summary>Changes a member's role and/or active flag, keeping the shop's last owner safe.</summary>
     private async Task<IActionResult> ChangeAsync(string id, ShopRole? newRole, bool? newActive)
     {

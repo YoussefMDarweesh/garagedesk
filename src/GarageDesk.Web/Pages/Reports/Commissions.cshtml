@@ -1,0 +1,81 @@
+@page
+@using GarageDesk.Web.Services
+@model GarageDesk.Web.Pages.Reports.CommissionsModel
+@{
+    ViewData["Title"] = L["Commissions"].Value;
+}
+
+<div class="page-head">
+    <div>
+        <p class="eyebrow mb-1">@L["Owner only"]</p>
+        <h1>@L["Commissions"]</h1>
+        <p class="page-sub"><span class="ltr num" data-month>@Model.MonthStart.ToString("yyyy-MM")</span></p>
+    </div>
+    <div class="page-actions">
+        <a class="btn btn-outline-secondary" asp-page="Commissions" asp-route-month="@Model.PreviousKey"><partial name="_Icon" model='"chevron-left"' />@L["Previous month"]</a>
+        <a class="btn btn-outline-secondary" asp-page="Commissions" asp-route-month="@Model.NextKey">@L["Next month"]</a>
+    </div>
+</div>
+
+<section class="panel panel-pad mb-4" aria-labelledby="rule-heading">
+    <h2 id="rule-heading" class="panel-title">@L["How commission is worked out"]</h2>
+    <p class="text-secondary mb-0">
+        @L["For each paid job card assigned to a person, with a visit date in this month, the labor lines are added up (before discount and VAT). The commission is that labor total times the person's commission percent. Parts are never included. The percent used is the person's current one, set on the My team page."]
+    </p>
+</section>
+
+@if (Model.Lines.Count == 0)
+{
+    <section class="panel">
+        <div class="empty">
+            <span class="icon-tile"><partial name="_Icon" model='"coins"' /></span>
+            <h2>@L["No commissions this month."]</h2>
+            <p>@L["Commission shows here once a paid job card is assigned to someone with a commission percent."]</p>
+            <a class="btn btn-outline-secondary btn-sm mt-2" asp-page="/Staff/Index">@L["My team"]</a>
+        </div>
+    </section>
+}
+else
+{
+    <section class="panel">
+        <div class="data-table-wrap">
+            <table class="data-table" data-commissions>
+                <thead>
+                    <tr>
+                        <th scope="col">@L["Technician"]</th>
+                        <th scope="col" class="cell-end">@L["Paid jobs"]</th>
+                        <th scope="col" class="cell-end">@L["Labor total"]</th>
+                        <th scope="col" class="cell-end">@L["Commission %"]</th>
+                        <th scope="col" class="cell-end">@L["Commission due"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var line in Model.Lines)
+                {
+                    <tr data-person="@line.Name">
+                        <td>@line.Name @if (!line.IsActive) { <span class="chip">@L["Deactivated"]</span> }</td>
+                        <td class="cell-end num"><span class="ltr">@line.Jobs</span></td>
+                        <td class="cell-end"><partial name="_Money" model="line.LaborTotal" /></td>
+                        <td class="cell-end num"><span class="ltr">@line.Percent.ToString("0.##")%</span></td>
+                        <td class="cell-end fw-bold" data-due><partial name="_Money" model="line.Due" /></td>
+                    </tr>
+                }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th scope="row">@L["Total"]</th>
+                        <td></td>
+                        <td class="cell-end fw-bold"><partial name="_Money" model="Model.TotalLabor" /></td>
+                        <td></td>
+                        <td class="cell-end fw-bold" data-total-due><partial name="_Money" model="Model.TotalDue" /></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </section>
+}
+
+@if (Model.UnassignedPaidJobs > 0)
+{
+    <p class="text-secondary small mt-3" data-unassigned>@L["{0} paid job cards this month have no technician, so they earn no commission.", Model.UnassignedPaidJobs]</p>
+}

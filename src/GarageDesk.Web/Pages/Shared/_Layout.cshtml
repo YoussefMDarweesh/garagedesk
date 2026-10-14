@@ -51,6 +51,7 @@
             items.Add(new("/Receivables/Index", "/Receivables", L["Who owes me"].Value, "coins"));
             if (role == ShopRole.Owner)
             {
+                items.Add(new("/Reports/Commissions", "/Reports", L["Commissions"].Value, "trending-up", 0, OwnerOnly: true));
                 items.Add(new("/Staff/Index", "/Staff", L["My team"].Value, "users", 0, OwnerOnly: true));
                 items.Add(new("/ShopSettings", "/ShopSettings", L["Shop settings"].Value, "sliders", 0, OwnerOnly: true));
             }

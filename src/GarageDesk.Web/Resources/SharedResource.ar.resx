@@ -544,6 +544,20 @@
   <data name="Not assigned" xml:space="preserve"><value>غير مُسند</value></data>
   <data name="Everyone" xml:space="preserve"><value>الجميع</value></data>
   <data name="Choose someone from your team." xml:space="preserve"><value>اختر شخصًا من فريقك.</value></data>
+  <data name="Commissions" xml:space="preserve"><value>العمولات</value></data>
+  <data name="Commission %" xml:space="preserve"><value>نسبة العمولة %</value></data>
+  <data name="Commission due" xml:space="preserve"><value>العمولة المستحقة</value></data>
+  <data name="Commission saved." xml:space="preserve"><value>تم حفظ العمولة.</value></data>
+  <data name="Enter a commission between 0 and 100." xml:space="preserve"><value>أدخل عمولة بين 0 و100.</value></data>
+  <data name="Paid jobs" xml:space="preserve"><value>أوامر شغل مدفوعة</value></data>
+  <data name="Labor total" xml:space="preserve"><value>إجمالي المصنعية</value></data>
+  <data name="Previous month" xml:space="preserve"><value>الشهر السابق</value></data>
+  <data name="Next month" xml:space="preserve"><value>الشهر التالي</value></data>
+  <data name="How commission is worked out" xml:space="preserve"><value>كيف تُحسب العمولة</value></data>
+  <data name="For each paid job card assigned to a person, with a visit date in this month, the labor lines are added up (before discount and VAT). The commission is that labor total times the person's commission percent. Parts are never included. The percent used is the person's current one, set on the My team page." xml:space="preserve"><value>لكل أمر شغل مدفوع مُسند إلى شخص وتاريخ زيارته في هذا الشهر، تُجمع بنود المصنعية (قبل الخصم والضريبة). العمولة هي إجمالي المصنعية مضروبًا في نسبة عمولة الشخص. القطع لا تدخل أبدًا. النسبة المستخدمة هي النسبة الحالية للشخص كما هي مضبوطة في صفحة فريقي.</value></data>
+  <data name="No commissions this month." xml:space="preserve"><value>لا توجد عمولات هذا الشهر.</value></data>
+  <data name="Commission shows here once a paid job card is assigned to someone with a commission percent." xml:space="preserve"><value>تظهر العمولة هنا عندما يُسند أمر شغل مدفوع إلى شخص لديه نسبة عمولة.</value></data>
+  <data name="{0} paid job cards this month have no technician, so they earn no commission." xml:space="preserve"><value>{0} من أوامر الشغل المدفوعة هذا الشهر بلا فني، لذلك لا تُحتسب عليها عمولة.</value></data>
   <data name="You cannot deactivate your own account." xml:space="preserve"><value>لا يمكنك تعطيل حسابك بنفسك.</value></data>
   <data name="A shop needs at least one active owner." xml:space="preserve"><value>لا بد أن يبقى للورشة مالك نشط واحد على الأقل.</value></data>
   <data name="That change could not be saved." xml:space="preserve"><value>تعذّر حفظ هذا التغيير.</value></data>
