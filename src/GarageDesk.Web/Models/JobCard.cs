@@ -29,6 +29,9 @@ public class JobCard : IShopOwned
     public JobStatus Status { get; set; } = JobStatus.Booked;
 
     /// <summary>Per-shop invoice number (1, 2, ...), given once when the job first reaches Done or Paid. Null until then, never changes.</summary>
+    /// <summary>The estimate this job card was created from, if any.</summary>
+    public int? EstimateId { get; set; }
+
     public int? InvoiceNumber { get; set; }
 
     /// <summary>"INV-0001", or null while the job card has not been issued yet.</summary>

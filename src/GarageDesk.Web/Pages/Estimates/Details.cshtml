@@ -1,0 +1,188 @@
+@page "{id:int}"
+@model GarageDesk.Web.Pages.Estimates.DetailsModel
+@using GarageDesk.Web.Models
+@{
+    var e = Model.Estimate;
+    var vehicle = e.Vehicle;
+    ViewData["Title"] = $"{L["Estimate"]} {e.Label}";
+}
+
+@if (Model.StatusMessage is not null)
+{
+    <div class="toast-source" data-toast="success" role="status">@Model.StatusMessage</div>
+}
+@if (Model.ErrorMessage is not null)
+{
+    <div class="toast-source" data-toast="danger" role="alert">@Model.ErrorMessage</div>
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="h2 fw-bold mb-1">
+            @L["Estimate"] <span class="ltr num">@e.Label</span>
+            <partial name="_EstimateStatus" model="e.Status" />
+        </h1>
+        <p class="page-sub">
+            <span class="plate" dir="auto">@vehicle?.Plate</span> @vehicle?.Make @vehicle?.Model &middot;
+            <a asp-page="/Customers/Details" asp-route-id="@vehicle?.CustomerId">@vehicle?.Customer?.Name</a>
+        </p>
+    </div>
+    <div class="page-actions">
+        <a class="btn btn-outline-secondary" asp-page="Print" asp-route-id="@e.Id">@L["Print / Save as PDF"]</a>
+        @if (Model.WhatsAppUrl is { } wa)
+        {
+            <a class="btn btn-outline-secondary" href="@wa" target="_blank" rel="noopener" data-estimate-whatsapp><partial name="_Icon" model='"whatsapp"' />@L["Send on WhatsApp"]</a>
+        }
+        @if (e.JobCardId is int jobId)
+        {
+            <a class="btn btn-primary" asp-page="/Jobs/Details" asp-route-id="@jobId" data-estimate-job>@L["Open job card"]</a>
+        }
+        else if (e.Lines.Count > 0)
+        {
+            <form method="post" asp-page-handler="Convert" asp-route-id="@e.Id" class="d-inline">
+                <button type="submit" class="btn btn-primary" data-convert>@L["Convert to job card"]</button>
+            </form>
+        }
+    </div>
+</div>
+
+<div class="row g-3 g-lg-4">
+    <div class="col-lg-8">
+        <section class="panel panel-pad mb-3">
+            <div class="panel-head"><h2 class="panel-title">@L["Parts and labor"]</h2></div>
+            @if (e.Lines.Count == 0)
+            {
+                <p class="text-secondary mb-3">@L["No lines on this estimate yet."]</p>
+            }
+            else
+            {
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">@L["Type"]</th>
+                                <th scope="col">@L["Description"]</th>
+                                <th scope="col" class="cell-end">@L["Quantity"]</th>
+                                <th scope="col" class="cell-end">@L["Unit price"]</th>
+                                <th scope="col" class="cell-end">@L["Total"]</th>
+                                @if (!e.IsLocked) { <th scope="col"><span class="visually-hidden">@L["Remove"]</span></th> }
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var line in e.Lines)
+                        {
+                            <tr>
+                                <td><span class="chip @(line.Type == JobLineType.Part ? "chip-info" : "chip-accent")">@(line.Type == JobLineType.Part ? L["Part"] : L["Labor"])</span></td>
+                                <td class="fw-semibold">@line.Description</td>
+                                <td class="cell-end num"><span class="ltr">@line.Quantity.ToString("0.##")</span></td>
+                                <td class="cell-end"><partial name="_Money" model="line.UnitPrice" /></td>
+                                <td class="cell-end fw-bold"><partial name="_Money" model="line.LineTotal" /></td>
+                                @if (!e.IsLocked)
+                                {
+                                    <td class="cell-end">
+                                        <form method="post" asp-page-handler="RemoveLine" asp-route-id="@e.Id" asp-route-lineId="@line.Id"
+                                              data-confirm="@L["Remove this line from the job card?"]">
+                                            <button type="submit" class="icon-btn" title="@L["Remove"]" aria-label="@L["Remove"]"><partial name="_Icon" model='"x"' /></button>
+                                        </form>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+            @if (!e.IsLocked)
+            {
+                <form method="post" asp-page-handler="AddLine" asp-route-id="@e.Id" novalidate class="add-line">
+                    <h3 class="form-section-title">@L["Add a line"]</h3>
+                    <div class="row g-2 align-items-start">
+                        <div class="col-sm-3 col-md-2">
+                            <label asp-for="NewLine.Type" class="form-label small text-secondary"></label>
+                            <select asp-for="NewLine.Type" class="form-select">
+                                <option value="@JobLineType.Part">@L["Part"]</option>
+                                <option value="@JobLineType.Labor">@L["Labor"]</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-9 col-md-4">
+                            <label asp-for="NewLine.Description" class="form-label small text-secondary"></label>
+                            <input asp-for="NewLine.Description" class="form-control" autocomplete="off" />
+                            <span asp-validation-for="NewLine.Description"></span>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <label asp-for="NewLine.Quantity" class="form-label small text-secondary"></label>
+                            <input asp-for="NewLine.Quantity" class="form-control" inputmode="decimal" />
+                            <span asp-validation-for="NewLine.Quantity"></span>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <label asp-for="NewLine.UnitPrice" class="form-label small text-secondary"></label>
+                            <input asp-for="NewLine.UnitPrice" class="form-control" inputmode="decimal" />
+                            <span asp-validation-for="NewLine.UnitPrice"></span>
+                        </div>
+                        <div class="col-md-2 d-grid align-self-end">
+                            <button type="submit" class="btn btn-primary"><partial name="_Icon" model='"plus"' />@L["Add line"]</button>
+                        </div>
+                    </div>
+                </form>
+            }
+        </section>
+    </div>
+
+    <div class="col-lg-4">
+        <section class="panel panel-pad mb-3" aria-labelledby="est-total-heading">
+            <div class="panel-head"><h2 id="est-total-heading" class="panel-title">@L["Total"]</h2></div>
+            <dl class="row mb-0 g-1">
+                @if (e.DiscountValue > 0 || e.VatValue > 0)
+                {
+                    <dt class="col-6 text-secondary fw-normal">@L["Subtotal"]</dt>
+                    <dd class="col-6 text-end mb-1"><partial name="_Money" model="e.Subtotal" /></dd>
+                }
+                @if (e.DiscountValue > 0)
+                {
+                    <dt class="col-6 text-secondary fw-normal">@L["Discount"]</dt>
+                    <dd class="col-6 text-end mb-1">&minus; <partial name="_Money" model="e.DiscountValue" /></dd>
+                }
+                @if (e.VatValue > 0)
+                {
+                    <dt class="col-6 text-secondary fw-normal">@L["VAT"] (<span class="ltr">@e.VatPercent?.ToString("0.##")%</span>)</dt>
+                    <dd class="col-6 text-end mb-2"><partial name="_Money" model="e.VatValue" /></dd>
+                }
+                <dt class="col-6 border-top pt-3 mb-0">@L["Total"]</dt>
+                <dd class="col-6 text-end border-top pt-3 mb-0 fw-bold fs-5" data-estimate-total><partial name="_Money" model="e.Total" /></dd>
+            </dl>
+        </section>
+
+        <section class="panel panel-pad mb-3">
+            <div class="panel-head"><h2 class="panel-title">@L["Status"]</h2></div>
+            <p class="small text-secondary mb-3">
+                @L["Valid until"]: <span class="ltr num">@(e.ValidUntil?.ToString("yyyy-MM-dd") ?? "-")</span>
+            </p>
+            <div class="d-grid gap-2">
+                @if (!e.IsLocked && e.Status == EstimateStatus.Draft)
+                {
+                    <form method="post" asp-page-handler="Status" asp-route-id="@e.Id" asp-route-to="@EstimateStatus.Sent">
+                        <button type="submit" class="btn btn-outline-secondary w-100">@L["Mark as sent"]</button>
+                    </form>
+                }
+                @if (!e.IsLocked && e.Status is EstimateStatus.Draft or EstimateStatus.Sent)
+                {
+                    <form method="post" asp-page-handler="Status" asp-route-id="@e.Id" asp-route-to="@EstimateStatus.Declined"
+                          data-confirm="@L["Mark this estimate as declined?"]">
+                        <button type="submit" class="btn btn-outline-secondary w-100 btn-sm">@L["Mark as declined"]</button>
+                    </form>
+                }
+                @if (!e.IsLocked && e.Status == EstimateStatus.Declined)
+                {
+                    <form method="post" asp-page-handler="Status" asp-route-id="@e.Id" asp-route-to="@EstimateStatus.Draft">
+                        <button type="submit" class="btn btn-outline-secondary w-100">@L["Reopen as draft"]</button>
+                    </form>
+                }
+            </div>
+            @if (e.Notes is not null)
+            {
+                <p class="small text-secondary mt-3 mb-0" dir="auto">@e.Notes</p>
+            }
+        </section>
+    </div>
+</div>

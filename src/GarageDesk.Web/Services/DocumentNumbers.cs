@@ -13,6 +13,8 @@ public static class DocumentNumbers
 {
     public const string Invoice = "Invoice";
     public const string InvoicePrefix = "INV";
+    public const string Estimate = "Estimate";
+    public const string EstimatePrefix = "EST";
 
     public static string Format(string prefix, int number) => $"{prefix}-{number:D4}";
 

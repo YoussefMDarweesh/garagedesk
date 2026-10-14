@@ -123,6 +123,106 @@ namespace GarageDesk.Web.Data.Migrations
                     b.ToTable("Customers");
                 });
 
+            modelBuilder.Entity("GarageDesk.Web.Models.Estimate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly>("CreatedOn")
+                        .HasColumnType("date");
+
+                    b.Property<decimal?>("DiscountAmount")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<decimal?>("DiscountPercent")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
+
+                    b.Property<int?>("JobCardId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateOnly?>("ValidUntil")
+                        .HasColumnType("date");
+
+                    b.Property<decimal?>("VatPercent")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
+
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VehicleId");
+
+                    b.HasIndex("ShopId", "Number")
+                        .IsUnique();
+
+                    b.HasIndex("ShopId", "Status");
+
+                    b.ToTable("Estimates");
+                });
+
+            modelBuilder.Entity("GarageDesk.Web.Models.EstimateLine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("EstimateId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EstimateId");
+
+                    b.HasIndex("ShopId");
+
+                    b.ToTable("EstimateLines");
+                });
+
             modelBuilder.Entity("GarageDesk.Web.Models.JobCard", b =>
                 {
                     b.Property<int>("Id")
@@ -141,6 +241,9 @@ namespace GarageDesk.Web.Data.Migrations
                     b.Property<decimal?>("DiscountPercent")
                         .HasPrecision(5, 2)
                         .HasColumnType("numeric(5,2)");
+
+                    b.Property<int?>("EstimateId")
+                        .HasColumnType("integer");
 
                     b.Property<int?>("InvoiceNumber")
                         .HasColumnType("integer");
@@ -168,6 +271,8 @@ namespace GarageDesk.Web.Data.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EstimateId");
 
                     b.HasIndex("VehicleId");
 
@@ -600,6 +705,40 @@ namespace GarageDesk.Web.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("GarageDesk.Web.Models.Estimate", b =>
+                {
+                    b.HasOne("GarageDesk.Web.Models.Shop", null)
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GarageDesk.Web.Models.Vehicle", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("GarageDesk.Web.Models.EstimateLine", b =>
+                {
+                    b.HasOne("GarageDesk.Web.Models.Estimate", "Estimate")
+                        .WithMany("Lines")
+                        .HasForeignKey("EstimateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GarageDesk.Web.Models.Shop", null)
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Estimate");
+                });
+
             modelBuilder.Entity("GarageDesk.Web.Models.JobCard", b =>
                 {
                     b.HasOne("GarageDesk.Web.Models.Shop", null)
@@ -757,6 +896,11 @@ namespace GarageDesk.Web.Data.Migrations
             modelBuilder.Entity("GarageDesk.Web.Models.Customer", b =>
                 {
                     b.Navigation("Vehicles");
+                });
+
+            modelBuilder.Entity("GarageDesk.Web.Models.Estimate", b =>
+                {
+                    b.Navigation("Lines");
                 });
 
             modelBuilder.Entity("GarageDesk.Web.Models.JobCard", b =>

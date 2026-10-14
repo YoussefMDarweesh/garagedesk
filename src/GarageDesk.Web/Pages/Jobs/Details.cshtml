@@ -21,6 +21,10 @@
         <p class="page-sub">
             <span class="ltr num">@job.DateIn.ToString("yyyy-MM-dd")</span> &middot; @vehicle?.Make @vehicle?.Model
         </p>
+        @if (job.EstimateId is int estimateId)
+        {
+            <p class="small text-secondary mb-0"><a asp-page="/Estimates/Details" asp-route-id="@estimateId" data-from-estimate>@L["Created from an estimate"]</a></p>
+        }
     </div>
     <div class="page-actions">
         <a class="btn @(job.IsLocked ? "btn-primary" : "btn-outline-secondary")" asp-page="Invoice" asp-route-id="@job.Id"><partial name="_Icon" model='"file-text"' />@L["Invoice / Print"]</a>

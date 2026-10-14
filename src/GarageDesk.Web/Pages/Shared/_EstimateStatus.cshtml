@@ -1,0 +1,9 @@
+@using GarageDesk.Web.Models
+@model EstimateStatus
+<span class="chip @(Model switch { EstimateStatus.Accepted => "chip-ok", EstimateStatus.Sent => "chip-info", EstimateStatus.Declined => "chip-warn", _ => "" })" data-estimate-status>@(Model switch
+{
+    EstimateStatus.Sent => L["Sent"],
+    EstimateStatus.Accepted => L["Accepted"],
+    EstimateStatus.Declined => L["Declined"],
+    _ => L["Draft"],
+})</span>

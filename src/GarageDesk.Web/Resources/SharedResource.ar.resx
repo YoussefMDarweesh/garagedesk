@@ -398,6 +398,33 @@
   <data name="Enter a VAT percent between 0 and 100." xml:space="preserve"><value>أدخل نسبة ضريبة بين 0 و100.</value></data>
   <data name="VAT setting saved." xml:space="preserve"><value>تم حفظ إعداد الضريبة.</value></data>
 
+  <!-- Estimates -->
+  <data name="Estimates" xml:space="preserve"><value>عروض الأسعار</value></data>
+  <data name="Estimate" xml:space="preserve"><value>عرض سعر</value></data>
+  <data name="Estimate no." xml:space="preserve"><value>رقم عرض السعر</value></data>
+  <data name="New estimate" xml:space="preserve"><value>عرض سعر جديد</value></data>
+  <data name="Create estimate" xml:space="preserve"><value>إنشاء عرض السعر</value></data>
+  <data name="Quotations that become job cards once the customer says yes." xml:space="preserve"><value>عروض أسعار تتحول إلى أوامر شغل عندما يوافق العميل.</value></data>
+  <data name="No estimates yet." xml:space="preserve"><value>لا توجد عروض أسعار بعد.</value></data>
+  <data name="No lines on this estimate yet." xml:space="preserve"><value>لا توجد بنود في عرض السعر بعد.</value></data>
+  <data name="An estimate is made for a vehicle. Add a vehicle first." xml:space="preserve"><value>يُعد عرض السعر لمركبة. أضف مركبة أولًا.</value></data>
+  <data name="Valid until" xml:space="preserve"><value>صالح حتى</value></data>
+  <data name="Prepared for" xml:space="preserve"><value>مقدم إلى</value></data>
+  <data name="Back to estimate" xml:space="preserve"><value>العودة إلى عرض السعر</value></data>
+  <data name="Convert to job card" xml:space="preserve"><value>تحويل إلى أمر شغل</value></data>
+  <data name="Mark as sent" xml:space="preserve"><value>تحديد كمُرسل</value></data>
+  <data name="Mark as declined" xml:space="preserve"><value>تحديد كمرفوض</value></data>
+  <data name="Mark this estimate as declined?" xml:space="preserve"><value>تحديد عرض السعر هذا كمرفوض؟</value></data>
+  <data name="Reopen as draft" xml:space="preserve"><value>إعادة فتحه كمسودة</value></data>
+  <data name="Sent" xml:space="preserve"><value>مُرسل</value></data>
+  <data name="Accepted" xml:space="preserve"><value>مقبول</value></data>
+  <data name="Declined" xml:space="preserve"><value>مرفوض</value></data>
+  <data name="Created from an estimate" xml:space="preserve"><value>أُنشئ من عرض سعر</value></data>
+  <data name="An accepted estimate can no longer be changed." xml:space="preserve"><value>لا يمكن تغيير عرض سعر مقبول.</value></data>
+  <data name="Estimate accepted. This is the new job card." xml:space="preserve"><value>تم قبول عرض السعر. هذا هو أمر الشغل الجديد.</value></data>
+  <data name="This estimate is not an invoice. Prices are valid until the date shown." xml:space="preserve"><value>هذا العرض ليس فاتورة. الأسعار سارية حتى التاريخ المذكور.</value></data>
+  <data name="Hello {0}, this is {1}: estimate {2} for your {3} (plate {4}) is {5} EGP, valid until {6}. Reply to confirm and we will book you in. Thank you!" xml:space="preserve"><value>مرحبًا {0}، معك {1}: عرض السعر {2} لسيارتك {3} (لوحة {4}) بقيمة {5} جنيه، ساري حتى {6}. رُد للتأكيد وسنحجز لك موعدًا. شكرًا لك!</value></data>
+
   <!-- Shop settings and logo -->
   <data name="Shop settings" xml:space="preserve"><value>إعدادات الورشة</value></data>
   <data name="Shop logo" xml:space="preserve"><value>شعار الورشة</value></data>

@@ -40,6 +40,10 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
 
     public DbSet<Reminder> Reminders => Set<Reminder>();
 
+    public DbSet<Estimate> Estimates => Set<Estimate>();
+
+    public DbSet<EstimateLine> EstimateLines => Set<EstimateLine>();
+
     public DbSet<Payment> Payments => Set<Payment>();
 
     public DbSet<NumberSequence> NumberSequences => Set<NumberSequence>();
@@ -107,6 +111,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             job.HasOne<Shop>().WithMany().HasForeignKey(j => j.ShopId).OnDelete(DeleteBehavior.Restrict);
             // The totals are worked out from the lines, never stored.
             job.HasIndex(j => new { j.ShopId, j.InvoiceNumber }).IsUnique();
+            job.HasIndex(j => j.EstimateId);
             job.Ignore(j => j.InvoiceLabel);
             job.Ignore(j => j.PartsTotal).Ignore(j => j.LaborTotal).Ignore(j => j.Total).Ignore(j => j.IsLocked)
                 .Ignore(j => j.Subtotal).Ignore(j => j.DiscountValue).Ignore(j => j.VatValue).Ignore(j => j.PaidTotal).Ignore(j => j.Balance).Ignore(j => j.PaymentState);
@@ -129,6 +134,31 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             reminder.HasIndex(r => new { r.ShopId, r.IsDone, r.DueDate });
             reminder.HasOne(r => r.Vehicle).WithMany().HasForeignKey(r => r.VehicleId).OnDelete(DeleteBehavior.Restrict);
             reminder.HasOne<Shop>().WithMany().HasForeignKey(r => r.ShopId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<Estimate>(estimate =>
+        {
+            estimate.Property(e => e.Status).HasConversion<string>().HasMaxLength(20);
+            estimate.Property(e => e.Notes).HasMaxLength(2000);
+            estimate.Property(e => e.DiscountAmount).HasPrecision(12, 2);
+            estimate.Property(e => e.DiscountPercent).HasPrecision(5, 2);
+            estimate.Property(e => e.VatPercent).HasPrecision(5, 2);
+            estimate.HasIndex(e => new { e.ShopId, e.Number }).IsUnique();
+            estimate.HasIndex(e => new { e.ShopId, e.Status });
+            estimate.HasOne(e => e.Vehicle).WithMany().HasForeignKey(e => e.VehicleId).OnDelete(DeleteBehavior.Restrict);
+            estimate.HasOne<Shop>().WithMany().HasForeignKey(e => e.ShopId).OnDelete(DeleteBehavior.Restrict);
+            estimate.Ignore(e => e.Label).Ignore(e => e.Subtotal).Ignore(e => e.DiscountValue).Ignore(e => e.VatValue).Ignore(e => e.Total).Ignore(e => e.IsLocked);
+        });
+
+        builder.Entity<EstimateLine>(line =>
+        {
+            line.Property(l => l.Type).HasConversion<string>().HasMaxLength(20);
+            line.Property(l => l.Description).HasMaxLength(200);
+            line.Property(l => l.Quantity).HasPrecision(10, 2);
+            line.Property(l => l.UnitPrice).HasPrecision(12, 2);
+            line.HasOne(l => l.Estimate).WithMany(e => e.Lines).HasForeignKey(l => l.EstimateId).OnDelete(DeleteBehavior.Cascade);
+            line.HasOne<Shop>().WithMany().HasForeignKey(l => l.ShopId).OnDelete(DeleteBehavior.Restrict);
+            line.Ignore(l => l.LineTotal);
         });
 
         builder.Entity<Payment>(payment =>
