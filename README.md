@@ -19,7 +19,7 @@ I run an automotive software business and manage a fleet of cars, so I've been o
 
 ## Roadmap
 - [x] M0 — Project skeleton, CI
-- [ ] M1 — Shop accounts & multi-tenancy
+- [x] M1 — Shop accounts & multi-tenancy
 - [ ] M2 — Customers & vehicles
 - [ ] M3 — Job cards
 - [ ] M4 — Service history
