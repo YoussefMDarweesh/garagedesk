@@ -38,7 +38,7 @@ Full scope and acceptance criteria: [SPEC.md](SPEC.md)
 | Auth | ASP.NET Core Identity |
 | UI | Bootstrap 5 |
 | Tests | xUnit + SQLite in-memory |
-| CI/CD | GitHub Actions → Azure App Service |
+| CI/CD | GitHub Actions (build, test, Docker build) → Render auto-deploy |
 
 ## How it's built
 This project is built with AI coding agents under my direction: **Claude Code** implements each milestone from [SPEC.md](SPEC.md), **Codex** reviews every pull request against [AGENTS.md](AGENTS.md), and I scope, test, and merge. The rules both agents follow are in [CLAUDE.md](CLAUDE.md).

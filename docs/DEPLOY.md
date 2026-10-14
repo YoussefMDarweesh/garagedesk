@@ -1,53 +1,63 @@
-# Deploying GarageDesk to Azure (free)
+# Deploying GarageDesk on Render (free, no card)
 
-The app runs on **Azure App Service, Free (F1) plan**, and uses the **same Neon database** you already use locally.
-Every push to `main` runs `.github/workflows/deploy.yml`, which builds, tests and ships the app.
+The app runs as a **Docker container on Render's free web service** and uses a **Neon database**.
+Render builds the container from the `Dockerfile` in this repository and redeploys on every push to `main`.
+There are no deploy secrets in GitHub: Render pulls the code itself.
 
-You do this setup once, by hand, in the Azure portal. Nothing here costs money on the Free plan.
+You do this setup once, by hand.
+
+> **Stop rule:** Render's free web service and the sign-up with GitHub do not ask for a card.
+> If Render ever asks you for payment details, **stop**: close the page and do not enter anything.
+> The free instance type is all this project needs.
 
 ## 0. What you need
 
-- A Microsoft account and an Azure account (https://azure.microsoft.com/free). A card is asked for to prove you are a person; the Free (F1) plan does not charge it.
-- Your Neon connection string (the one in your user-secrets). Treat it like a password.
+- A GitHub account (you have one) and this repository.
+- Your Neon connection string (the one in your user-secrets). Treat it like a password: type or paste it only into Render's dashboard, never into the repository or a chat.
 
-## 1. Create the Web App
+## 1. Create the Render account
 
-Azure portal -> **Create a resource** -> **Web App** -> **Create**.
+1. Go to https://render.com and click **Get Started**.
+2. Choose **GitHub** to sign up. Allow Render to read your repositories. When GitHub asks which repositories, choose **Only select repositories** and pick `garagedesk`.
+
+## 2. Create the web service
+
+Render dashboard -> **New +** -> **Web Service** -> **Build and deploy from a Git repository** -> select `garagedesk` -> **Connect**.
 
 | Field | Value |
 |---|---|
-| Resource group | **Create new**: `garagedesk-rg` |
-| Name | something unique, e.g. `garagedesk-youssef`. It becomes `https://<name>.azurewebsites.net` |
-| Publish | **Code** |
-| Runtime stack | **.NET 10 (LTS)** |
-| Operating System | **Linux** |
-| Region | close to your Neon region (less delay between app and database). If the Free plan is greyed out, pick another region. |
-| Pricing plan | **Free F1** (click *Explore pricing plans* if it shows something else) |
+| Name | something unique, e.g. `garagedesk-youssef`. It becomes `https://<name>.onrender.com` |
+| Language / Runtime | **Docker** (Render finds the `Dockerfile` at the repo root by itself) |
+| Branch | `main` |
+| Region | the one closest to your Neon database (check the region in the Neon dashboard) |
+| Instance Type | **Free** |
 
-Open the **Deployment** tab and set:
+Leave "Root Directory", "Dockerfile Path" and the commands empty.
 
-- **Continuous deployment**: Disable (GitHub Actions does it, from our own workflow file).
-- **Basic authentication**: **Enable** (the publish profile in step 5 needs it).
+## 3. Environment variables
 
-Click **Review + create**, then **Create**. Wait for "Your deployment is complete".
+On the same page open **Environment Variables** (or later: the service -> **Environment**) and add:
 
-## 2. Give the app its connection string
-
-Web App -> **Settings** -> **Environment variables** -> **App settings** -> **+ Add**. Add both:
-
-| Name | Value |
+| Key | Value |
 |---|---|
 | `ConnectionStrings__Default` | your Neon connection string (note the **two** underscores; ASP.NET turns `__` into `:`) |
-| `ASPNETCORE_FORWARDEDHEADERS_ENABLED` | `true` (so the app knows the visitor came in over HTTPS) |
+| `ASPNETCORE_FORWARDEDHEADERS_ENABLED` | `true` (so the app knows the visitor is on HTTPS; the Docker image already sets it, this keeps it explicit) |
 
-Click **Apply**, then **Confirm**. The app restarts.
+This is the Render counterpart of `dotnet user-secrets`: the string lives in Render, never in the repository and never inside the Docker image.
 
-This is the Azure counterpart of `dotnet user-secrets`: the string lives in Azure, never in the repository.
+## 4. Health check and auto-deploy
 
-## 3. Create the tables and the demo data (from your PC)
+Open **Settings** of the service and check:
+
+- **Health Check Path**: `/healthz`. It answers `ok` without using the database, so a sleeping Neon database never makes Render think the app is down.
+- **Auto-Deploy**: **On Commit** (this is the default). Every push to `main` redeploys.
+
+Then click **Create Web Service** (or **Save Changes**). The first build takes a few minutes; watch the **Logs** tab until you see the service is **Live**.
+
+## 5. Create the tables and the demo data (from your PC)
 
 The deployed app and your PC share one Neon database, so you only do this once, from your machine.
-Stop the dev server first if it is running.
+Stop the local dev server first if it is running.
 
 ```bash
 dotnet ef database update --project src/GarageDesk.Web
@@ -66,43 +76,38 @@ dotnet user-secrets set "Demo:Password" "<a password you choose>" --project src/
 
 Running `--seed-demo` again is harmless: a shop that already has data is left alone, and an existing password is never changed.
 
-## 4. Tell GitHub which app to deploy to
+Now open `https://<name>.onrender.com` and sign in with the demo login.
 
-GitHub repo -> **Settings** -> **Secrets and variables** -> **Actions** -> **Variables** tab -> **New repository variable**:
+## Optional tip: a separate Neon branch for the public demo
 
-- Name: `AZURE_WEBAPP_NAME`
-- Value: the name you chose in step 1 (just the name, not the full address)
+The demo login is meant to be shared, so strangers can change what is in the demo shop.
+To keep that away from your own data, give the public site its own copy of the database:
 
-Until this variable exists the deploy job is skipped, so nothing goes red before you finish the setup.
+1. Neon dashboard -> your project -> **Branches** -> **Create branch** (e.g. `demo`). It is free and copies the schema.
+2. Copy the connection string **of that branch** and use it as `ConnectionStrings__Default` in Render (step 3).
+3. Run step 5 once against that branch: temporarily set it with
+   `dotnet user-secrets set "ConnectionStrings:Default" "<the demo branch string>" --project src/GarageDesk.Web`,
+   run the two commands, then set your own development string back.
 
-## 5. Give GitHub permission to deploy (publish profile)
+Your daily work then stays in your main branch and the public demo lives in its own.
 
-1. Azure portal -> your Web App -> **Overview** -> **Download publish profile** (top bar). A `.PublishSettings` file downloads.
-2. If the button is greyed out: **Settings** -> **Configuration** -> **General settings** -> **SCM Basic Auth Publishing Credentials** = **On** -> **Save**, then try again.
-3. Open the file in Notepad and copy **all** of it.
-4. GitHub repo -> **Settings** -> **Secrets and variables** -> **Actions** -> **Secrets** tab -> **New repository secret**:
-   - Name: `AZURE_WEBAPP_PUBLISH_PROFILE`
-   - Secret: paste the whole file.
-5. Delete the downloaded file from your PC. Never commit it.
+## What to expect on the free plan
 
-## 6. Deploy
-
-Merge to `main`, or GitHub -> **Actions** -> **Deploy to Azure** -> **Run workflow**.
-When it is green, open `https://<name>.azurewebsites.net` and sign in with the demo login.
-
-## What to expect on the Free plan
-
-- The app **goes to sleep after about 20 minutes** without visitors. The next request takes 10 to 30 seconds. (Free has no "Always on".)
+- The service **goes to sleep after about 15 minutes** without visitors. The next request wakes it and takes **about a minute** (a "cold start"). Open the link before you show it to someone.
 - Neon's free database also sleeps when idle, so the first page after a quiet period can be slow too.
-- 60 CPU-minutes per day. Plenty for a demo.
-- The demo login is public, so anyone can change the demo data. `--seed-demo` only fills an *empty* shop, so to start over you would first delete the demo shop's rows. A "reset demo" command is a good later addition.
+- The container's disk is **ephemeral** (wiped on every restart and deploy). That is fine here: everything, including shop logos, lives in the database.
+- Free instances have a monthly hours allowance and limited CPU and memory. Plenty for a demo.
+- The demo login is public, so anyone can change the demo data. `--seed-demo` only fills an *empty* shop, so to start over you would first delete the demo shop's rows (or recreate the Neon branch). A "reset demo" command is a good later addition.
 
 ## If something goes wrong
 
 | Symptom | Likely cause |
 |---|---|
-| Workflow shows as skipped | `AZURE_WEBAPP_NAME` variable is missing (step 4) |
-| Deploy step fails with a 401 / "publish profile" error | secret missing or incomplete, or Basic authentication is off (step 5) |
-| Site shows "HTTP Error 500.30" or "Application Error" | open Web App -> **Monitoring** -> **Log stream**. Usually the connection string setting is missing or misspelled (step 2). |
-| "password authentication failed" in the log | the Neon string was copied wrongly; copy it again from your user-secrets |
-| Page loads but is empty / "relation does not exist" | the migrations were not applied to Neon (step 3) |
+| Build fails in the Render logs | read the last lines of the build log. The same `docker build .` runs in GitHub Actions on every push, so look at the CI run's "docker-build" job first |
+| Deploy "failed" / service restarts in a loop, logs show `Connection string 'Default' not found` | the `ConnectionStrings__Default` variable is missing or misspelled (two underscores, exact capitals) |
+| Logs show `password authentication failed` or `SSL` errors | the Neon string was copied wrongly; copy it again from your user-secrets. Keep `SSL Mode=Require` in it |
+| Site opens but pages show an error / `relation "..." does not exist` | the migrations were not applied to that Neon database (step 5) |
+| "Application failed to respond" or "No open ports detected" | the container did not start. Check the Logs tab for the real error, usually one of the two rows above |
+| Redirect loop / "too many redirects" | `ASPNETCORE_FORWARDEDHEADERS_ENABLED` is not `true` |
+| First load takes a minute, later loads are fast | normal: the free instance was asleep |
+| Render asks for a credit card or payment details | stop and do not enter anything. You should not need them for the free instance |

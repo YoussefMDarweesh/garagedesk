@@ -52,7 +52,7 @@ Each shop is a separate tenant. One shop must never see another shop's data.
 ### M7 — Ship
 - Deployed online, demo shop with seed data, README with screenshots and a short demo video.
 - Decisions: the demo shop is created by `dotnet run --project src/GarageDesk.Web -- --seed-demo`, which makes the shop "Demo Motors", its owner login and the data, then exits without starting the website. The data is 10 customers, 15 cars (three each of Skoda, Volkswagen, Hyundai, Kia and Toyota), about 50 job cards over the last year (every status) and a mix of overdue, due-soon, upcoming and finished reminders. All dates are relative to today, so the dashboard always has due reminders. It only fills an empty shop, so running it twice changes nothing, and it refuses to run if migrations are pending. The login is `Demo:Email` (default `demo@garagedesk.app`) with `Demo:Password`; without a password setting a random one is printed once. No password is stored in the repository.
-- Deployment: `.github/workflows/deploy.yml` builds, tests and publishes on every push to `main` and deploys to Azure App Service (Free F1, Linux, .NET 10). The deploy job is skipped until the `AZURE_WEBAPP_NAME` repository variable exists. The connection string is the `ConnectionStrings__Default` app setting in Azure. Migrations are applied by hand from a developer machine (`dotnet ef database update`), never automatically on startup. Step by step: `docs/DEPLOY.md`.
+- Deployment: the app ships as a Docker container (`Dockerfile`: SDK build stage, ASP.NET runtime stage, non-root user, listens on Render's `PORT`, no secrets in the image) on a Render free web service, with the Neon database. Render auto-deploys from `main` on every push, so no deploy secrets live in GitHub; `ci.yml` builds, tests and also builds the image and calls `/healthz`. The connection string is the `ConnectionStrings__Default` environment variable in Render's dashboard, and `ASPNETCORE_FORWARDEDHEADERS_ENABLED=true` makes the app trust the proxy's HTTPS headers. `/healthz` answers `ok` without touching the database, so a sleeping Neon never fails the health check. Migrations are applied by hand from a developer machine (`dotnet ef database update`), never automatically on startup. Step by step: `docs/DEPLOY.md`.
 - Not included: a "reset demo" command, applying migrations at startup, staging environments, a custom domain.
 
 ### UI — Arabic and dark mode
@@ -86,7 +86,7 @@ Online payments, inventory/stock, multi-branch, staff roles, mobile app, SMS, em
 | Languages | Built-in ASP.NET Core localization, one `.resx` table (English default, Arabic) | No extra packages |
 | Theme | Bootstrap 5.3 `data-bs-theme` (light/dark) | No extra CSS framework |
 | Multi-tenancy | `ShopId` on every shop-owned table + EF Core global query filter | Simplest safe SaaS pattern |
-| Hosting | Azure App Service Free (F1) | Free, native .NET, deploys from GitHub Actions |
+| Hosting | Render free web service, running the app as a Docker container | Free with no payment card, auto-deploys from GitHub; the database stays on Neon |
 | CI | GitHub Actions: build + test on every push | Free for public repos |
 | Tests | xUnit | Standard for .NET |
 
