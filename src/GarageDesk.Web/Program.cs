@@ -1,5 +1,12 @@
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
+using GarageDesk.Web;
 using GarageDesk.Web.Data;
 using GarageDesk.Web.Models;
 using GarageDesk.Web.Services;
@@ -21,10 +28,25 @@ builder.Services.AddScoped<ICurrentShop, CurrentShop>();
 // No email sender exists in the MVP, so accounts can't be email-confirmed: sign-in works right after registering.
 builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddClaimsPrincipalFactory<AppUserClaimsPrincipalFactory>();
+    .AddClaimsPrincipalFactory<AppUserClaimsPrincipalFactory>()
+    .AddErrorDescriber<LocalizedIdentityErrorDescriber>();
+
+// Languages: English (default) and Arabic. All translations live in Resources/SharedResource.ar.resx.
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+// By default ASP.NET writes anything outside basic Latin as &#x...; entities. Let Arabic through as real text.
+builder.Services.AddWebEncoders(options =>
+    options.TextEncoderSettings = new TextEncoderSettings(
+        UnicodeRanges.BasicLatin, UnicodeRanges.Latin1Supplement, UnicodeRanges.Arabic));
+builder.Services.AddSingleton<IValidationAttributeAdapterProvider, LocalizedValidationAttributeAdapterProvider>();
+builder.Services.AddOptions<MvcOptions>()
+    .Configure<IStringLocalizerFactory>((mvc, localizerFactory) =>
+        mvc.ModelMetadataDetailsProviders.Add(
+            new LocalizedDisplayNameProvider(localizerFactory.Create(typeof(SharedResource)))));
 
 builder.Services.AddRazorPages()
-    .AddMvcOptions(options => options.Filters.Add<RequireShopPageFilter>());
+    .AddMvcOptions(options => options.Filters.Add<RequireShopPageFilter>())
+    .AddDataAnnotationsLocalization(options =>
+        options.DataAnnotationLocalizerProvider = (_, localizerFactory) => localizerFactory.Create(typeof(SharedResource)));
 
 var app = builder.Build();
 
@@ -41,6 +63,15 @@ else
 }
 
 app.UseHttpsRedirection();
+
+// The language comes only from the cookie set by the navbar switcher; anything else falls back to English.
+app.UseRequestLocalization(options =>
+{
+    options.SetDefaultCulture(Cultures.Default)
+        .AddSupportedCultures(Cultures.Supported)
+        .AddSupportedUICultures(Cultures.Supported);
+    options.RequestCultureProviders = [new CookieRequestCultureProvider()];
+});
 
 app.UseRouting();
 
