@@ -28,6 +28,9 @@ public class JobCard : IShopOwned
 
     public JobStatus Status { get; set; } = JobStatus.Booked;
 
+    /// <summary>When the status last changed (UTC). Null if it never changed; the customer's status page then shows the visit date.</summary>
+    public DateTime? StatusChangedAtUtc { get; set; }
+
     /// <summary>Per-shop invoice number (1, 2, ...), given once when the job first reaches Done or Paid. Null until then, never changes.</summary>
     /// <summary>The estimate this job card was created from, if any.</summary>
     public int? EstimateId { get; set; }

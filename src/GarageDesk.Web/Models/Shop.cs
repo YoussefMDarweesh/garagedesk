@@ -21,4 +21,12 @@ public class Shop
 
     /// <summary>VAT percent added to job cards, or null when the shop does not charge VAT.</summary>
     public decimal? VatPercent { get; set; }
+
+    /// <summary>The shop's own WhatsApp message (English) with placeholders such as {name} and {link}; null means the built-in wording.</summary>
+    [StringLength(500)]
+    public string? ShareMessageEn { get; set; }
+
+    /// <summary>The same message in Arabic.</summary>
+    [StringLength(500)]
+    public string? ShareMessageAr { get; set; }
 }

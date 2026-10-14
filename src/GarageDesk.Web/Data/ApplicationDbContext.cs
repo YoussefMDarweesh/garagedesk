@@ -48,6 +48,8 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
 
     public DbSet<NumberSequence> NumberSequences => Set<NumberSequence>();
 
+    public DbSet<ShareLink> ShareLinks => Set<ShareLink>();
+
     // Read by the query filters below. EF evaluates it per context instance, i.e. per request.
     private int? CurrentShopId => _currentShop.ShopId;
 
@@ -176,6 +178,17 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             sequence.Property(s => s.Kind).HasMaxLength(30);
             sequence.HasIndex(s => new { s.ShopId, s.Kind }).IsUnique();
             sequence.HasOne<Shop>().WithMany().HasForeignKey(s => s.ShopId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<ShareLink>(link =>
+        {
+            link.Property(l => l.Kind).HasConversion<string>().HasMaxLength(20);
+            link.Property(l => l.TokenHash).HasMaxLength(32);
+            link.Property(l => l.TokenProtected).HasMaxLength(500);
+            link.Property(l => l.Language).HasMaxLength(5);
+            link.HasIndex(l => l.TokenHash).IsUnique();
+            link.HasIndex(l => new { l.ShopId, l.Kind, l.TargetId });
+            link.HasOne<Shop>().WithMany().HasForeignKey(l => l.ShopId).OnDelete(DeleteBehavior.Restrict);
         });
 
         // THE PATTERN: every entity that implements IShopOwned gets the same filter automatically.
