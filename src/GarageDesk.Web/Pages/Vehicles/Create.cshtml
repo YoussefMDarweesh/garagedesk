@@ -1,0 +1,32 @@
+@page
+@model CreateModel
+@{
+    ViewData["Title"] = L["Add vehicle"].Value;
+}
+
+<div class="card shadow-sm auth-card">
+    <div class="card-body p-4 p-md-5">
+        <h1 class="h3 fw-bold mb-4">@L["Add vehicle"]</h1>
+
+        @if (Model.Owners.Count == 0)
+        {
+            <p class="text-secondary">@L["A vehicle needs an owner. Add a customer first."]</p>
+            <a class="btn btn-primary" asp-page="/Customers/Create">@L["Add customer"]</a>
+        }
+        else
+        {
+            <form method="post" novalidate>
+                <partial name="_VehicleForm" model="Model" />
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">@L["Save"]</button>
+                    <a class="btn btn-outline-secondary" asp-page="Index">@L["Cancel"]</a>
+                </div>
+            </form>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

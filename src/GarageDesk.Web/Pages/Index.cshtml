@@ -20,6 +20,26 @@
         </div>
     </div>
 
+    <div class="row g-4 mb-4">
+        <div class="col-sm-6">
+            <a class="card h-100 text-decoration-none" asp-page="/Customers/Index">
+                <div class="card-body p-4">
+                    <p class="text-secondary mb-1">@L["Customers"]</p>
+                    <p class="display-6 fw-bold mb-0 text-body">@Model.CustomerCount</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-sm-6">
+            <a class="card h-100 text-decoration-none" asp-page="/Vehicles/Index">
+                <div class="card-body p-4">
+                    <p class="text-secondary mb-1">@L["Vehicles"]</p>
+                    <p class="display-6 fw-bold mb-0 text-body">@Model.VehicleCount</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    var firstCustomerAndCarDone = Model.CustomerCount > 0 && Model.VehicleCount > 0;
     <div class="card">
         <div class="card-body p-4">
             <h2 class="h5 mb-3">@L["Getting started"]</h2>
@@ -32,9 +52,17 @@
                     @L["Set up your shop"]
                     <span class="badge text-bg-success">@L["Done"]</span>
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center px-0 text-secondary">
-                    @L["Add your first customer and car"]
-                    <span class="badge bg-body-secondary border text-secondary">@L["Coming soon"]</span>
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                    @if (firstCustomerAndCarDone)
+                    {
+                        <span>@L["Add your first customer and car"]</span>
+                        <span class="badge text-bg-success">@L["Done"]</span>
+                    }
+                    else
+                    {
+                        <a asp-page="/Customers/Create">@L["Add your first customer and car"]</a>
+                        <span class="badge bg-body-secondary border text-secondary">@L["To do"]</span>
+                    }
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center px-0 text-secondary">
                     @L["Open your first job card"]

@@ -1,0 +1,65 @@
+@page "{id:int}"
+@model DetailsModel
+@{
+    ViewData["Title"] = Model.Customer.Name;
+}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <a asp-page="Index" class="text-secondary">&larr; @L["Customers"]</a>
+</nav>
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-4">
+    <div>
+        <h1 class="h2 fw-bold mb-1">@Model.Customer.Name</h1>
+        <p class="mb-0"><span class="ltr">@Model.Customer.Phone</span></p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-page="Edit" asp-route-id="@Model.Customer.Id">@L["Edit"]</a>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.Customer.Notes))
+{
+    <div class="card mb-4"><div class="card-body p-4">
+        <h2 class="h6 text-secondary">@L["Notes"]</h2>
+        <p class="mb-0" style="white-space: pre-line">@Model.Customer.Notes</p>
+    </div></div>
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h2 class="h4 fw-bold mb-0">@L["Vehicles"]</h2>
+    <a class="btn btn-primary btn-sm" asp-page="/Vehicles/Create" asp-route-customerId="@Model.Customer.Id">@L["Add vehicle"]</a>
+</div>
+
+@if (Model.Customer.Vehicles.Count == 0)
+{
+    <div class="card"><div class="card-body p-4 text-center text-secondary">
+        <p class="mb-0">@L["This customer has no vehicles yet."]</p>
+    </div></div>
+}
+else
+{
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">@L["Plate number"]</th>
+                        <th scope="col">@L["Vehicle"]</th>
+                        <th scope="col">@L["Year"]</th>
+                        <th scope="col">@L["Mileage (km)"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var vehicle in Model.Customer.Vehicles)
+                {
+                    <tr>
+                        <td><a class="plate" dir="auto" asp-page="/Vehicles/Details" asp-route-id="@vehicle.Id">@vehicle.Plate</a></td>
+                        <td>@vehicle.Make @vehicle.Model</td>
+                        <td>@vehicle.Year</td>
+                        <td>@vehicle.Mileage.ToString("N0")</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

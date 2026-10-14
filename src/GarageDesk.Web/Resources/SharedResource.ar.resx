@@ -113,6 +113,49 @@
   <data name="Cookies" xml:space="preserve"><value>ملفات تعريف الارتباط</value></data>
   <data name="One cookie keeps you signed in and another remembers your language. Your light or dark theme is saved in your browser. There is no advertising or tracking." xml:space="preserve"><value>ملف تعريف ارتباط يُبقيك مسجّلًا للدخول وآخر يتذكّر لغتك. ويُحفظ اختيارك للمظهر الفاتح أو الداكن في متصفحك. لا توجد إعلانات ولا تتبّع.</value></data>
 
+  <!-- Customers and vehicles -->
+  <data name="Customers" xml:space="preserve"><value>العملاء</value></data>
+  <data name="Add customer" xml:space="preserve"><value>إضافة عميل</value></data>
+  <data name="Edit customer" xml:space="preserve"><value>تعديل العميل</value></data>
+  <data name="Edit" xml:space="preserve"><value>تعديل</value></data>
+  <data name="Save" xml:space="preserve"><value>حفظ</value></data>
+  <data name="Cancel" xml:space="preserve"><value>إلغاء</value></data>
+  <data name="Search" xml:space="preserve"><value>بحث</value></data>
+  <data name="Clear" xml:space="preserve"><value>مسح</value></data>
+  <data name="To do" xml:space="preserve"><value>للتنفيذ</value></data>
+  <data name="Name" xml:space="preserve"><value>الاسم</value></data>
+  <data name="Notes" xml:space="preserve"><value>ملاحظات</value></data>
+  <data name="Search by name, phone or plate number" xml:space="preserve"><value>ابحث بالاسم أو الهاتف أو رقم اللوحة</value></data>
+  <data name="No customers match your search." xml:space="preserve"><value>لا يوجد عملاء يطابقون بحثك.</value></data>
+  <data name="No customers yet. Add your first customer to get started." xml:space="preserve"><value>لا يوجد عملاء بعد. أضف أول عميل للبدء.</value></data>
+  <data name="Showing the first {0} customers. Use the search to narrow the list." xml:space="preserve"><value>يتم عرض أول {0} عميل. استخدم البحث لتضييق القائمة.</value></data>
+  <data name="Egyptian mobile or landline, e.g. 0101 234 5678. It is saved in +20 format." xml:space="preserve"><value>رقم موبايل أو أرضي مصري، مثل 0101 234 5678. يتم حفظه بصيغة +20.</value></data>
+  <data name="Enter a valid Egyptian phone number, for example 0101 234 5678." xml:space="preserve"><value>أدخل رقم هاتف مصريًا صحيحًا، مثل 0101 234 5678.</value></data>
+  <data name="This customer has no vehicles yet." xml:space="preserve"><value>لا توجد مركبات لهذا العميل بعد.</value></data>
+  <data name="Vehicles" xml:space="preserve"><value>المركبات</value></data>
+  <data name="Vehicle" xml:space="preserve"><value>المركبة</value></data>
+  <data name="Add vehicle" xml:space="preserve"><value>إضافة مركبة</value></data>
+  <data name="Edit vehicle" xml:space="preserve"><value>تعديل المركبة</value></data>
+  <data name="Search by plate, make, model or owner" xml:space="preserve"><value>ابحث برقم اللوحة أو الماركة أو الموديل أو المالك</value></data>
+  <data name="No vehicles match your search." xml:space="preserve"><value>لا توجد مركبات تطابق بحثك.</value></data>
+  <data name="No vehicles yet. Add a vehicle from a customer's page, or use the button above." xml:space="preserve"><value>لا توجد مركبات بعد. أضف مركبة من صفحة العميل أو استخدم الزر أعلاه.</value></data>
+  <data name="Showing the first {0} vehicles. Use the search to narrow the list." xml:space="preserve"><value>يتم عرض أول {0} مركبة. استخدم البحث لتضييق القائمة.</value></data>
+  <data name="A vehicle needs an owner. Add a customer first." xml:space="preserve"><value>المركبة تحتاج إلى مالك. أضف عميلًا أولًا.</value></data>
+  <data name="Owner" xml:space="preserve"><value>المالك</value></data>
+  <data name="Choose the owner." xml:space="preserve"><value>اختر المالك.</value></data>
+  <data name="Plate number" xml:space="preserve"><value>رقم اللوحة</value></data>
+  <data name="Enter a valid plate number." xml:space="preserve"><value>أدخل رقم لوحة صحيحًا.</value></data>
+  <data name="Make" xml:space="preserve"><value>الماركة</value></data>
+  <data name="Model" xml:space="preserve"><value>الموديل</value></data>
+  <data name="Year" xml:space="preserve"><value>سنة الصنع</value></data>
+  <data name="Mileage (km)" xml:space="preserve"><value>المسافة المقطوعة (كم)</value></data>
+  <data name="VIN (optional)" xml:space="preserve"><value>رقم الشاسيه VIN (اختياري)</value></data>
+  <data name="VIN" xml:space="preserve"><value>رقم الشاسيه (VIN)</value></data>
+  <data name="The field {0} must be between {1} and {2}." xml:space="preserve"><value>يجب أن تكون قيمة حقل {0} بين {1} و{2}.</value></data>
+  <data name="The field {0} must be a number." xml:space="preserve"><value>يجب أن يكون حقل {0} رقمًا.</value></data>
+  <data name="The value '{0}' is not valid for {1}." xml:space="preserve"><value>القيمة '{0}' غير صالحة للحقل {1}.</value></data>
+  <data name="The value '{0}' is invalid." xml:space="preserve"><value>القيمة '{0}' غير صالحة.</value></data>
+
   <!-- Shop settings and logo -->
   <data name="Shop settings" xml:space="preserve"><value>إعدادات الورشة</value></data>
   <data name="Shop logo" xml:space="preserve"><value>شعار الورشة</value></data>

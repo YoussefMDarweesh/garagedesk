@@ -194,6 +194,49 @@ html[lang="ar"] * {
   font-weight: 400;
 }
 
+/* Phone numbers, VINs and other left-to-right text inside right-to-left (Arabic) pages. */
+.ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+  display: inline-block;
+}
+
+.ltr-input {
+  direction: ltr;
+  text-align: start;
+}
+
+/* A licence plate. */
+.plate {
+  display: inline-block;
+  margin-inline-end: 0.4rem;
+  padding: 0.1rem 0.5rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-decoration: none;
+  color: var(--bs-body-color);
+  background: var(--gd-surface);
+  border: 2px solid var(--bs-body-color);
+  border-radius: 0.4rem;
+  white-space: nowrap;
+}
+
+.plate:hover {
+  color: var(--gd-accent-text);
+  border-color: var(--gd-accent-text);
+}
+
+.plate-lg {
+  font-size: 1.25rem;
+  padding: 0.2rem 0.75rem;
+}
+
+/* The plate that matched what was searched for. */
+.plate-match {
+  background: rgba(var(--gd-accent-rgb), 0.15);
+  border-color: var(--gd-accent-text);
+}
+
 /* Centred card used by login, register and create-shop */
 .auth-card {
   max-width: 26rem;

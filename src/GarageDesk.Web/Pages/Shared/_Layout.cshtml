@@ -64,6 +64,14 @@
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
+                                <a class="nav-link @(currentPage?.StartsWith("/Customers") == true ? "active" : "")"
+                                   asp-area="" asp-page="/Customers/Index">@L["Customers"]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(currentPage?.StartsWith("/Vehicles") == true ? "active" : "")"
+                                   asp-area="" asp-page="/Vehicles/Index">@L["Vehicles"]</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link @(currentPage == "/ShopSettings" ? "active" : "")"
                                    asp-area="" asp-page="/ShopSettings">@L["Shop settings"]</a>
                             </li>
