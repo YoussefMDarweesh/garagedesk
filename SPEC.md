@@ -61,6 +61,13 @@ Each shop is a separate tenant. One shop must never see another shop's data.
 - Each shop only ever sees its own logo; the URL carries no shop id.
 - **Done when:** I can upload a logo and see it in the navbar, a second shop cannot fetch it, and a non-image or oversized file is refused with a clear message.
 
+### UI — app shell and dashboard
+- Signed-in pages share one app shell: a floating navigation rail (a bottom tab bar on phones), a top bar with search, the due-reminders bell, language and light/dark switches and the user menu, and the shop logo.
+- The home page is a dashboard of real, shop-scoped numbers: customers, vehicles, open job cards, revenue this month (paid job cards by visit date), a revenue/job-card activity chart by month, due reminders and the recent service history, with friendly empty states.
+- A vehicle's page shows a hero card, status tiles (kilometres and days since the last service, reminders, visits) computed only from data we already store, and its service-history timeline.
+- A shop can choose its accent colour from a small preset palette in Shop settings.
+- Design notes: `docs/DESIGN.md`.
+
 ## 4. Not in the MVP
 Online payments, inventory/stock, multi-branch, staff roles, mobile app, SMS, email notifications.
 
@@ -79,7 +86,7 @@ Online payments, inventory/stock, multi-branch, staff roles, mobile app, SMS, em
 | Tests | xUnit | Standard for .NET |
 
 ## 6. Data model (first version)
-- `Shop` (Id, Name, Phone, Address)
+- `Shop` (Id, Name, Phone, Address, AccentColor?)
 - `ShopLogo` (Id, ShopId, Bytes, ContentType, UpdatedAtUtc), one per shop, stored in the database
 - `AppUser` (Identity user + ShopId)
 - `Customer` (Id, ShopId, Name, Phone, Notes)
