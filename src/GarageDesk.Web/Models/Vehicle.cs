@@ -26,4 +26,20 @@ public class Vehicle : IShopOwned
 
     /// <summary>Current mileage in kilometres.</summary>
     public int Mileage { get; set; }
+
+    /// <summary>
+    /// Records an odometer reading taken at a visit. The vehicle's current mileage only ever goes up:
+    /// an older or mistyped lower reading on a job card must not wind it back.
+    /// </summary>
+    /// <returns>True if the vehicle's mileage changed.</returns>
+    public bool RaiseMileageTo(int reading)
+    {
+        if (reading <= Mileage)
+        {
+            return false;
+        }
+
+        Mileage = reading;
+        return true;
+    }
 }
