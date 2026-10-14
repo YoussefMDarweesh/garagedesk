@@ -5,15 +5,23 @@
     var searching = !string.IsNullOrWhiteSpace(Model.Q);
 }
 
-<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-    <h1 class="h2 fw-bold mb-0">@L["Vehicles"]</h1>
-    <a class="btn btn-primary" asp-page="Create">@L["Add vehicle"]</a>
+<div class="page-head">
+    <div>
+        <h1 class="visually-hidden">@L["Vehicles"]</h1>
+        <p class="page-sub mt-0">@L["{0} vehicles", Model.Total]</p>
+    </div>
+    <div class="page-actions">
+        <a class="btn btn-primary" asp-page="Create"><partial name="_Icon" model='"plus"' />@L["Add vehicle"]</a>
+    </div>
 </div>
 
-<form method="get" class="mb-4" role="search">
-    <div class="input-group">
+<form method="get" class="toolbar" role="search">
+    <div class="search-field">
+        <partial name="_Icon" model='"search"' />
         <input type="search" name="q" value="@Model.Q" class="form-control"
                placeholder="@L["Search by plate, make, model or owner"]" aria-label="@L["Search by plate, make, model or owner"]" />
+    </div>
+    <div class="page-actions">
         <button type="submit" class="btn btn-outline-secondary">@L["Search"]</button>
         @if (searching)
         {
@@ -24,28 +32,33 @@
 
 @if (Model.Vehicles.Count == 0)
 {
-    <div class="card"><div class="card-body p-4 text-center text-secondary">
-        @if (searching)
-        {
-            <p class="mb-0">@L["No vehicles match your search."]</p>
-        }
-        else
-        {
-            <p>@L["No vehicles yet. Add a vehicle from a customer's page, or use the button above."]</p>
-        }
-    </div></div>
+    <section class="panel">
+        <div class="empty">
+            <span class="icon-tile"><partial name="_Icon" model='searching ? "search" : "car"' /></span>
+            @if (searching)
+            {
+                <h2>@L["No vehicles match your search."]</h2>
+                <p>@L["Try a different plate, make, model or owner."]</p>
+            }
+            else
+            {
+                <h2>@L["No vehicles yet."]</h2>
+                <p>@L["Add a vehicle from a customer's page, or use the button above."]</p>
+            }
+        </div>
+    </section>
 }
 else
 {
-    <div class="card">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+    <section class="panel">
+        <div class="data-table-wrap">
+            <table class="data-table">
                 <thead>
                     <tr>
                         <th scope="col">@L["Plate number"]</th>
                         <th scope="col">@L["Vehicle"]</th>
                         <th scope="col">@L["Year"]</th>
-                        <th scope="col">@L["Mileage (km)"]</th>
+                        <th scope="col" class="cell-end">@L["Mileage (km)"]</th>
                         <th scope="col">@L["Owner"]</th>
                     </tr>
                 </thead>
@@ -54,19 +67,24 @@ else
                 {
                     <tr>
                         <td><a class="plate" dir="auto" asp-page="Details" asp-route-id="@vehicle.Id">@vehicle.Plate</a></td>
-                        <td>@vehicle.Make @vehicle.Model</td>
-                        <td>@vehicle.Year</td>
-                        <td>@vehicle.Mileage.ToString("N0")</td>
-                        <td><a asp-page="/Customers/Details" asp-route-id="@vehicle.CustomerId">@vehicle.Customer?.Name</a></td>
+                        <td class="fw-semibold">@vehicle.Make @vehicle.Model</td>
+                        <td class="num">@vehicle.Year</td>
+                        <td class="cell-end num">@vehicle.Mileage.ToString("N0")</td>
+                        <td>
+                            @if (vehicle.Customer is not null)
+                            {
+                                <div class="identity">
+                                    <partial name="_Avatar" model="vehicle.Customer.Name" view-data='new ViewDataDictionary(ViewData) { ["Size"] = "avatar-sm" }' />
+                                    <a class="identity-name" asp-page="/Customers/Details" asp-route-id="@vehicle.CustomerId">@vehicle.Customer.Name</a>
+                                </div>
+                            }
+                        </td>
                     </tr>
                 }
                 </tbody>
             </table>
         </div>
-    </div>
+    </section>
 
-    @if (Model.HasMore)
-    {
-        <p class="text-secondary small mt-3">@L["Showing the first {0} vehicles. Use the search to narrow the list.", IndexModel.PageSize]</p>
-    }
+    <partial name="_Pager" model="Model.Pager" />
 }

@@ -231,7 +231,7 @@ public class JobCardsTests(GarageDeskWebFactory factory) : IClassFixture<GarageD
         var html = await TestData.BodyAsync(await client.GetAsync("/"));
 
         // Booked + In progress are open; Paid is not.
-        Assert.Matches(@"Open job cards</p>\s*<p[^>]*>\s*2\s*</p>", html);
+        Assert.Matches(@"Open job cards</span>.*?stat-value"">\s*2\s*</p>", Squash(html));
     }
 
     // ---- one shop must never reach another shop's job cards (CLAUDE.md rule 2) ----

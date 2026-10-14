@@ -5,35 +5,39 @@
     var job = Model.Job;
     ViewData["Title"] = $"{L["Job card"]} #{job.Id}";
     var vehicle = job.Vehicle;
+    var steps = new[] { JobStatus.Booked, JobStatus.InProgress, JobStatus.Done, JobStatus.Paid };
 }
 
-<nav aria-label="breadcrumb" class="mb-3">
-    <a asp-page="Index" class="text-secondary">&larr; @L["Job cards"]</a>
+<nav class="mb-3">
+    <a asp-page="Index" class="text-secondary text-decoration-none"><partial name="_Icon" model='"chevron-left"' /> @L["Job cards"]</a>
 </nav>
 
-<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-4">
+<div class="page-head">
     <div>
         <h1 class="h2 fw-bold mb-1">
-            @L["Job card"] <span class="ltr">#@job.Id</span>
+            @L["Job card"] <span class="ltr num">#@job.Id</span>
             <partial name="_StatusBadge" model="job.Status" />
         </h1>
-        <p class="text-secondary mb-0">
-            <span class="ltr">@job.DateIn.ToString("yyyy-MM-dd")</span> &middot; @vehicle?.Make @vehicle?.Model
+        <p class="page-sub">
+            <span class="ltr num">@job.DateIn.ToString("yyyy-MM-dd")</span> &middot; @vehicle?.Make @vehicle?.Model
         </p>
     </div>
     @if (!job.IsLocked)
     {
-        <a class="btn btn-outline-secondary" asp-page="Edit" asp-route-id="@job.Id">@L["Edit"]</a>
+        <div class="page-actions">
+            <a class="btn btn-outline-secondary" asp-page="Edit" asp-route-id="@job.Id"><partial name="_Icon" model='"edit"' />@L["Edit"]</a>
+        </div>
     }
 </div>
 
+@* Server messages become toasts (site.js); without JavaScript they stay readable in place. *@
 @if (!string.IsNullOrEmpty(Model.StatusMessage))
 {
-    <div class="alert alert-success" role="status">@Model.StatusMessage</div>
+    <div class="toast-source" data-toast="success" role="status">@Model.StatusMessage</div>
 }
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
-    <div class="alert alert-danger" role="alert">@Model.ErrorMessage</div>
+    <div class="toast-source" data-toast="danger" role="alert">@Model.ErrorMessage</div>
 }
 
 @if (Model.OfferReminder && job.Status == JobStatus.Done)
@@ -41,13 +45,16 @@
     // Suggest the next oil change: a few months from now, or a set distance past the vehicle's mileage.
     var suggestedDate = GarageDesk.Web.Services.ShopClock.Today().AddMonths(Reminder.SuggestedOilChangeMonths);
     var suggestedKm = Math.Max(job.MileageAtVisit, vehicle?.Mileage ?? 0) + Reminder.SuggestedOilChangeKm;
-    <div class="card border-primary mb-4">
-        <div class="card-body p-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
-            <div>
-                <h2 class="h6 mb-1">@L["Job done. Create the next oil change reminder?"]</h2>
-                <p class="text-secondary small mb-0">
-                    @L["Suggested: {0} or {1} km. You can change both.", suggestedDate.ToString("yyyy-MM-dd"), suggestedKm.ToString("N0")]
-                </p>
+    <section class="panel panel-pad offer mb-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <span class="icon-tile"><partial name="_Icon" model='"bell"' /></span>
+                <div>
+                    <h2 class="h6 mb-1">@L["Job done. Create the next oil change reminder?"]</h2>
+                    <p class="text-secondary small mb-0">
+                        @L["Suggested: {0} or {1} km. You can change both.", suggestedDate.ToString("yyyy-MM-dd"), suggestedKm.ToString("N0")]
+                    </p>
+                </div>
             </div>
             <div class="d-flex gap-2">
                 <a class="btn btn-primary btn-sm" asp-page="/Reminders/Create"
@@ -58,167 +65,184 @@
                 <a class="btn btn-outline-secondary btn-sm" asp-page="Details" asp-route-id="@job.Id">@L["Not now"]</a>
             </div>
         </div>
-    </div>
+    </section>
 }
 
-<div class="row g-4">
+<div class="row g-3 g-lg-4">
     <div class="col-lg-8">
-        <div class="card">
-            <div class="card-body p-4">
-                <h2 class="h5 mb-3">@L["Parts and labor"]</h2>
+        <section class="panel panel-pad" aria-labelledby="lines-heading">
+            <div class="panel-head"><h2 id="lines-heading" class="panel-title">@L["Parts and labor"]</h2></div>
 
-                @if (job.Lines.Count == 0)
-                {
-                    <p class="text-secondary">@L["No lines yet. Add the parts and labor below."]</p>
-                }
-                else
-                {
-                    <div class="table-responsive">
-                        <table class="table align-middle">
-                            <thead>
-                                <tr>
-                                    <th scope="col">@L["Type"]</th>
-                                    <th scope="col">@L["Description"]</th>
-                                    <th scope="col" class="text-end">@L["Quantity"]</th>
-                                    <th scope="col" class="text-end">@L["Unit price"]</th>
-                                    <th scope="col" class="text-end">@L["Total"]</th>
-                                    @if (!job.IsLocked)
-                                    {
-                                        <th scope="col"><span class="visually-hidden">@L["Remove"]</span></th>
-                                    }
-                                </tr>
-                            </thead>
-                            <tbody>
-                            @foreach (var line in job.Lines)
-                            {
-                                <tr>
-                                    <td>@(line.Type == JobLineType.Part ? L["Part"] : L["Labor"])</td>
-                                    <td>@line.Description</td>
-                                    <td class="text-end"><span class="ltr">@line.Quantity.ToString("0.##")</span></td>
-                                    <td class="text-end"><partial name="_Money" model="line.UnitPrice" /></td>
-                                    <td class="text-end"><partial name="_Money" model="line.LineTotal" /></td>
-                                    @if (!job.IsLocked)
-                                    {
-                                        <td class="text-end">
-                                            <form method="post" asp-page-handler="RemoveLine" asp-route-id="@job.Id" asp-route-lineId="@line.Id">
-                                                <button type="submit" class="btn btn-sm btn-outline-secondary">@L["Remove"]</button>
-                                            </form>
-                                        </td>
-                                    }
-                                </tr>
-                            }
-                            </tbody>
-                        </table>
-                    </div>
-                }
+            @if (job.Lines.Count == 0)
+            {
+                <div class="empty">
+                    <span class="icon-tile"><partial name="_Icon" model='"tool"' /></span>
+                    <p>@L["No lines yet. Add the parts and labor below."]</p>
+                </div>
+            }
+            else
+            {
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">@L["Type"]</th>
+                                <th scope="col">@L["Description"]</th>
+                                <th scope="col" class="cell-end">@L["Quantity"]</th>
+                                <th scope="col" class="cell-end">@L["Unit price"]</th>
+                                <th scope="col" class="cell-end">@L["Total"]</th>
+                                @if (!job.IsLocked)
+                                {
+                                    <th scope="col"><span class="visually-hidden">@L["Remove"]</span></th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var line in job.Lines)
+                        {
+                            <tr>
+                                <td><span class="chip @(line.Type == JobLineType.Part ? "chip-info" : "chip-accent")">@(line.Type == JobLineType.Part ? L["Part"] : L["Labor"])</span></td>
+                                <td class="fw-semibold">@line.Description</td>
+                                <td class="cell-end num"><span class="ltr">@line.Quantity.ToString("0.##")</span></td>
+                                <td class="cell-end"><partial name="_Money" model="line.UnitPrice" /></td>
+                                <td class="cell-end fw-bold"><partial name="_Money" model="line.LineTotal" /></td>
+                                @if (!job.IsLocked)
+                                {
+                                    <td class="cell-end">
+                                        <form method="post" asp-page-handler="RemoveLine" asp-route-id="@job.Id" asp-route-lineId="@line.Id"
+                                              data-confirm="@L["Remove this line from the job card?"]">
+                                            <button type="submit" class="icon-btn" title="@L["Remove"]" aria-label="@L["Remove"]"><partial name="_Icon" model='"x"' /></button>
+                                        </form>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
 
-                @if (!job.IsLocked)
-                {
-                    <form method="post" asp-page-handler="AddLine" asp-route-id="@job.Id" novalidate class="border-top pt-3 mt-2">
-                        <h3 class="h6 mb-3">@L["Add a line"]</h3>
-                        <div class="row g-2 align-items-start">
-                            <div class="col-sm-3 col-md-2">
-                                <label asp-for="NewLine.Type" class="form-label small text-secondary"></label>
-                                <select asp-for="NewLine.Type" class="form-select">
-                                    <option value="@JobLineType.Part">@L["Part"]</option>
-                                    <option value="@JobLineType.Labor">@L["Labor"]</option>
-                                </select>
-                            </div>
-                            <div class="col-sm-9 col-md-4">
-                                <label asp-for="NewLine.Description" class="form-label small text-secondary"></label>
-                                <input asp-for="NewLine.Description" class="form-control" autocomplete="off" />
-                                <span asp-validation-for="NewLine.Description"></span>
-                            </div>
-                            <div class="col-6 col-md-2">
-                                <label asp-for="NewLine.Quantity" class="form-label small text-secondary"></label>
-                                <input asp-for="NewLine.Quantity" type="number" step="0.01" min="0.01" inputmode="decimal" class="form-control" />
-                                <span asp-validation-for="NewLine.Quantity"></span>
-                            </div>
-                            <div class="col-6 col-md-2">
-                                <label asp-for="NewLine.UnitPrice" class="form-label small text-secondary"></label>
-                                <input asp-for="NewLine.UnitPrice" type="number" step="0.01" min="0" inputmode="decimal" class="form-control" />
-                                <span asp-validation-for="NewLine.UnitPrice"></span>
-                            </div>
-                            <div class="col-12 col-md-2 d-grid">
-                                <label class="form-label small d-none d-md-block">&nbsp;</label>
-                                <button type="submit" class="btn btn-primary">@L["Add line"]</button>
-                            </div>
+            @if (!job.IsLocked)
+            {
+                <form method="post" asp-page-handler="AddLine" asp-route-id="@job.Id" novalidate class="add-line">
+                    <h3 class="form-section-title">@L["Add a line"]</h3>
+                    <div class="row g-2 align-items-start">
+                        <div class="col-sm-3 col-md-2">
+                            <label asp-for="NewLine.Type" class="form-label small text-secondary"></label>
+                            <select asp-for="NewLine.Type" class="form-select">
+                                <option value="@JobLineType.Part">@L["Part"]</option>
+                                <option value="@JobLineType.Labor">@L["Labor"]</option>
+                            </select>
                         </div>
-                    </form>
-                }
-            </div>
-        </div>
+                        <div class="col-sm-9 col-md-4">
+                            <label asp-for="NewLine.Description" class="form-label small text-secondary"></label>
+                            <input asp-for="NewLine.Description" class="form-control" autocomplete="off" />
+                            <span asp-validation-for="NewLine.Description"></span>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <label asp-for="NewLine.Quantity" class="form-label small text-secondary"></label>
+                            <input asp-for="NewLine.Quantity" type="number" step="0.01" min="0.01" inputmode="decimal" class="form-control" />
+                            <span asp-validation-for="NewLine.Quantity"></span>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <label asp-for="NewLine.UnitPrice" class="form-label small text-secondary"></label>
+                            <input asp-for="NewLine.UnitPrice" type="number" step="0.01" min="0" inputmode="decimal" class="form-control" />
+                            <span asp-validation-for="NewLine.UnitPrice"></span>
+                        </div>
+                        <div class="col-12 col-md-2 d-grid">
+                            <label class="form-label small d-none d-md-block">&nbsp;</label>
+                            <button type="submit" class="btn btn-primary"><partial name="_Icon" model='"plus"' />@L["Add line"]</button>
+                        </div>
+                    </div>
+                </form>
+            }
+        </section>
     </div>
 
     <div class="col-lg-4">
-        <div class="card mb-4">
-            <div class="card-body p-4">
-                <h2 class="h5 mb-3">@L["Total"]</h2>
-                <dl class="row mb-0">
-                    <dt class="col-6 text-secondary fw-normal">@L["Parts"]</dt>
-                    <dd class="col-6 text-end"><partial name="_Money" model="job.PartsTotal" /></dd>
-                    <dt class="col-6 text-secondary fw-normal">@L["Labor"]</dt>
-                    <dd class="col-6 text-end"><partial name="_Money" model="job.LaborTotal" /></dd>
-                    <dt class="col-6 border-top pt-2 mb-0">@L["Total"]</dt>
-                    <dd class="col-6 text-end border-top pt-2 mb-0 fw-bold fs-5" data-job-total><partial name="_Money" model="job.Total" /></dd>
-                </dl>
-            </div>
-        </div>
+        <section class="panel panel-pad mb-3 mb-lg-4" aria-labelledby="total-heading">
+            <div class="panel-head"><h2 id="total-heading" class="panel-title">@L["Total"]</h2></div>
+            <dl class="row mb-0 g-1">
+                <dt class="col-6 text-secondary fw-normal">@L["Parts"]</dt>
+                <dd class="col-6 text-end mb-1"><partial name="_Money" model="job.PartsTotal" /></dd>
+                <dt class="col-6 text-secondary fw-normal">@L["Labor"]</dt>
+                <dd class="col-6 text-end mb-2"><partial name="_Money" model="job.LaborTotal" /></dd>
+                <dt class="col-6 border-top pt-3 mb-0">@L["Total"]</dt>
+                <dd class="col-6 text-end border-top pt-3 mb-0 fw-bold fs-5" data-job-total><partial name="_Money" model="job.Total" /></dd>
+            </dl>
+        </section>
 
-        <div class="card mb-4">
-            <div class="card-body p-4">
-                <h2 class="h5 mb-3">@L["Status"]</h2>
-                <div class="d-grid gap-2">
-                    @if (Model.NextStatus is JobStatus next)
-                    {
-                        <form method="post" asp-page-handler="Status" asp-route-id="@job.Id" asp-route-to="@next">
-                            <button type="submit" class="btn btn-primary w-100">
-                                @(next switch
-                                {
-                                    JobStatus.InProgress => L["Start work"],
-                                    JobStatus.Done => L["Mark as done"],
-                                    _ => L["Mark as paid"],
-                                })
-                            </button>
-                        </form>
-                    }
-                    @if (Model.PreviousStatus is JobStatus previous)
-                    {
-                        <form method="post" asp-page-handler="Status" asp-route-id="@job.Id" asp-route-to="@previous">
-                            <button type="submit" class="btn btn-outline-secondary w-100 btn-sm">
-                                @L["Move back to"] <partial name="_StatusLabel" model="previous" />
-                            </button>
-                        </form>
-                    }
-                    @if (job.IsLocked)
-                    {
-                        <p class="text-secondary small mb-0">@L["This job card is paid and can no longer be changed."]</p>
-                    }
-                </div>
-            </div>
-        </div>
+        <section class="panel panel-pad mb-3 mb-lg-4" aria-labelledby="status-heading">
+            <div class="panel-head"><h2 id="status-heading" class="panel-title">@L["Status"]</h2></div>
 
-        <div class="card">
-            <div class="card-body p-4">
-                <h2 class="h5 mb-3">@L["Details"]</h2>
-                <dl class="mb-0">
-                    <dt class="text-secondary fw-normal">@L["Vehicle"]</dt>
-                    <dd>
-                        <a class="plate" dir="auto" asp-page="/Vehicles/Details" asp-route-id="@job.VehicleId">@vehicle?.Plate</a>
-                        <span class="ms-1">@vehicle?.Make @vehicle?.Model</span>
-                    </dd>
-                    <dt class="text-secondary fw-normal">@L["Owner"]</dt>
-                    <dd><a asp-page="/Customers/Details" asp-route-id="@vehicle?.CustomerId">@vehicle?.Customer?.Name</a></dd>
-                    <dt class="text-secondary fw-normal">@L["Mileage at visit (km)"]</dt>
-                    <dd><span class="ltr">@job.MileageAtVisit.ToString("N0")</span></dd>
-                    @if (!string.IsNullOrWhiteSpace(job.Notes))
-                    {
-                        <dt class="text-secondary fw-normal">@L["Notes"]</dt>
-                        <dd class="mb-0" style="white-space: pre-line">@job.Notes</dd>
-                    }
-                </dl>
+            <ol class="stepper" aria-label="@L["Status"]">
+                @foreach (var step in steps)
+                {
+                    var state = step == job.Status ? "current" : step < job.Status ? "done" : "";
+                    <li class="@state" aria-current="@(step == job.Status ? "step" : null)">
+                        <span class="step-dot">@if (step < job.Status) { <partial name="_Icon" model='"check"' /> }</span>
+                        <span class="step-label"><partial name="_StatusLabel" model="step" /></span>
+                    </li>
+                }
+            </ol>
+
+            <div class="d-grid gap-2 mt-4">
+                @if (Model.NextStatus is JobStatus next)
+                {
+                    <form method="post" asp-page-handler="Status" asp-route-id="@job.Id" asp-route-to="@next"
+                          data-confirm="@(next == JobStatus.Paid ? L["Mark this job card as paid? A paid job card can no longer be changed."].Value : null)">
+                        <button type="submit" class="btn btn-primary w-100">
+                            @(next switch
+                            {
+                                JobStatus.InProgress => L["Start work"],
+                                JobStatus.Done => L["Mark as done"],
+                                _ => L["Mark as paid"],
+                            })
+                        </button>
+                    </form>
+                }
+                @if (Model.PreviousStatus is JobStatus previous)
+                {
+                    <form method="post" asp-page-handler="Status" asp-route-id="@job.Id" asp-route-to="@previous">
+                        <button type="submit" class="btn btn-outline-secondary w-100 btn-sm">
+                            @L["Move back to"] <partial name="_StatusLabel" model="previous" />
+                        </button>
+                    </form>
+                }
+                @if (job.IsLocked)
+                {
+                    <p class="text-secondary small mb-0">@L["This job card is paid and can no longer be changed."]</p>
+                }
             </div>
-        </div>
+        </section>
+
+        <section class="panel panel-pad" aria-labelledby="details-heading">
+            <div class="panel-head"><h2 id="details-heading" class="panel-title">@L["Details"]</h2></div>
+            <dl class="mb-0">
+                <dt class="text-secondary fw-normal">@L["Vehicle"]</dt>
+                <dd>
+                    <a class="plate" dir="auto" asp-page="/Vehicles/Details" asp-route-id="@job.VehicleId">@vehicle?.Plate</a>
+                    <span class="ms-1">@vehicle?.Make @vehicle?.Model</span>
+                </dd>
+                <dt class="text-secondary fw-normal">@L["Owner"]</dt>
+                <dd>
+                    @if (vehicle?.Customer is { } owner)
+                    {
+                        <span class="identity">
+                            <partial name="_Avatar" model="owner.Name" view-data='new ViewDataDictionary(ViewData) { ["Size"] = "avatar-sm" }' />
+                            <a asp-page="/Customers/Details" asp-route-id="@vehicle.CustomerId">@owner.Name</a>
+                        </span>
+                    }
+                </dd>
+                <dt class="text-secondary fw-normal">@L["Mileage at visit (km)"]</dt>
+                <dd class="num"><span class="ltr">@job.MileageAtVisit.ToString("N0")</span></dd>
+                @if (!string.IsNullOrWhiteSpace(job.Notes))
+                {
+                    <dt class="text-secondary fw-normal">@L["Notes"]</dt>
+                    <dd class="mb-0" style="white-space: pre-line">@job.Notes</dd>
+                }
+            </dl>
+        </section>
     </div>
 </div>
 

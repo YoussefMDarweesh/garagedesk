@@ -57,7 +57,8 @@ public class UiPagesTests(GarageDeskWebFactory factory) : IClassFixture<GarageDe
 
         var html = await (await client.GetAsync("/")).Content.ReadAsStringAsync();
 
-        Assert.Contains("class=\"navbar-text shop-name", html);
+        // The app shell: the sidebar carries the shop name, the user menu carries Log out.
+        Assert.Contains("class=\"sidebar\"", html);
         Assert.Contains("Nile Auto Care", html);
         Assert.Contains("Log out", html);
     }

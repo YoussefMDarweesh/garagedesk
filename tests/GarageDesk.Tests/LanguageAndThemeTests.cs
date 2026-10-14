@@ -153,7 +153,7 @@ public partial class LanguageAndThemeTests(GarageDeskWebFactory factory) : IClas
         var stylesheet = html.IndexOf("rel=\"stylesheet\"", StringComparison.Ordinal);
         Assert.True(script > 0 && script < stylesheet, "theme script must come before the stylesheets");
         Assert.Contains("prefers-color-scheme: dark", html);
-        Assert.Contains("id=\"theme-toggle\"", html);
+        Assert.Contains("js-theme-toggle", html);
     }
 
     // ---- helpers ----

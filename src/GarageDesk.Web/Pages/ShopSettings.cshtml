@@ -7,44 +7,69 @@
     var shopName = User.FindFirst(CurrentShop.NameClaimType)?.Value;
 }
 
-<div class="narrow mx-auto">
-    <h1 class="h2 fw-bold mb-4">@L["Shop settings"]</h1>
+<div class="narrow" style="max-width: 46rem">
+    <div class="page-head">
+        <div>
+            <h1 class="visually-hidden">@L["Shop settings"]</h1>
+            <p class="page-sub mt-0">@shopName</p>
+        </div>
+    </div>
 
     @if (!string.IsNullOrEmpty(Model.StatusMessage))
     {
-        <div class="alert alert-success" role="status">@Model.StatusMessage</div>
+        <div class="toast-source" data-toast="success" role="status">@Model.StatusMessage</div>
     }
 
-    <div class="card">
-        <div class="card-body p-4">
-            <h2 class="h5">@L["Shop logo"]</h2>
-            <p class="text-secondary">@L["PNG, JPEG or WebP, up to 512 KB. It appears in the navigation bar."]</p>
+    <section class="panel panel-pad mb-4" aria-labelledby="logo-heading">
+        <div class="panel-head mb-1"><h2 id="logo-heading" class="panel-title">@L["Shop logo"]</h2></div>
+        <p class="text-secondary">@L["PNG, JPEG or WebP, up to 512 KB. It appears in the navigation bar."]</p>
 
-            <div class="mb-4">
-                @if (Model.HasLogo)
-                {
-                    <img src="@Url.Content("~" + ShopLogoEndpoint.Path)?v=@logoVersion" alt="@shopName" class="shop-logo shop-logo-lg" />
-                }
-                else
-                {
-                    <p class="text-secondary mb-0">@L["No logo yet."]</p>
-                }
-            </div>
-
-            <partial name="_FormErrors" />
-
-            <form method="post" asp-page-handler="Upload" enctype="multipart/form-data">
-                <label class="form-label" for="upload">@L["Logo image"]</label>
-                <input id="upload" name="upload" type="file" class="form-control" accept="image/png,image/jpeg,image/webp" required />
-                <button type="submit" class="btn btn-primary mt-3">@L["Upload"]</button>
-            </form>
-
+        <div class="mb-4">
             @if (Model.HasLogo)
             {
-                <form method="post" asp-page-handler="Remove" class="mt-3">
-                    <button type="submit" class="btn btn-outline-secondary">@L["Remove logo"]</button>
-                </form>
+                <img src="@Url.Content("~" + ShopLogoEndpoint.Path)?v=@logoVersion" alt="@shopName" class="shop-logo shop-logo-lg" />
+            }
+            else
+            {
+                <div class="d-flex align-items-center gap-3 text-secondary">
+                    <span class="brand-tile"><partial name="_Icon" model='"tool"' /></span>
+                    <span>@L["No logo yet."]</span>
+                </div>
             }
         </div>
-    </div>
+
+        <partial name="_FormErrors" />
+
+        <form method="post" asp-page-handler="Upload" enctype="multipart/form-data">
+            <label class="form-label fw-semibold" for="upload">@L["Logo image"]</label>
+            <input id="upload" name="upload" type="file" class="form-control" accept="image/png,image/jpeg,image/webp" required />
+            <button type="submit" class="btn btn-primary mt-3">@L["Upload"]</button>
+        </form>
+
+        @if (Model.HasLogo)
+        {
+            <form method="post" asp-page-handler="Remove" class="mt-3" data-confirm="@L["Remove the shop logo?"]">
+                <button type="submit" class="btn btn-outline-secondary">@L["Remove logo"]</button>
+            </form>
+        }
+    </section>
+
+    <section class="panel panel-pad" aria-labelledby="accent-heading">
+        <div class="panel-head mb-1"><h2 id="accent-heading" class="panel-title">@L["Accent colour"]</h2></div>
+        <p class="text-secondary">@L["Pick the colour used for buttons, highlights and the car on your vehicle pages."]</p>
+
+        <form method="post" asp-page-handler="Accent">
+            <div class="accent-swatches" role="radiogroup" aria-label="@L["Accent colour"]">
+                @foreach (var preset in Accents.Presets)
+                {
+                    <label class="accent-swatch" title="@L[preset]" style="--swatch: @Accents.Swatch(preset)">
+                        <input type="radio" name="accent" value="@preset" checked="@(preset == Model.Accent)" />
+                        <span><partial name="_Icon" model='"check"' /></span>
+                        <span class="visually-hidden">@L[preset]</span>
+                    </label>
+                }
+            </div>
+            <button type="submit" class="btn btn-primary mt-4">@L["Save"]</button>
+        </form>
+    </section>
 </div>

@@ -5,33 +5,50 @@
     var returnUrl = Url.Page("/Reminders/Index", new { show = Model.Show });
 }
 
-<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-    <h1 class="h2 fw-bold mb-0">@L["Reminders"]</h1>
-    <a class="btn btn-primary" asp-page="Create">@L["Add reminder"]</a>
+<div class="page-head">
+    <div>
+        <h1 class="visually-hidden">@L["Reminders"]</h1>
+        <p class="page-sub mt-0">@L["{0} reminders", Model.Reminders.Count]</p>
+    </div>
+    <div class="page-actions">
+        <a class="btn btn-primary" asp-page="Create"><partial name="_Icon" model='"plus"' />@L["Add reminder"]</a>
+    </div>
 </div>
 
-<ul class="nav nav-pills mb-3">
-    <li class="nav-item"><a class="nav-link @(Model.Filter == "open" ? "active" : "")" asp-page="Index">@L["Open"]</a></li>
-    <li class="nav-item"><a class="nav-link @(Model.Filter == "done" ? "active" : "")" asp-page="Index" asp-route-show="done">@L["Done"]</a></li>
-    <li class="nav-item"><a class="nav-link @(Model.Filter == "all" ? "active" : "")" asp-page="Index" asp-route-show="all">@L["All"]</a></li>
-</ul>
+<div class="toolbar">
+    <div class="seg" role="group" aria-label="@L["Show"]">
+        <a class="@(Model.Filter == "open" ? "active" : "")" asp-page="Index">@L["Open"]</a>
+        <a class="@(Model.Filter == "done" ? "active" : "")" asp-page="Index" asp-route-show="done">@L["Done"]</a>
+        <a class="@(Model.Filter == "all" ? "active" : "")" asp-page="Index" asp-route-show="all">@L["All"]</a>
+    </div>
+</div>
 
 @if (Model.Reminders.Count == 0)
 {
-    <div class="card"><div class="card-body p-4 text-center text-secondary">
-        <p class="mb-0">@(Model.Filter == "done"
-            ? L["No completed reminders yet."]
-            : L["No reminders yet. Add one from here or from a vehicle's page."])</p>
-    </div></div>
+    <section class="panel">
+        <div class="empty">
+            <span class="icon-tile"><partial name="_Icon" model='Model.Filter == "done" ? "check-circle" : "bell"' /></span>
+            @if (Model.Filter == "done")
+            {
+                <h2>@L["No completed reminders yet."]</h2>
+            }
+            else
+            {
+                <h2>@L["No reminders yet."]</h2>
+                <p>@L["Add one from here or from a vehicle's page."]</p>
+                <a class="btn btn-primary mt-2" asp-page="Create">@L["Add reminder"]</a>
+            }
+        </div>
+    </section>
 }
 else
 {
-    <div class="card">
+    <section class="panel">
         <ul class="list-group list-group-flush">
             @foreach (var reminder in Model.Reminders)
             {
                 <partial name="_ReminderRow" model="new GarageDesk.Web.Pages.Reminders.ReminderRowModel(reminder, Model.Today, returnUrl!, Model.ShopName)" />
             }
         </ul>
-    </div>
+    </section>
 }

@@ -3,19 +3,26 @@
 
 <partial name="_FormErrors" />
 
-<div class="form-floating mb-3">
-    <input asp-for="Input.Name" class="form-control" placeholder="@L["Name"]" autocomplete="off" />
-    <label asp-for="Input.Name"></label>
-    <span asp-validation-for="Input.Name"></span>
+<div class="form-section">
+    <p class="form-section-title">@L["Contact details"]</p>
+    <div class="form-floating mb-3">
+        <input asp-for="Input.Name" class="form-control" placeholder="@L["Name"]" autocomplete="off" />
+        <label asp-for="Input.Name"></label>
+        <span asp-validation-for="Input.Name"></span>
+    </div>
+    <div class="form-floating mb-1">
+        <input asp-for="Input.Phone" class="form-control ltr-input" placeholder="@L["Phone"]" inputmode="tel" autocomplete="off" />
+        <label asp-for="Input.Phone"></label>
+        <span asp-validation-for="Input.Phone"></span>
+    </div>
+    <p class="form-text mb-0">@L["Egyptian mobile or landline, e.g. 0101 234 5678. It is saved in +20 format."]</p>
 </div>
-<div class="form-floating mb-1">
-    <input asp-for="Input.Phone" class="form-control ltr-input" placeholder="@L["Phone"]" inputmode="tel" autocomplete="off" />
-    <label asp-for="Input.Phone"></label>
-    <span asp-validation-for="Input.Phone"></span>
-</div>
-<p class="form-text mb-3">@L["Egyptian mobile or landline, e.g. 0101 234 5678. It is saved in +20 format."]</p>
-<div class="form-floating mb-4">
-    <textarea asp-for="Input.Notes" class="form-control" placeholder="@L["Notes"]" style="height: 7rem"></textarea>
-    <label asp-for="Input.Notes"></label>
-    <span asp-validation-for="Input.Notes"></span>
+
+<div class="form-section mb-4">
+    <p class="form-section-title">@L["Notes"]</p>
+    <div class="form-floating">
+        <textarea asp-for="Input.Notes" class="form-control" placeholder="@L["Notes"]" style="height: 7rem"></textarea>
+        <label asp-for="Input.Notes"></label>
+        <span asp-validation-for="Input.Notes"></span>
+    </div>
 </div>

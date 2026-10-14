@@ -1,0 +1,28 @@
+@* A top-down car, drawn for GarageDesk. Colours come from CSS (.car-body, .car-glass, ...), so it can be tinted
+   by whatever surface it sits on (the vehicle hero, the auth panel, empty states). Purely decorative. *@
+<svg class="car-silhouette" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 300" aria-hidden="true" focusable="false">
+    <ellipse class="car-shadow" cx="80" cy="150" rx="66" ry="140"/>
+    @* wheels *@
+    <rect class="car-wheel" x="10" y="52" width="16" height="46" rx="7"/>
+    <rect class="car-wheel" x="134" y="52" width="16" height="46" rx="7"/>
+    <rect class="car-wheel" x="10" y="200" width="16" height="46" rx="7"/>
+    <rect class="car-wheel" x="134" y="200" width="16" height="46" rx="7"/>
+    @* mirrors *@
+    <path class="car-body" d="M30 104c-8-2-15 0-18 5 4 4 11 5 18 3z"/>
+    <path class="car-body" d="M130 104c8-2 15 0 18 5-4 4-11 5-18 3z"/>
+    @* body *@
+    <path class="car-body" d="M80 6c34 0 49 20 52 58l3 138c1 44-18 78-55 92-37-14-56-48-55-92l3-138C31 26 46 6 80 6z"/>
+    @* hood crease *@
+    <path class="car-line" d="M52 34c8-6 18-8 28-8s20 2 28 8" fill="none"/>
+    @* windscreen *@
+    <path class="car-glass" d="M46 92c6-12 20-18 34-18s28 6 34 18l-6 30H52z"/>
+    @* roof *@
+    <rect class="car-roof" x="50" y="126" width="60" height="62" rx="12"/>
+    @* rear window *@
+    <path class="car-glass" d="M52 194h56l6 16c-8 12-20 18-34 18s-26-6-34-18z"/>
+    @* lights *@
+    <path class="car-light" d="M42 18c6-4 12-6 16-6l2 7c-6 1-12 4-16 9z"/>
+    <path class="car-light" d="M118 18c-6-4-12-6-16-6l-2 7c6 1 12 4 16 9z"/>
+    <rect class="car-tail" x="42" y="266" width="22" height="7" rx="3.5"/>
+    <rect class="car-tail" x="96" y="266" width="22" height="7" rx="3.5"/>
+</svg>

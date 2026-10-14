@@ -54,7 +54,11 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             .OnDelete(DeleteBehavior.Restrict);
 
         // A user can only ever see their own shop row.
-        builder.Entity<Shop>().HasQueryFilter(s => s.Id == CurrentShopId);
+        builder.Entity<Shop>(shop =>
+        {
+            shop.HasQueryFilter(s => s.Id == CurrentShopId);
+            shop.Property(s => s.AccentColor).HasMaxLength(20);
+        });
 
         // At most one logo per shop. (The tenant query filter comes from IShopOwned, below.)
         builder.Entity<ShopLogo>(logo =>

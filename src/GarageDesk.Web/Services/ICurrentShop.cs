@@ -19,6 +19,9 @@ public class CurrentShop(IHttpContextAccessor httpContextAccessor) : ICurrentSho
     /// <summary>Present only when the shop has a logo. The value is a version (ticks of the last change) used to bust the browser cache.</summary>
     public const string LogoClaimType = "shop_logo";
 
+    /// <summary>The shop's chosen accent colour preset (see Accents). Absent means the default.</summary>
+    public const string AccentClaimType = "shop_accent";
+
     public int? ShopId =>
         int.TryParse(httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimType), out var id) ? id : null;
 }

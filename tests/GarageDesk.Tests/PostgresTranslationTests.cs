@@ -91,6 +91,52 @@ public class PostgresTranslationTests
     }
 
     [Fact]
+    public void The_dashboard_activity_query_translates_to_postgresql()
+    {
+        using var db = NewPostgresContext();
+        var first = new DateOnly(2026, 1, 1);
+
+        var sql = db.JobCards.AsNoTracking()
+            .Where(j => j.DateIn >= first)
+            .Select(j => new
+            {
+                j.DateIn,
+                j.Status,
+                Lines = j.Lines.Select(l => new { l.Quantity, l.UnitPrice }).ToList(),
+            })
+            .ToQueryString();
+
+        Assert.Contains("\"JobCards\"", sql);
+        Assert.Contains("\"UnitPrice\"", sql);
+        Assert.Contains("\"ShopId\"", sql);
+    }
+
+    [Fact]
+    public void The_paged_lists_translate_to_postgresql()
+    {
+        using var db = NewPostgresContext();
+
+        var customers = db.Customers.AsNoTracking().Search("Ahmed")
+            .Include(c => c.Vehicles.OrderBy(v => v.Plate))
+            .OrderBy(c => c.Name).ThenBy(c => c.Id)
+            .Skip(20).Take(20)
+            .ToQueryString();
+        var vehicles = db.Vehicles.AsNoTracking().Search("ABC")
+            .Include(v => v.Customer)
+            .OrderBy(v => v.Plate).ThenBy(v => v.Id)
+            .Skip(20).Take(20)
+            .ToQueryString();
+        var count = db.JobCards.AsNoTracking().Search("#12")
+            .Where(j => j.Status == GarageDesk.Web.Models.JobStatus.Paid)
+            .ToQueryString();
+
+        Assert.Contains("OFFSET", customers);
+        Assert.Contains("LIMIT", customers);
+        Assert.Contains("OFFSET", vehicles);
+        Assert.Contains("\"JobCards\"", count);
+    }
+
+    [Fact]
     public void The_open_job_count_translates_to_postgresql()
     {
         using var db = NewPostgresContext();

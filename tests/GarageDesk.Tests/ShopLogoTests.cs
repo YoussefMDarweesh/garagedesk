@@ -244,8 +244,9 @@ public partial class ShopLogoTests(GarageDeskWebFactory factory) : IClassFixture
 
         Assert.Contains("src=\"/shop/logo?v=12345\"", htmlWith);
         Assert.Contains("alt=\"Logo Garage\"", htmlWith);
+        Assert.Contains("brand-tile has-logo", htmlWith);
         Assert.DoesNotContain("/shop/logo", htmlWithout);
-        Assert.Contains("brand-dot", htmlWithout);
+        Assert.DoesNotContain("has-logo", htmlWithout);
     }
 
     [Fact]

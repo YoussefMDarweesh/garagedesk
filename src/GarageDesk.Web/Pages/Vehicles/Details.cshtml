@@ -1,163 +1,222 @@
 @page "{id:int}"
 @using GarageDesk.Web.Models
+@using GarageDesk.Web.Services
 @model DetailsModel
 @{
     var vehicle = Model.Vehicle;
+    var owner = vehicle.Customer;
+    var last = Model.LastService;
     ViewData["Title"] = vehicle.Plate;
+    var km = Model.KmSinceService;
+    var days = Model.DaysSinceService;
+    var (kmPercent, kmTone) = km is int k ? DetailsModel.Meter(k, DetailsModel.ServiceIntervalKm) : (0, "");
+    var (dayPercent, dayTone) = days is int d ? DetailsModel.Meter(d, DetailsModel.ServiceIntervalDays) : (0, "");
 }
 
-<nav aria-label="breadcrumb" class="mb-3">
-    <a asp-page="Index" class="text-secondary">&larr; @L["Vehicles"]</a>
+<nav class="mb-3">
+    <a asp-page="Index" class="text-secondary text-decoration-none"><partial name="_Icon" model='"chevron-left"' /> @L["Vehicles"]</a>
 </nav>
 
-<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-4">
+@* ------------------------------------------------ hero ------------------------------------------------ *@
+<section class="vehicle-hero mb-4">
     <div>
-        <h1 class="h2 fw-bold mb-1"><span class="plate plate-lg" dir="auto">@vehicle.Plate</span></h1>
-        <p class="text-secondary mb-0">@vehicle.Make @vehicle.Model &middot; @vehicle.Year</p>
-    </div>
-    <div class="d-flex flex-wrap gap-2">
-        <a class="btn btn-primary" asp-page="/Jobs/Create" asp-route-vehicleId="@vehicle.Id">@L["Open job card"]</a>
-        <a class="btn btn-outline-secondary" asp-page="Edit" asp-route-id="@vehicle.Id">@L["Edit"]</a>
-    </div>
-</div>
-
-<div class="card">
-    <div class="card-body p-4">
-        <dl class="row mb-0">
-            <dt class="col-sm-4 text-secondary fw-normal">@L["Owner"]</dt>
-            <dd class="col-sm-8">
-                <a asp-page="/Customers/Details" asp-route-id="@vehicle.CustomerId">@vehicle.Customer?.Name</a>
-                @if (vehicle.Customer is not null)
-                {
-                    <span class="ltr text-secondary ms-2">@vehicle.Customer.Phone</span>
-                }
-            </dd>
-
-            <dt class="col-sm-4 text-secondary fw-normal">@L["Make"]</dt>
-            <dd class="col-sm-8">@vehicle.Make</dd>
-
-            <dt class="col-sm-4 text-secondary fw-normal">@L["Model"]</dt>
-            <dd class="col-sm-8">@vehicle.Model</dd>
-
-            <dt class="col-sm-4 text-secondary fw-normal">@L["Year"]</dt>
-            <dd class="col-sm-8">@vehicle.Year</dd>
-
-            <dt class="col-sm-4 text-secondary fw-normal">@L["Mileage (km)"]</dt>
-            <dd class="col-sm-8">@vehicle.Mileage.ToString("N0")</dd>
-
-            <dt class="col-sm-4 text-secondary fw-normal">@L["VIN"]</dt>
-            <dd class="col-sm-8 mb-0">
-                @if (string.IsNullOrEmpty(vehicle.Vin))
-                {
-                    <span class="text-secondary">&mdash;</span>
-                }
-                else
-                {
-                    <span class="ltr">@vehicle.Vin</span>
-                }
-            </dd>
-        </dl>
-    </div>
-</div>
-
-<section class="mt-5" aria-labelledby="reminders-heading">
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-        <h2 id="reminders-heading" class="h4 fw-bold mb-0">@L["Reminders"]</h2>
-        <a class="btn btn-outline-secondary btn-sm" asp-page="/Reminders/Create" asp-route-vehicleId="@vehicle.Id">@L["Add reminder"]</a>
-    </div>
-
-    @if (Model.OpenReminders.Count == 0)
-    {
-        <div class="card"><div class="card-body p-4 text-center text-secondary">
-            <p class="mb-0">@L["No open reminders for this vehicle."]</p>
-        </div></div>
-    }
-    else
-    {
-        var vehicleReturn = Url.Page("/Vehicles/Details", new { id = vehicle.Id });
-        <div class="card">
-            <ul class="list-group list-group-flush">
-                @foreach (var reminder in Model.OpenReminders)
-                {
-                    <partial name="_ReminderRow" model="new GarageDesk.Web.Pages.Reminders.ReminderRowModel(reminder, Model.Today, vehicleReturn!, Model.ShopName, ShowVehicle: false)" />
-                }
-            </ul>
-        </div>
-    }
-</section>
-
-<section class="mt-5" aria-labelledby="history-heading">
-    <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-3">
-        <h2 id="history-heading" class="h4 fw-bold mb-0">@L["Service history"]</h2>
-        @if (Model.History.Count > 0)
+        <p class="hero-kicker">@vehicle.Make @vehicle.Model &middot; <span class="num">@vehicle.Year</span></p>
+        <h1><span class="plate plate-lg" dir="auto">@vehicle.Plate</span></h1>
+        @if (owner is not null)
         {
-            <p class="text-secondary mb-0">
-                @L["Visits: {0}", Model.History.Count] &middot;
-                @L["All visits total"]: <partial name="_Money" model="Model.HistoryTotal" />
+            <p class="mb-0 d-flex flex-wrap align-items-center gap-2">
+                <partial name="_Avatar" model="owner.Name" view-data='new ViewDataDictionary(ViewData) { ["Size"] = "avatar-sm" }' />
+                <a class="text-white fw-bold" asp-page="/Customers/Details" asp-route-id="@owner.Id">@owner.Name</a>
+                <span class="ltr" style="color: rgba(255,255,255,.75)">@owner.Phone</span>
             </p>
         }
+
+        <dl class="hero-stats">
+            <div class="hero-stat"><dt>@L["Mileage (km)"]</dt><dd class="num">@vehicle.Mileage.ToString("N0")</dd></div>
+            <div class="hero-stat">
+                <dt>@L["Last service"]</dt>
+                <dd class="num">@(last is null ? "—" : last.DateIn.ToString("yyyy-MM-dd"))</dd>
+            </div>
+            <div class="hero-stat"><dt>@L["Visits"]</dt><dd class="num">@Model.History.Count</dd></div>
+            <div class="hero-stat"><dt>@L["All visits total"]</dt><dd><partial name="_Money" model="Model.HistoryTotal" /></dd></div>
+        </dl>
+
+        <div class="d-flex flex-wrap gap-2 mt-4">
+            <a class="btn btn-light fw-bold" asp-page="/Jobs/Create" asp-route-vehicleId="@vehicle.Id"><partial name="_Icon" model='"plus"' />@L["Open job card"]</a>
+            <a class="btn" style="color:#fff;border:1px solid rgba(255,255,255,.35)" asp-page="/Reminders/Create" asp-route-vehicleId="@vehicle.Id"><partial name="_Icon" model='"bell"' />@L["Add reminder"]</a>
+            <a class="btn" style="color:#fff;border:1px solid rgba(255,255,255,.35)" asp-page="Edit" asp-route-id="@vehicle.Id"><partial name="_Icon" model='"edit"' />@L["Edit"]</a>
+        </div>
+    </div>
+    <div class="hero-car"><partial name="_CarSilhouette" /></div>
+</section>
+
+@* ------------------------------------------------ status tiles (all from data we already store) ------------------------------------------------ *@
+<div class="row g-3 g-lg-4 mb-4">
+    <div class="col-6 col-xl-3">
+        <div class="tile">
+            <div class="tile-top">
+                <span class="icon-tile"><partial name="_Icon" model='"gauge"' /></span>
+                <div><p class="tile-name">@L["Since last service"]</p><p class="tile-state">@(km is null ? L["No service recorded yet"] : L["Of {0} km", DetailsModel.ServiceIntervalKm.ToString("N0")])</p></div>
+            </div>
+            <p class="tile-value">@(km is int kmValue ? $"{kmValue:N0} {L["km"]}" : "—")</p>
+            <div class="meter @kmTone" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="@kmPercent" aria-label="@L["Since last service"]"><span style="--pct: @(kmPercent)%"></span></div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="tile">
+            <div class="tile-top">
+                <span class="icon-tile"><partial name="_Icon" model='"calendar"' /></span>
+                <div><p class="tile-name">@L["Time since service"]</p><p class="tile-state">@(days is null ? L["No service recorded yet"] : L["Of {0} days", DetailsModel.ServiceIntervalDays])</p></div>
+            </div>
+            <p class="tile-value">@(days is int dayValue ? L["{0} days", dayValue].Value : "—")</p>
+            <div class="meter @dayTone" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="@dayPercent" aria-label="@L["Time since service"]"><span style="--pct: @(dayPercent)%"></span></div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="tile">
+            <div class="tile-top">
+                <span class="icon-tile"><partial name="_Icon" model='"bell"' /></span>
+                <div>
+                    <p class="tile-name">@L["Reminders"]</p>
+                    <p class="tile-state">@(Model.OverdueReminderCount > 0 ? L["{0} overdue", Model.OverdueReminderCount] : L["All on track"])</p>
+                </div>
+            </div>
+            <p class="tile-value">@Model.OpenReminders.Count</p>
+            <div class="meter @(Model.OverdueReminderCount > 0 ? "bad" : "")"><span style="--pct: @(Model.OpenReminders.Count == 0 ? 0 : 100 * Model.OverdueReminderCount / Model.OpenReminders.Count)%"></span></div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="tile">
+            <div class="tile-top">
+                <span class="icon-tile"><partial name="_Icon" model='"clipboard"' /></span>
+                <div><p class="tile-name">@L["Visits"]</p><p class="tile-state">@L["Job cards for this vehicle"]</p></div>
+            </div>
+            <p class="tile-value">@Model.History.Count</p>
+            <div class="meter"><span style="--pct: @(Model.History.Count == 0 ? 0 : 100)%"></span></div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 g-lg-4">
+    @* ------------------------------------------------ service history timeline ------------------------------------------------ *@
+    <div class="col-xl-8">
+        <section class="panel panel-pad h-100" aria-labelledby="history-heading">
+            <div class="panel-head">
+                <h2 id="history-heading" class="panel-title">@L["Service history"]</h2>
+                @if (Model.History.Count > 0)
+                {
+                    <p class="text-secondary mb-0 small">@L["Visits: {0}", Model.History.Count]</p>
+                }
+            </div>
+
+            @if (Model.History.Count == 0)
+            {
+                <div class="empty">
+                    <span class="icon-tile"><partial name="_Icon" model='"clock"' /></span>
+                    <h3>@L["No visits yet."]</h3>
+                    <p>@L["Open a job card to start this vehicle's history."]</p>
+                    <a class="btn btn-primary btn-sm mt-2" asp-page="/Jobs/Create" asp-route-vehicleId="@vehicle.Id">@L["Open job card"]</a>
+                </div>
+            }
+            else
+            {
+                <ul class="timeline">
+                    @foreach (var visit in Model.History)
+                    {
+                        var dot = visit.Status switch
+                        {
+                            JobStatus.Paid => "ok",
+                            JobStatus.Done => "info",
+                            JobStatus.InProgress => "accent",
+                            _ => "",
+                        };
+                        <li>
+                            <span class="tl-dot @dot"><partial name="_Icon" model='visit.Status is JobStatus.Paid or JobStatus.Done ? "check" : visit.Status == JobStatus.InProgress ? "tool" : "calendar"' /></span>
+                            <div class="min-w-0">
+                                <p class="tl-title">
+                                    <span class="ltr">@visit.DateIn.ToString("yyyy-MM-dd")</span>
+                                    <span class="text-secondary fw-normal"> &middot; <span class="ltr num">@visit.MileageAtVisit.ToString("N0")</span> @L["km"]</span>
+                                </p>
+                                <p class="tl-meta">@L["What was done"]</p>
+                                @if (visit.Lines.Count == 0)
+                                {
+                                    <p class="text-secondary mb-0">&mdash;</p>
+                                }
+                                else
+                                {
+                                    <ul class="mb-0 ps-3">
+                                        @foreach (var line in visit.Lines)
+                                        {
+                                            <li class="d-list-item">
+                                                @line.Description
+                                                @if (line.Quantity != 1)
+                                                {
+                                                    <span class="text-secondary">&times; <span class="ltr">@line.Quantity.ToString("0.##")</span></span>
+                                                }
+                                                @if (line.Type == JobLineType.Labor)
+                                                {
+                                                    <span class="text-secondary small">(@L["Labor"])</span>
+                                                }
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(visit.Notes))
+                                {
+                                    <p class="tl-meta mb-0 mt-2" style="white-space: pre-line">@visit.Notes</p>
+                                }
+                            </div>
+                            <div class="tl-aside">
+                                <partial name="_StatusBadge" model="visit.Status" />
+                                <p class="mb-0 mt-1 fw-bold"><partial name="_Money" model="visit.Total" /></p>
+                                <a class="small" asp-page="/Jobs/Details" asp-route-id="@visit.Id"><span class="ltr">#@visit.Id</span></a>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
     </div>
 
-    @if (Model.History.Count == 0)
-    {
-        <div class="card"><div class="card-body p-4 text-center text-secondary">
-            <p class="mb-3">@L["No visits yet. Open a job card to start this vehicle's history."]</p>
-            <a class="btn btn-primary btn-sm" asp-page="/Jobs/Create" asp-route-vehicleId="@vehicle.Id">@L["Open job card"]</a>
-        </div></div>
-    }
-    else
-    {
-        <div class="card">
-            <ul class="list-group list-group-flush">
-            @foreach (var visit in Model.History)
+    <div class="col-xl-4">
+        <section class="panel mb-3 mb-lg-4" aria-labelledby="reminders-heading">
+            <div class="panel-pad pb-0">
+                <div class="panel-head mb-2">
+                    <h2 id="reminders-heading" class="panel-title">@L["Reminders"]</h2>
+                    <a class="small fw-bold" asp-page="/Reminders/Create" asp-route-vehicleId="@vehicle.Id">@L["Add reminder"]</a>
+                </div>
+            </div>
+            @if (Model.OpenReminders.Count == 0)
             {
-                <li class="list-group-item p-3 p-md-4">
-                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
-                        <div>
-                            <span class="fw-semibold"><span class="ltr">@visit.DateIn.ToString("yyyy-MM-dd")</span></span>
-                            <span class="text-secondary"> &middot; <span class="ltr">@visit.MileageAtVisit.ToString("N0")</span> @L["km"]</span>
-                            <partial name="_StatusBadge" model="visit.Status" />
-                        </div>
-                        <div class="text-end">
-                            <a class="me-2" asp-page="/Jobs/Details" asp-route-id="@visit.Id"><span class="ltr">#@visit.Id</span></a>
-                            <span class="fw-bold"><partial name="_Money" model="visit.Total" /></span>
-                        </div>
-                    </div>
-
-                    <div class="mt-2">
-                        <div class="small text-secondary">@L["What was done"]</div>
-                        @if (visit.Lines.Count == 0)
-                        {
-                            <div class="text-secondary">&mdash;</div>
-                        }
-                        else
-                        {
-                            <ul class="mb-0 ps-3">
-                            @foreach (var line in visit.Lines)
-                            {
-                                <li>
-                                    @line.Description
-                                    @if (line.Quantity != 1)
-                                    {
-                                        <span class="text-secondary">&times; <span class="ltr">@line.Quantity.ToString("0.##")</span></span>
-                                    }
-                                    @if (line.Type == JobLineType.Labor)
-                                    {
-                                        <span class="text-secondary small">(@L["Labor"])</span>
-                                    }
-                                </li>
-                            }
-                            </ul>
-                        }
-                    </div>
-
-                    @if (!string.IsNullOrWhiteSpace(visit.Notes))
-                    {
-                        <p class="small text-secondary mb-0 mt-2" style="white-space: pre-line">@visit.Notes</p>
-                    }
-                </li>
+                <div class="empty">
+                    <span class="icon-tile"><partial name="_Icon" model='"check-circle"' /></span>
+                    <p>@L["No open reminders for this vehicle."]</p>
+                </div>
             }
-            </ul>
-        </div>
-    }
-</section>
+            else
+            {
+                var vehicleReturn = Url.Page("/Vehicles/Details", new { id = vehicle.Id });
+                <ul class="list-group list-group-flush">
+                    @foreach (var reminder in Model.OpenReminders)
+                    {
+                        <partial name="_ReminderRow" model="new GarageDesk.Web.Pages.Reminders.ReminderRowModel(reminder, Model.Today, vehicleReturn!, Model.ShopName, ShowVehicle: false, Compact: true)" />
+                    }
+                </ul>
+            }
+        </section>
+
+        <section class="panel panel-pad" aria-labelledby="details-heading">
+            <div class="panel-head"><h2 id="details-heading" class="panel-title">@L["Details"]</h2></div>
+            <dl class="row mb-0 g-2">
+                <dt class="col-5 text-secondary fw-normal">@L["Make"]</dt><dd class="col-7 mb-0">@vehicle.Make</dd>
+                <dt class="col-5 text-secondary fw-normal">@L["Model"]</dt><dd class="col-7 mb-0">@vehicle.Model</dd>
+                <dt class="col-5 text-secondary fw-normal">@L["Year"]</dt><dd class="col-7 mb-0 num">@vehicle.Year</dd>
+                <dt class="col-5 text-secondary fw-normal">@L["VIN"]</dt>
+                <dd class="col-7 mb-0">
+                    @if (string.IsNullOrEmpty(vehicle.Vin)) { <span class="text-secondary">&mdash;</span> }
+                    else { <span class="ltr">@vehicle.Vin</span> }
+                </dd>
+            </dl>
+        </section>
+    </div>
+</div>

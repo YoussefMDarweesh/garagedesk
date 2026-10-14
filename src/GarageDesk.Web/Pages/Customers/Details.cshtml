@@ -1,65 +1,79 @@
 @page "{id:int}"
+@using GarageDesk.Web.Services
 @model DetailsModel
 @{
-    ViewData["Title"] = Model.Customer.Name;
+    var customer = Model.Customer;
+    ViewData["Title"] = customer.Name;
 }
 
-<nav aria-label="breadcrumb" class="mb-3">
-    <a asp-page="Index" class="text-secondary">&larr; @L["Customers"]</a>
+<nav class="mb-3">
+    <a asp-page="Index" class="text-secondary text-decoration-none"><partial name="_Icon" model='"chevron-left"' /> @L["Customers"]</a>
 </nav>
 
-<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-4">
-    <div>
-        <h1 class="h2 fw-bold mb-1">@Model.Customer.Name</h1>
-        <p class="mb-0"><span class="ltr">@Model.Customer.Phone</span></p>
+<section class="panel panel-pad mb-4">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div class="identity">
+            <partial name="_Avatar" model="customer.Name" view-data='new ViewDataDictionary(ViewData) { ["Size"] = "avatar-lg" }' />
+            <div>
+                <h1 class="h3 fw-bold mb-1">@customer.Name</h1>
+                <p class="mb-0 text-secondary"><partial name="_Icon" model='"phone"' /> <span class="ltr num">@customer.Phone</span></p>
+            </div>
+        </div>
+        <div class="page-actions">
+            <a class="btn btn-outline-secondary" asp-page="Edit" asp-route-id="@customer.Id"><partial name="_Icon" model='"edit"' />@L["Edit"]</a>
+            <a class="btn btn-primary" asp-page="/Vehicles/Create" asp-route-customerId="@customer.Id"><partial name="_Icon" model='"plus"' />@L["Add vehicle"]</a>
+        </div>
     </div>
-    <a class="btn btn-outline-secondary" asp-page="Edit" asp-route-id="@Model.Customer.Id">@L["Edit"]</a>
+
+    @if (!string.IsNullOrWhiteSpace(customer.Notes))
+    {
+        <div class="mt-4 pt-4 border-top">
+            <p class="form-section-title mb-1">@L["Notes"]</p>
+            <p class="mb-0" style="white-space: pre-line">@customer.Notes</p>
+        </div>
+    }
+</section>
+
+<div class="panel-head">
+    <h2 class="panel-title">@L["Vehicles"]</h2>
 </div>
 
-@if (!string.IsNullOrWhiteSpace(Model.Customer.Notes))
+@if (customer.Vehicles.Count == 0)
 {
-    <div class="card mb-4"><div class="card-body p-4">
-        <h2 class="h6 text-secondary">@L["Notes"]</h2>
-        <p class="mb-0" style="white-space: pre-line">@Model.Customer.Notes</p>
-    </div></div>
-}
-
-<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-    <h2 class="h4 fw-bold mb-0">@L["Vehicles"]</h2>
-    <a class="btn btn-primary btn-sm" asp-page="/Vehicles/Create" asp-route-customerId="@Model.Customer.Id">@L["Add vehicle"]</a>
-</div>
-
-@if (Model.Customer.Vehicles.Count == 0)
-{
-    <div class="card"><div class="card-body p-4 text-center text-secondary">
-        <p class="mb-0">@L["This customer has no vehicles yet."]</p>
-    </div></div>
+    <section class="panel">
+        <div class="empty">
+            <span class="icon-tile"><partial name="_Icon" model='"car"' /></span>
+            <h2>@L["No vehicles yet."]</h2>
+            <p>@L["This customer has no vehicles yet."]</p>
+            <a class="btn btn-primary btn-sm mt-2" asp-page="/Vehicles/Create" asp-route-customerId="@customer.Id">@L["Add vehicle"]</a>
+        </div>
+    </section>
 }
 else
 {
-    <div class="card">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+    <section class="panel">
+        <div class="data-table-wrap">
+            <table class="data-table">
                 <thead>
                     <tr>
                         <th scope="col">@L["Plate number"]</th>
                         <th scope="col">@L["Vehicle"]</th>
                         <th scope="col">@L["Year"]</th>
-                        <th scope="col">@L["Mileage (km)"]</th>
+                        <th scope="col" class="cell-end">@L["Mileage (km)"]</th>
                     </tr>
                 </thead>
                 <tbody>
-                @foreach (var vehicle in Model.Customer.Vehicles)
+                @foreach (var vehicle in customer.Vehicles)
                 {
                     <tr>
                         <td><a class="plate" dir="auto" asp-page="/Vehicles/Details" asp-route-id="@vehicle.Id">@vehicle.Plate</a></td>
-                        <td>@vehicle.Make @vehicle.Model</td>
-                        <td>@vehicle.Year</td>
-                        <td>@vehicle.Mileage.ToString("N0")</td>
+                        <td class="fw-semibold">@vehicle.Make @vehicle.Model</td>
+                        <td class="num">@vehicle.Year</td>
+                        <td class="cell-end num">@vehicle.Mileage.ToString("N0")</td>
                     </tr>
                 }
                 </tbody>
             </table>
         </div>
-    </div>
+    </section>
 }

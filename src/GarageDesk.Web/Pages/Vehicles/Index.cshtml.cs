@@ -9,26 +9,36 @@ namespace GarageDesk.Web.Pages.Vehicles;
 
 public class IndexModel(ApplicationDbContext db) : PageModel
 {
-    public const int PageSize = 100;
+    public const int PageSize = 20;
 
     [BindProperty(SupportsGet = true)]
     public string? Q { get; set; }
 
+    [BindProperty(SupportsGet = true)]
+    public int P { get; set; } = 1;
+
     public List<Vehicle> Vehicles { get; private set; } = [];
 
-    public bool HasMore { get; private set; }
+    public int Total { get; private set; }
+
+    public int PageCount { get; private set; } = 1;
+
+    public PagerModel Pager => new(P, PageCount, Total, PageSize, "/Vehicles/Index",
+        new Dictionary<string, string?> { ["q"] = Q });
 
     public async Task OnGetAsync()
     {
-        var found = await db.Vehicles
-            .AsNoTracking()
-            .Search(Q)
-            .Include(v => v.Customer)
-            .OrderBy(v => v.Plate)
-            .Take(PageSize + 1)
-            .ToListAsync();
+        var query = db.Vehicles.AsNoTracking().Search(Q);
 
-        HasMore = found.Count > PageSize;
-        Vehicles = found.Take(PageSize).ToList();
+        Total = await query.CountAsync();
+        PageCount = PagerModel.CountPages(Total, PageSize);
+        P = Math.Clamp(P, 1, PageCount);
+
+        Vehicles = await query
+            .Include(v => v.Customer)
+            .OrderBy(v => v.Plate).ThenBy(v => v.Id)
+            .Skip((P - 1) * PageSize)
+            .Take(PageSize)
+            .ToListAsync();
     }
 }

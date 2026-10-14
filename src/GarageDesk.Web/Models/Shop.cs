@@ -15,4 +15,7 @@ public class Shop
 
     [Required, StringLength(200)]
     public string Address { get; set; } = "";
+
+    /// <summary>One of the Accents presets, or null for the default (orange).</summary>
+    public string? AccentColor { get; set; }
 }
