@@ -1,0 +1,50 @@
+@page
+@using GarageDesk.Web.Services
+@model ShopSettingsModel
+@{
+    ViewData["Title"] = L["Shop settings"].Value;
+    var logoVersion = User.FindFirst(CurrentShop.LogoClaimType)?.Value;
+    var shopName = User.FindFirst(CurrentShop.NameClaimType)?.Value;
+}
+
+<div class="narrow mx-auto">
+    <h1 class="h2 fw-bold mb-4">@L["Shop settings"]</h1>
+
+    @if (!string.IsNullOrEmpty(Model.StatusMessage))
+    {
+        <div class="alert alert-success" role="status">@Model.StatusMessage</div>
+    }
+
+    <div class="card">
+        <div class="card-body p-4">
+            <h2 class="h5">@L["Shop logo"]</h2>
+            <p class="text-secondary">@L["PNG, JPEG or WebP, up to 512 KB. It appears in the navigation bar."]</p>
+
+            <div class="mb-4">
+                @if (Model.HasLogo)
+                {
+                    <img src="@Url.Content("~" + ShopLogoEndpoint.Path)?v=@logoVersion" alt="@shopName" class="shop-logo shop-logo-lg" />
+                }
+                else
+                {
+                    <p class="text-secondary mb-0">@L["No logo yet."]</p>
+                }
+            </div>
+
+            <partial name="_FormErrors" />
+
+            <form method="post" asp-page-handler="Upload" enctype="multipart/form-data">
+                <label class="form-label" for="upload">@L["Logo image"]</label>
+                <input id="upload" name="upload" type="file" class="form-control" accept="image/png,image/jpeg,image/webp" required />
+                <button type="submit" class="btn btn-primary mt-3">@L["Upload"]</button>
+            </form>
+
+            @if (Model.HasLogo)
+            {
+                <form method="post" asp-page-handler="Remove" class="mt-3">
+                    <button type="submit" class="btn btn-outline-secondary">@L["Remove logo"]</button>
+                </form>
+            }
+        </div>
+    </div>
+</div>

@@ -7,6 +7,11 @@
     // Bootstrap ships a mirrored stylesheet for right-to-left languages.
     var bootstrapCss = Url.Content("~/lib/bootstrap/dist/css/" + (isRtl ? "bootstrap.rtl.min.css" : "bootstrap.min.css"));
     var currentUrl = $"{Context.Request.PathBase}{Context.Request.Path}{Context.Request.QueryString}";
+    var currentPage = ViewContext.RouteData.Values["page"]?.ToString();
+    // The shop logo is only a claim in the login cookie ("has one, and which version"); the image itself is
+    // fetched from /shop/logo, which only ever returns the signed-in user's own shop's logo.
+    var logoVersion = User.FindFirst(CurrentShop.LogoClaimType)?.Value;
+    var layoutShopName = User.FindFirst(CurrentShop.NameClaimType)?.Value;
 }
 <!DOCTYPE html>
 <html lang="@lang" dir="@(isRtl ? "rtl" : "ltr")">
@@ -35,7 +40,17 @@
     <header>
         <nav class="navbar navbar-expand-md app-navbar" aria-label="Main">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index"><span class="brand-dot"></span>GarageDesk</a>
+                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-page="/Index">
+                    @if (logoVersion is not null)
+                    {
+                        <img src="@Url.Content("~" + ShopLogoEndpoint.Path)?v=@logoVersion" alt="@layoutShopName" class="shop-logo brand-logo" />
+                    }
+                    else
+                    {
+                        <span class="brand-dot"></span>
+                    }
+                    GarageDesk
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
                         aria-controls="mainNav" aria-expanded="false" aria-label="@L["Toggle navigation"]">
                     <span class="navbar-toggler-icon"></span>
@@ -43,9 +58,16 @@
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString() == "/Index" ? "active" : "")"
+                            <a class="nav-link @(currentPage == "/Index" ? "active" : "")"
                                asp-area="" asp-page="/Index">@L["Home"]</a>
                         </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(currentPage == "/ShopSettings" ? "active" : "")"
+                                   asp-area="" asp-page="/ShopSettings">@L["Shop settings"]</a>
+                            </li>
+                        }
                     </ul>
 
                     <div class="d-flex flex-column flex-md-row align-items-md-center gap-3 gap-md-2 mt-3 mt-md-0">

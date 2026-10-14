@@ -1,4 +1,5 @@
 @page
+@using GarageDesk.Web.Services
 @model IndexModel
 @{
     ViewData["Title"] = Model.ShopName ?? L["Home"].Value;
@@ -6,10 +7,17 @@
 
 @if (User.Identity?.IsAuthenticated == true)
 {
-    <div class="mb-5">
-        <p class="eyebrow mb-1">@L["Your shop"]</p>
-        <h1 class="display-6 fw-bold">@(Model.ShopName ?? L["Welcome"].Value)</h1>
-        <p class="text-secondary mb-0">@L["Your shop is set up and ready."]</p>
+    var logoVersion = User.FindFirst(CurrentShop.LogoClaimType)?.Value;
+    <div class="mb-5 d-flex align-items-center gap-3">
+        @if (logoVersion is not null)
+        {
+            <img src="@Url.Content("~" + ShopLogoEndpoint.Path)?v=@logoVersion" alt="@Model.ShopName" class="shop-logo shop-logo-lg" />
+        }
+        <div>
+            <p class="eyebrow mb-1">@L["Your shop"]</p>
+            <h1 class="display-6 fw-bold">@(Model.ShopName ?? L["Welcome"].Value)</h1>
+            <p class="text-secondary mb-0">@L["Your shop is set up and ready."]</p>
+        </div>
     </div>
 
     <div class="card">

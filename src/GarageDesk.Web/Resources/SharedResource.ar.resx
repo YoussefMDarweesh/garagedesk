@@ -113,6 +113,20 @@
   <data name="Cookies" xml:space="preserve"><value>ملفات تعريف الارتباط</value></data>
   <data name="One cookie keeps you signed in and another remembers your language. Your light or dark theme is saved in your browser. There is no advertising or tracking." xml:space="preserve"><value>ملف تعريف ارتباط يُبقيك مسجّلًا للدخول وآخر يتذكّر لغتك. ويُحفظ اختيارك للمظهر الفاتح أو الداكن في متصفحك. لا توجد إعلانات ولا تتبّع.</value></data>
 
+  <!-- Shop settings and logo -->
+  <data name="Shop settings" xml:space="preserve"><value>إعدادات الورشة</value></data>
+  <data name="Shop logo" xml:space="preserve"><value>شعار الورشة</value></data>
+  <data name="PNG, JPEG or WebP, up to 512 KB. It appears in the navigation bar." xml:space="preserve"><value>صورة بصيغة PNG أو JPEG أو WebP بحجم أقصاه 512 كيلوبايت. يظهر الشعار في شريط التنقل.</value></data>
+  <data name="No logo yet." xml:space="preserve"><value>لا يوجد شعار بعد.</value></data>
+  <data name="Logo image" xml:space="preserve"><value>صورة الشعار</value></data>
+  <data name="Upload" xml:space="preserve"><value>رفع</value></data>
+  <data name="Remove logo" xml:space="preserve"><value>حذف الشعار</value></data>
+  <data name="Choose an image to upload." xml:space="preserve"><value>اختر صورة لرفعها.</value></data>
+  <data name="The image is too large. The maximum size is 512 KB." xml:space="preserve"><value>حجم الصورة كبير جدًا. الحد الأقصى 512 كيلوبايت.</value></data>
+  <data name="Only PNG, JPEG or WebP images are allowed." xml:space="preserve"><value>يُسمح فقط بصور PNG أو JPEG أو WebP.</value></data>
+  <data name="Logo updated." xml:space="preserve"><value>تم تحديث الشعار.</value></data>
+  <data name="Logo removed." xml:space="preserve"><value>تم حذف الشعار.</value></data>
+
   <!-- Error page -->
   <data name="Error" xml:space="preserve"><value>خطأ</value></data>
   <data name="Something went wrong" xml:space="preserve"><value>حدث خطأ ما</value></data>
