@@ -4,31 +4,32 @@
     ViewData["Title"] = "Create your shop";
 }
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <h1>Create your shop</h1>
-        <p class="text-muted">One last step before you can start. You can't use GarageDesk until your shop exists. Prices are in EGP.</p>
+<div class="card shadow-sm auth-card">
+    <div class="card-body p-4 p-md-5">
+        <p class="eyebrow mb-1">Step 2 of 2</p>
+        <h1 class="h3 fw-bold">Create your shop</h1>
+        <p class="text-secondary mb-4">Last step before you can start. Prices are in EGP.</p>
 
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+        <form method="post" novalidate>
+            <div asp-validation-summary="ModelOnly" role="alert"></div>
 
             <div class="form-floating mb-3">
                 <input asp-for="Input.Name" class="form-control" placeholder="Shop name" autocomplete="organization" />
                 <label asp-for="Input.Name"></label>
-                <span asp-validation-for="Input.Name" class="text-danger"></span>
+                <span asp-validation-for="Input.Name"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Input.Phone" class="form-control" placeholder="Phone" autocomplete="tel" />
                 <label asp-for="Input.Phone"></label>
-                <span asp-validation-for="Input.Phone" class="text-danger"></span>
+                <span asp-validation-for="Input.Phone"></span>
             </div>
-            <div class="form-floating mb-3">
+            <div class="form-floating mb-4">
                 <input asp-for="Input.Address" class="form-control" placeholder="Address" autocomplete="street-address" />
                 <label asp-for="Input.Address"></label>
-                <span asp-validation-for="Input.Address" class="text-danger"></span>
+                <span asp-validation-for="Input.Address"></span>
             </div>
 
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Create shop</button>
+            <button type="submit" class="btn btn-primary w-100 py-2">Create shop</button>
         </form>
     </div>
 </div>
