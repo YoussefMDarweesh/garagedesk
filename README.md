@@ -25,7 +25,7 @@ I run an automotive software business and manage a fleet of cars, so I've been o
 - [x] M4 — Service history
 - [x] M5 — Reminders + WhatsApp
 - [x] M6 — Printable invoice
-- [ ] M7 — Demo data & deployment
+- [ ] M7 — Demo data & deployment (seed command and deploy workflow are in; going live follows [docs/DEPLOY.md](docs/DEPLOY.md))
 - [ ] M8 — Screenshots, demo video, final README
 
 Full scope and acceptance criteria: [SPEC.md](SPEC.md)

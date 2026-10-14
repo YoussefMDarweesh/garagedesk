@@ -103,7 +103,15 @@ app.MapRazorPages()
    .WithStaticAssets();
 app.MapShopLogo();
 
-app.Run();
+// "-- --seed-demo" creates the Demo Motors shop and exits; otherwise this is a normal web server.
+if (args.Contains(DemoDataCommand.Flag))
+{
+    Environment.ExitCode = await DemoDataCommand.RunAsync(app.Services, app.Configuration, Console.Out);
+}
+else
+{
+    app.Run();
+}
 
 // Makes the auto-generated Program class visible to the test project (WebApplicationFactory<Program>).
 public partial class Program { }
