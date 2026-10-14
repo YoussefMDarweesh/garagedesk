@@ -338,6 +338,19 @@
   <data name="Job cards with totals worked out for you" xml:space="preserve"><value>أوامر شغل بإجمالي محسوب تلقائيًا</value></data>
   <data name="Reminders to your customers on WhatsApp" xml:space="preserve"><value>تذكيرات لعملائك عبر واتساب</value></data>
 
+  <!-- Invoice -->
+  <data name="Invoice" xml:space="preserve"><value>فاتورة</value></data>
+  <data name="Invoice / Print" xml:space="preserve"><value>الفاتورة / طباعة</value></data>
+  <data name="Invoice no." xml:space="preserve"><value>رقم الفاتورة</value></data>
+  <data name="Date" xml:space="preserve"><value>التاريخ</value></data>
+  <data name="Bill to" xml:space="preserve"><value>العميل</value></data>
+  <data name="Unpaid" xml:space="preserve"><value>غير مدفوع</value></data>
+  <data name="Print / Save as PDF" xml:space="preserve"><value>طباعة / حفظ كملف PDF</value></data>
+  <data name="Back to job card" xml:space="preserve"><value>العودة إلى أمر الشغل</value></data>
+  <data name="Choose Save as PDF as the printer to get a PDF." xml:space="preserve"><value>اختر «حفظ كملف PDF» كطابعة للحصول على ملف PDF.</value></data>
+  <data name="No lines on this job card." xml:space="preserve"><value>لا توجد بنود في أمر الشغل هذا.</value></data>
+  <data name="Thank you for your business." xml:space="preserve"><value>شكرًا لتعاملكم معنا.</value></data>
+
   <!-- Shop settings and logo -->
   <data name="Shop settings" xml:space="preserve"><value>إعدادات الورشة</value></data>
   <data name="Shop logo" xml:space="preserve"><value>شعار الورشة</value></data>
