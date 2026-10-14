@@ -129,6 +129,28 @@ html[lang="ar"] * {
   font-weight: 600;
 }
 
+/* Shop logos are user-uploaded and may be transparent or dark, so they always sit on a neutral light backing:
+   readable on the white navbar and on the dark theme alike. */
+.shop-logo {
+  background: #fff;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.4rem;
+  padding: 0.2rem 0.4rem;
+  object-fit: contain;
+  width: auto;
+}
+
+.brand-logo {
+  max-height: 2.25rem;
+  max-width: 8rem;
+  margin-inline-end: 0.6rem;
+}
+
+.shop-logo-lg {
+  max-height: 4.5rem;
+  max-width: 14rem;
+}
+
 .shop-name {
   max-width: 14rem;
   overflow: hidden;

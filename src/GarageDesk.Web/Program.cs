@@ -13,6 +13,9 @@ using GarageDesk.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// The biggest thing anyone uploads is a 512 KB logo, so cap request bodies well below Kestrel's 30 MB default.
+builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 2 * 1024 * 1024);
+
 // Add services to the container.
 // Local: dotnet user-secrets. Azure: the ConnectionStrings__Default environment variable.
 var connectionString = builder.Configuration.GetConnectionString("Default")
@@ -80,6 +83,7 @@ app.UseAuthorization();
 app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
+app.MapShopLogo();
 
 app.Run();
 

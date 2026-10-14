@@ -21,6 +21,7 @@ public class TestAuthHandler(
     public const string UserHeader = "X-Test-User";
     public const string ShopHeader = "X-Test-Shop";
     public const string ShopNameHeader = "X-Test-Shop-Name";
+    public const string ShopLogoHeader = "X-Test-Shop-Logo";
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -41,6 +42,10 @@ public class TestAuthHandler(
         if (Request.Headers.TryGetValue(ShopNameHeader, out var shopName))
         {
             claims.Add(new Claim(CurrentShop.NameClaimType, shopName.ToString()));
+        }
+        if (Request.Headers.TryGetValue(ShopLogoHeader, out var logoVersion))
+        {
+            claims.Add(new Claim(CurrentShop.LogoClaimType, logoVersion.ToString()));
         }
 
         // Same authentication type Identity uses, so SignInManager.IsSignedIn() is true in the layout.

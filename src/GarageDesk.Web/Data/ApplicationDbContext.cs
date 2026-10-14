@@ -28,6 +28,8 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
 
     public DbSet<Shop> Shops => Set<Shop>();
 
+    public DbSet<ShopLogo> ShopLogos => Set<ShopLogo>();
+
     // Read by the query filters below. EF evaluates it per context instance, i.e. per request.
     private int? CurrentShopId => _currentShop.ShopId;
 
@@ -43,6 +45,14 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
 
         // A user can only ever see their own shop row.
         builder.Entity<Shop>().HasQueryFilter(s => s.Id == CurrentShopId);
+
+        // At most one logo per shop. (The tenant query filter comes from IShopOwned, below.)
+        builder.Entity<ShopLogo>(logo =>
+        {
+            logo.HasIndex(l => l.ShopId).IsUnique();
+            logo.Property(l => l.ContentType).HasMaxLength(50);
+            logo.HasOne<Shop>().WithMany().HasForeignKey(l => l.ShopId).OnDelete(DeleteBehavior.Restrict);
+        });
 
         // THE PATTERN: every entity that implements IShopOwned gets the same filter automatically.
         // Adding a new shop-owned entity later needs no extra filter code, just ": IShopOwned".

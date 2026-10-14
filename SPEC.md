@@ -51,6 +51,12 @@ Each shop is a separate tenant. One shop must never see another shop's data.
 - Light and dark themes: the theme follows the OS setting by default, and a navbar toggle overrides it and is remembered in the browser.
 - **Done when:** switching to Arabic flips the pages to right-to-left with translated text and validation messages, and the theme can be switched (and survives a reload) without a flash.
 
+### Shop logo
+- A shop owner can upload their shop's logo (PNG, JPEG or WebP, up to 512 KB; SVG is not accepted) and remove it again, from a "Shop settings" page.
+- The logo is shown in the navigation bar and on the home page, and is reachable by other pages (e.g. the invoice) at `/shop/logo`.
+- Each shop only ever sees its own logo; the URL carries no shop id.
+- **Done when:** I can upload a logo and see it in the navbar, a second shop cannot fetch it, and a non-image or oversized file is refused with a clear message.
+
 ## 4. Not in the MVP
 Online payments, inventory/stock, multi-branch, staff roles, mobile app, SMS, email notifications.
 
@@ -70,6 +76,7 @@ Online payments, inventory/stock, multi-branch, staff roles, mobile app, SMS, em
 
 ## 6. Data model (first version)
 - `Shop` (Id, Name, Phone, Address)
+- `ShopLogo` (Id, ShopId, Bytes, ContentType, UpdatedAtUtc), one per shop, stored in the database
 - `AppUser` (Identity user + ShopId)
 - `Customer` (Id, ShopId, Name, Phone, Notes)
 - `Vehicle` (Id, ShopId, CustomerId, Plate, Vin, Make, Model, Year, Mileage)

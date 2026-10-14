@@ -33,6 +33,16 @@ public class AppUserClaimsPrincipalFactory(
             {
                 identity.AddClaim(new Claim(CurrentShop.NameClaimType, shopName));
             }
+
+            // Same reasoning: only a "has a logo, and which version" marker, never the image itself.
+            var logoUpdated = await db.ShopLogos.IgnoreQueryFilters()
+                .Where(l => l.ShopId == shopId)
+                .Select(l => (DateTime?)l.UpdatedAtUtc)
+                .FirstOrDefaultAsync();
+            if (logoUpdated is { } updated)
+            {
+                identity.AddClaim(new Claim(CurrentShop.LogoClaimType, updated.Ticks.ToString()));
+            }
         }
         return identity;
     }
