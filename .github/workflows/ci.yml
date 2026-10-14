@@ -23,3 +23,25 @@ jobs:
 
       - name: Test
         run: dotnet test GarageDesk.sln --configuration Release --no-build
+
+  # Proves the Dockerfile still builds and the container really starts and answers its health check.
+  # No database exists here, which is the point: /healthz must work without one.
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build the image
+        run: docker build --tag garagedesk:ci .
+
+      - name: Start it and call /healthz
+        run: |
+          docker run --detach --name garagedesk --publish 8080:8080 \
+            --env "ConnectionStrings__Default=Host=127.0.0.1;Port=1;Database=none;Username=none;Password=none;Timeout=2" \
+            garagedesk:ci
+          for i in $(seq 1 30); do
+            if curl --silent --fail http://localhost:8080/healthz; then echo; exit 0; fi
+            sleep 1
+          done
+          docker logs garagedesk
+          exit 1

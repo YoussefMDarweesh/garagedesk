@@ -1,0 +1,4 @@
+# Docker reads these on Linux; keep LF endings even when checked out on Windows.
+Dockerfile text eol=lf
+.dockerignore text eol=lf
+*.sh text eol=lf

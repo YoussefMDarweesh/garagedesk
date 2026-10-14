@@ -81,6 +81,10 @@ else
     app.UseHsts();
 }
 
+// Behind Render's proxy the container only ever speaks plain HTTP and the proxy does the TLS. Two things make that safe:
+// ASPNETCORE_FORWARDEDHEADERS_ENABLED=true (set in the Dockerfile) makes ASP.NET trust X-Forwarded-Proto, so the app
+// knows the visitor is on HTTPS; and with no HTTPS port bound in the container, UseHttpsRedirection has nowhere to
+// redirect to, so it can't loop. Locally (the https launch profile) it still sends http to https.
 app.UseHttpsRedirection();
 
 // The language comes only from the cookie set by the navbar switcher; anything else falls back to English.
@@ -102,6 +106,14 @@ app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
 app.MapShopLogo();
+
+// The platform's health check. It touches nothing (no database, no login): Neon may be asleep, and a sleeping
+// database must not make the platform think the app is down.
+app.MapGet("/healthz", (HttpContext context) =>
+{
+    context.Response.Headers.CacheControl = "no-store";
+    return Results.Text("ok");
+});
 
 // "-- --seed-demo" creates the Demo Motors shop and exits; otherwise this is a normal web server.
 if (args.Contains(DemoDataCommand.Flag))
