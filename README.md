@@ -39,6 +39,7 @@ All of these come from the seeded demo shop, "Demo Motors" (see [Run it locally]
 - **Shop logo and accent colour** from a settings page, shown in the navigation and on invoices.
 - **Dashboard** with real numbers only: customers, vehicles, open job cards, revenue this month, a monthly activity chart and the latest service history.
 - **Demo seeder:** one command creates the shop "Demo Motors" with 10 customers, 15 cars and a year of history.
+- **My team (v1.3):** staff accounts with three roles. The *owner* sees everything; the *cashier* handles customers, job cards, payments, invoices and estimates but not settings, staff or reports; the *technician* sees only the job cards assigned to them and never a price, total, payment or customer phone number. Owners invite people with a one-time link, deactivate them, assign job cards, set a commission percent per person, and read a monthly commissions report and each job card's history. See [docs/ROLES.md](docs/ROLES.md).
 
 ## How it works
 
@@ -129,6 +130,8 @@ dotnet run --project src/GarageDesk.Web -- --seed-demo
 
 This creates "Demo Motors" with 10 customers, 15 cars (three each of Skoda, Volkswagen, Hyundai, Kia and Toyota), about 50 job cards and a mix of overdue and upcoming reminders, then exits. Running it again changes nothing.
 
+It also creates a **cashier** (`cashier@garagedesk.app`) and a **technician** (`technician@garagedesk.app`) in the same shop, and gives the technician a third of the job cards and a 10% commission. Their passwords come from `Demo:CashierPassword` and `Demo:TechnicianPassword` (user-secrets or environment variables); without them a random password is printed once. The addresses can be changed with `Demo:CashierEmail` and `Demo:TechnicianEmail`.
+
 ```bash
 # 4. Start the app
 dotnet run --project src/GarageDesk.Web
@@ -164,7 +167,7 @@ This project is built with AI coding agents under my direction, and I want to be
 - **No VAT, no discounts.** Totals are parts plus labor.
 - **No email or SMS sending.** WhatsApp messages open in WhatsApp; nothing is sent by the server.
 - **English and Arabic only,** and one currency (EGP).
-- **One owner login per shop;** no staff accounts or roles yet.
+- **Team and roles are new (v1.3).** Three fixed roles, no custom permissions; one role per person and one shop per person. Commission uses a person's *current* percent, so changing it also changes past months in the report. Free-text job notes are shown to technicians as typed, so do not put prices in them.
 - **Sessions end when the server restarts** when it runs in a container, because the keys that protect login cookies are not persisted yet.
 - **The demo data is editable.** The demo shop is a normal shop: anything you change stays changed, and there is no "reset demo" command.
 - **Print layout was verified by emulation,** with tests and by applying the print rules to the page at A4 width. I have not checked a printed PDF from every browser.
@@ -184,7 +187,6 @@ Full scope and acceptance criteria: [SPEC.md](SPEC.md)
 
 ### What I'd build next
 - Per-shop invoice numbers (`INV-0001`), then VAT and discounts.
-- Staff accounts with limited roles.
 - A real host for the demo, and a "reset demo" command.
 - Persisting the data-protection keys so logins survive restarts.
 - Sending reminders on a schedule, not only on a tap.

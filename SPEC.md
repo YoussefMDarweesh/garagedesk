@@ -108,3 +108,11 @@ Online payments, inventory/stock, multi-branch, staff roles, mobile app, SMS, em
 - `JobLine` (Id, ShopId, JobCardId, Type, Description, Quantity, UnitPrice) — carries its own `ShopId` like every shop-owned row
 - `Reminder` (Id, ShopId, VehicleId, Type, DueDate?, DueMileage?, IsDone)
 - `ShareLink` (Id, ShopId, Kind, TargetId, TokenHash, TokenProtected?, Language, CreatedAtUtc, ExpiresAtUtc, RevokedAtUtc?, LastViewedAtUtc?, ViewCount): a secret public link to one invoice, estimate or car status. `Shop` also has `ShareMessageEn?` / `ShareMessageAr?`, and `JobCard` has `StatusChangedAtUtc?`.
+
+## 7. v1.3 "My team": staff accounts, roles, technicians, commissions
+- Roles: **Owner** (everything), **Cashier** (customers, vehicles, job cards, payments, invoices, estimates, receivables; no settings, staff or reports), **Technician** (only job cards assigned to them and their vehicles' history; may move a job Booked, In progress, Done and note parts and labor; never sees prices, totals, payments or customer phone numbers). One role, one shop per person. The person who registers a shop is its Owner. Details and enforcement: `docs/ROLES.md`.
+- Team page (owner): invite with a one-time link (hashed, expiring, single use), change role, activate or deactivate (deactivated users cannot sign in and their sessions stop), commission percent. The last active owner cannot be demoted or deactivated.
+- Job cards have an optional assignee (an active technician or owner of the same shop). "My jobs" lists the signed-in person's job cards.
+- Commissions report (owner, by month): labor total of Paid job cards assigned to the person (by visit month, before discount and VAT) times their percent.
+- History (owner): an append-only list per job card of who created it, changed its status, took or voided a payment, or assigned it.
+- Data model additions: `AppUser` (Role, IsActive, FullName, CommissionPercent), `StaffInvite` (Id, ShopId, TokenHash, Role, FullName?, Phone?, CreatedByUserId, CreatedAtUtc, ExpiresAtUtc, UsedAtUtc?, UsedByUserId?, RevokedAtUtc?), `JobCard.AssignedToUserId?`, `JobAuditEntry` (Id, ShopId, JobCardId, Kind, Detail, UserId?, UserName, AtUtc).
