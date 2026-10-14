@@ -168,6 +168,21 @@
                 <dd class="col-6 text-end mb-1"><partial name="_Money" model="job.PartsTotal" /></dd>
                 <dt class="col-6 text-secondary fw-normal">@L["Labor"]</dt>
                 <dd class="col-6 text-end mb-2"><partial name="_Money" model="job.LaborTotal" /></dd>
+                @if (job.DiscountValue > 0 || job.VatValue > 0)
+                {
+                    <dt class="col-6 text-secondary fw-normal">@L["Subtotal"]</dt>
+                    <dd class="col-6 text-end mb-1"><partial name="_Money" model="job.Subtotal" /></dd>
+                }
+                @if (job.DiscountValue > 0)
+                {
+                    <dt class="col-6 text-secondary fw-normal">@L["Discount"]@(job.DiscountPercent is > 0 ? $" ({job.DiscountPercent:0.##}%)" : "")</dt>
+                    <dd class="col-6 text-end mb-1" data-job-discount>&minus; <partial name="_Money" model="job.DiscountValue" /></dd>
+                }
+                @if (job.VatValue > 0)
+                {
+                    <dt class="col-6 text-secondary fw-normal">@L["VAT"] (<span class="ltr">@job.VatPercent?.ToString("0.##")%</span>)</dt>
+                    <dd class="col-6 text-end mb-2" data-job-vat><partial name="_Money" model="job.VatValue" /></dd>
+                }
                 <dt class="col-6 border-top pt-3 mb-0">@L["Total"]</dt>
                 <dd class="col-6 text-end border-top pt-3 mb-0 fw-bold fs-5" data-job-total><partial name="_Money" model="job.Total" /></dd>
             </dl>

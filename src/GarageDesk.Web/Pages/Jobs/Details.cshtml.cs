@@ -87,7 +87,7 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
         }
 
         // The total must never drop below what the customer has already paid.
-        if (job.PaidTotal > job.Total - line.LineTotal)
+        if (job.PaidTotal > JobTotals.Total(job.Subtotal - line.LineTotal, job.DiscountAmount, job.DiscountPercent, job.VatPercent))
         {
             return Fail(id, "Payments already received are more than the new total. Void the latest payment first.");
         }
@@ -187,6 +187,12 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
         if (!JobStatusFlow.CanMove(job.Status, to))
         {
             return Fail(id, "That status change is not allowed.");
+        }
+
+        // VAT is fixed when the job card is issued, so later changes of the shop setting never alter an invoice.
+        if (job.InvoiceNumber is null && to is JobStatus.Done or JobStatus.Paid)
+        {
+            job.VatPercent = await db.Shops.Select(s => s.VatPercent).FirstOrDefaultAsync();
         }
 
         // Marking a job paid by hand records the rest of the balance as a cash payment, so balance and status agree.

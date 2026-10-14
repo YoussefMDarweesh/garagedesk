@@ -107,6 +107,21 @@
             <dd><partial name="_Money" model="job.PartsTotal" /></dd>
             <dt>@L["Labor"]</dt>
             <dd><partial name="_Money" model="job.LaborTotal" /></dd>
+            @if (job.DiscountValue > 0 || job.VatValue > 0)
+            {
+                <dt>@L["Subtotal"]</dt>
+                <dd><partial name="_Money" model="job.Subtotal" /></dd>
+            }
+            @if (job.DiscountValue > 0)
+            {
+                <dt>@L["Discount"]@(job.DiscountPercent is > 0 ? $" ({job.DiscountPercent:0.##}%)" : "")</dt>
+                <dd data-invoice-discount>&minus; <partial name="_Money" model="job.DiscountValue" /></dd>
+            }
+            @if (job.VatValue > 0)
+            {
+                <dt>@L["VAT"] (<span class="ltr">@job.VatPercent?.ToString("0.##")%</span>)</dt>
+                <dd data-invoice-vat><partial name="_Money" model="job.VatValue" /></dd>
+            }
             <dt class="inv-grand">@L["Total"]</dt>
             <dd class="inv-grand" data-invoice-total><partial name="_Money" model="job.Total" /></dd>
             <dt>@L["Received"]</dt>

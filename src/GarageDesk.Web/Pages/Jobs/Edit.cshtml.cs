@@ -34,6 +34,8 @@ public class EditModel(ApplicationDbContext db, IStringLocalizer<SharedResource>
         Input.DateIn = job.DateIn;
         Input.MileageAtVisit = job.MileageAtVisit;
         Input.Notes = job.Notes;
+        Input.DiscountAmount = job.DiscountAmount;
+        Input.DiscountPercent = job.DiscountPercent;
         return Page();
     }
 
@@ -56,6 +58,11 @@ public class EditModel(ApplicationDbContext db, IStringLocalizer<SharedResource>
             ModelState.AddModelError("Input.DateIn", localizer["Enter a valid date."]);
         }
 
+        if (Input.DiscountAmount is > 0 && Input.DiscountPercent is > 0)
+        {
+            ModelState.AddModelError("Input.DiscountPercent", localizer["Use either a discount amount or a percent, not both."]);
+        }
+
         if (!ModelState.IsValid)
         {
             return Page();
@@ -64,6 +71,8 @@ public class EditModel(ApplicationDbContext db, IStringLocalizer<SharedResource>
         job.DateIn = Input.DateIn;
         job.MileageAtVisit = Input.MileageAtVisit;
         job.Notes = string.IsNullOrWhiteSpace(Input.Notes) ? null : Input.Notes.Trim();
+        job.DiscountAmount = Input.DiscountAmount is > 0 ? Input.DiscountAmount : null;
+        job.DiscountPercent = Input.DiscountPercent is > 0 ? Input.DiscountPercent : null;
 
         // Correcting a reading upwards updates the vehicle too; a lower one never winds the vehicle back.
         job.Vehicle?.RaiseMileageTo(job.MileageAtVisit);

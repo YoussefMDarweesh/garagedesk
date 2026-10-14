@@ -134,6 +134,14 @@ namespace GarageDesk.Web.Data.Migrations
                     b.Property<DateOnly>("DateIn")
                         .HasColumnType("date");
 
+                    b.Property<decimal?>("DiscountAmount")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<decimal?>("DiscountPercent")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
+
                     b.Property<int?>("InvoiceNumber")
                         .HasColumnType("integer");
 
@@ -151,6 +159,10 @@ namespace GarageDesk.Web.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
+
+                    b.Property<decimal?>("VatPercent")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
 
                     b.Property<int>("VehicleId")
                         .HasColumnType("integer");
@@ -339,6 +351,10 @@ namespace GarageDesk.Web.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
+
+                    b.Property<decimal?>("VatPercent")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
 
                     b.HasKey("Id");
 

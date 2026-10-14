@@ -27,6 +27,8 @@ public class ShopSettingsModel(
     /// <summary>The shop's accent colour preset (Accents.Default when none was chosen).</summary>
     public string Accent { get; private set; } = Accents.Default;
 
+    public decimal? VatPercent { get; private set; }
+
     public async Task OnGetAsync()
     {
         await LoadAsync();
@@ -37,6 +39,29 @@ public class ShopSettingsModel(
         HasLogo = await db.ShopLogos.AnyAsync();
         var accent = await db.Shops.Select(s => s.AccentColor).FirstOrDefaultAsync();
         Accent = Accents.IsPreset(accent) ? accent! : Accents.Default;
+        VatPercent = await db.Shops.Select(s => s.VatPercent).FirstOrDefaultAsync();
+    }
+
+    public async Task<IActionResult> OnPostVatAsync(decimal? vatPercent)
+    {
+        if (vatPercent is < 0 or > 100)
+        {
+            await LoadAsync();
+            ModelState.AddModelError(string.Empty, localizer["Enter a VAT percent between 0 and 100."]);
+            return Page();
+        }
+
+        var shop = await db.Shops.FirstOrDefaultAsync();
+        if (shop is null)
+        {
+            return NotFound();
+        }
+
+        shop.VatPercent = vatPercent is > 0 ? Math.Round(vatPercent.Value, 2) : null;
+        await db.SaveChangesAsync();
+
+        StatusMessage = localizer["VAT setting saved."];
+        return RedirectToPage();
     }
 
     public async Task<IActionResult> OnPostAccentAsync(string? accent)

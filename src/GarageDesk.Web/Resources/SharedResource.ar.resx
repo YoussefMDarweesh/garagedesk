@@ -386,6 +386,18 @@
   <data name="Balance" xml:space="preserve"><value>الرصيد</value></data>
   <data name="Unpaid job cards" xml:space="preserve"><value>أوامر شغل غير مسددة</value></data>
 
+  <!-- Discounts and VAT -->
+  <data name="Subtotal" xml:space="preserve"><value>المجموع الفرعي</value></data>
+  <data name="Discount" xml:space="preserve"><value>الخصم</value></data>
+  <data name="Discount (EGP)" xml:space="preserve"><value>الخصم (ج.م)</value></data>
+  <data name="Discount (%)" xml:space="preserve"><value>الخصم (٪)</value></data>
+  <data name="VAT" xml:space="preserve"><value>ضريبة القيمة المضافة</value></data>
+  <data name="VAT percent" xml:space="preserve"><value>نسبة الضريبة</value></data>
+  <data name="Leave empty if your shop does not charge VAT. It is added to job cards when they are issued (Done or Paid)." xml:space="preserve"><value>اتركه فارغًا إذا كانت ورشتك لا تحصّل ضريبة. تُضاف إلى أوامر الشغل عند إصدارها (منتهي أو مدفوع).</value></data>
+  <data name="Use either a discount amount or a percent, not both." xml:space="preserve"><value>استخدم مبلغ خصم أو نسبة خصم، وليس الاثنين معًا.</value></data>
+  <data name="Enter a VAT percent between 0 and 100." xml:space="preserve"><value>أدخل نسبة ضريبة بين 0 و100.</value></data>
+  <data name="VAT setting saved." xml:space="preserve"><value>تم حفظ إعداد الضريبة.</value></data>
+
   <!-- Shop settings and logo -->
   <data name="Shop settings" xml:space="preserve"><value>إعدادات الورشة</value></data>
   <data name="Shop logo" xml:space="preserve"><value>شعار الورشة</value></data>

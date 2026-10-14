@@ -62,6 +62,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
         {
             shop.HasQueryFilter(s => s.Id == CurrentShopId);
             shop.Property(s => s.AccentColor).HasMaxLength(20);
+            shop.Property(s => s.VatPercent).HasPrecision(5, 2);
         });
 
         // At most one logo per shop. (The tenant query filter comes from IShopOwned, below.)
@@ -97,6 +98,9 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
         {
             job.Property(j => j.Status).HasConversion<string>().HasMaxLength(20);
             job.Property(j => j.Notes).HasMaxLength(2000);
+            job.Property(j => j.DiscountAmount).HasPrecision(12, 2);
+            job.Property(j => j.DiscountPercent).HasPrecision(5, 2);
+            job.Property(j => j.VatPercent).HasPrecision(5, 2);
             job.HasIndex(j => new { j.ShopId, j.Status });
             job.HasIndex(j => new { j.ShopId, j.VehicleId });
             job.HasOne(j => j.Vehicle).WithMany().HasForeignKey(j => j.VehicleId).OnDelete(DeleteBehavior.Restrict);
@@ -105,7 +109,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             job.HasIndex(j => new { j.ShopId, j.InvoiceNumber }).IsUnique();
             job.Ignore(j => j.InvoiceLabel);
             job.Ignore(j => j.PartsTotal).Ignore(j => j.LaborTotal).Ignore(j => j.Total).Ignore(j => j.IsLocked)
-                .Ignore(j => j.PaidTotal).Ignore(j => j.Balance).Ignore(j => j.PaymentState);
+                .Ignore(j => j.Subtotal).Ignore(j => j.DiscountValue).Ignore(j => j.VatValue).Ignore(j => j.PaidTotal).Ignore(j => j.Balance).Ignore(j => j.PaymentState);
         });
 
         builder.Entity<JobLine>(line =>

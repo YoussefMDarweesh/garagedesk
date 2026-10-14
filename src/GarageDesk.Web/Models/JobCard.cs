@@ -40,14 +40,30 @@ public class JobCard : IShopOwned
 
     public List<Payment> Payments { get; set; } = [];
 
+    /// <summary>Optional fixed discount in EGP. Only one of the two discounts is used (a percent wins).</summary>
+    public decimal? DiscountAmount { get; set; }
+
+    /// <summary>Optional discount as a percent of the subtotal.</summary>
+    public decimal? DiscountPercent { get; set; }
+
+    /// <summary>The shop's VAT percent as it was when this job card was issued; null means no VAT.</summary>
+    public decimal? VatPercent { get; set; }
+
+    /// <summary>Sum of all lines, before discount and VAT.</summary>
+    public decimal Subtotal => Lines.Sum(l => l.LineTotal);
+
+    public decimal DiscountValue => JobTotals.Discount(Subtotal, DiscountAmount, DiscountPercent);
+
+    public decimal VatValue => JobTotals.Vat(Subtotal - DiscountValue, VatPercent);
+
     /// <summary>Sum of the parts lines.</summary>
     public decimal PartsTotal => Lines.Where(l => l.Type == JobLineType.Part).Sum(l => l.LineTotal);
 
     /// <summary>Sum of the labor lines.</summary>
     public decimal LaborTotal => Lines.Where(l => l.Type == JobLineType.Labor).Sum(l => l.LineTotal);
 
-    /// <summary>What the customer pays: every line, worked out automatically.</summary>
-    public decimal Total => Lines.Sum(l => l.LineTotal);
+    /// <summary>What the customer pays: subtotal, minus the discount, plus VAT. Worked out, never stored.</summary>
+    public decimal Total => JobTotals.Total(Subtotal, DiscountAmount, DiscountPercent, VatPercent);
 
     /// <summary>Money received so far.</summary>
     public decimal PaidTotal => Payments.Sum(p => p.Amount);
