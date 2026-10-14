@@ -398,8 +398,10 @@ public class CustomersAndVehiclesTests(GarageDeskWebFactory factory) : IClassFix
 
         var html = await TestData.BodyAsync(await client.GetAsync("/"));
 
-        Assert.Matches(@"text-body"">\s*2\s*</p>", html);
-        Assert.Matches(@"text-body"">\s*3\s*</p>", html);
+        // The stat cards: customers and vehicles.
+        var flat = System.Text.RegularExpressions.Regex.Replace(html, @"\s+", " ");
+        Assert.Matches(@"Customers</span>.*?stat-value"">\s*2\s*</p>", flat);
+        Assert.Matches(@"Vehicles</span>.*?stat-value"">\s*3\s*</p>", flat);
     }
 
     [Fact]
