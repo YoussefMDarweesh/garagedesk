@@ -1,0 +1,18 @@
+@* The brand half of the split-screen login and register pages. *@
+<aside class="auth-panel">
+    <a class="public-brand" asp-area="" asp-page="/Index">
+        <span class="brand-tile"><partial name="_Icon" model='"tool"' /></span>
+        <span>GarageDesk</span>
+    </a>
+
+    <div>
+        <h2>@L["One place for every job, car and customer."]</h2>
+        <ul class="auth-points">
+            <li><partial name="_Icon" model='"check"' />@L["Customers, vehicles and service history"]</li>
+            <li><partial name="_Icon" model='"check"' />@L["Job cards with totals worked out for you"]</li>
+            <li><partial name="_Icon" model='"check"' />@L["Reminders to your customers on WhatsApp"]</li>
+        </ul>
+    </div>
+
+    <div class="auth-art" aria-hidden="true"><partial name="_CarSilhouette" /></div>
+</aside>

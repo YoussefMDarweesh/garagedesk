@@ -4,40 +4,53 @@
 @model RegisterModel
 @{
     ViewData["Title"] = L["Create your account"].Value;
+    ViewData["Chrome"] = "auth";
+    var currentUrl = $"{Request.PathBase}{Request.Path}{Request.QueryString}";
 }
 
-<div class="card shadow-sm auth-card">
-    <div class="card-body p-4 p-md-5">
-        <p class="eyebrow mb-1">@L["Step {0} of {1}", 1, 2]</p>
-        <h1 class="h3 fw-bold">@L["Create your account"]</h1>
-        <p class="text-secondary mb-4">@L["You'll set up your shop next."]</p>
+<div class="auth-split">
+    <partial name="_AuthPanel" />
 
-        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" novalidate>
-            <partial name="_FormErrors" />
+    <div class="auth-form-side">
+        <div class="auth-form-top">
+            <partial name="_LanguageSwitch" model="currentUrl" />
+            <partial name="_ThemeToggle" />
+        </div>
 
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                <label asp-for="Input.Email">@L["Email"]</label>
-                <span asp-validation-for="Input.Email"></span>
+        <div class="auth-form-wrap">
+            <div class="auth-form-card">
+                <p class="eyebrow mb-1">@L["Step {0} of {1}", 1, 2]</p>
+                <h1>@L["Create your account"]</h1>
+                <p class="text-secondary mb-4">@L["You'll set up your shop next."]</p>
+
+                <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" novalidate>
+                    <partial name="_FormErrors" />
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                        <label asp-for="Input.Email">@L["Email"]</label>
+                        <span asp-validation-for="Input.Email"></span>
+                    </div>
+                    <div class="form-floating mb-1">
+                        <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="@L["Password"]" />
+                        <label asp-for="Input.Password">@L["Password"]</label>
+                        <span asp-validation-for="Input.Password"></span>
+                    </div>
+                    <p class="form-text mb-3">@L["At least 6 characters, with an uppercase letter, a lowercase letter, a number and a symbol."]</p>
+                    <div class="form-floating mb-4">
+                        <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="@L["Confirm password"]" />
+                        <label asp-for="Input.ConfirmPassword">@L["Confirm password"]</label>
+                        <span asp-validation-for="Input.ConfirmPassword"></span>
+                    </div>
+
+                    <button id="registerSubmit" type="submit" class="btn btn-primary btn-lg w-100">@L["Create account"]</button>
+                </form>
+
+                <p class="text-center text-secondary mt-4 mb-0">
+                    @L["Already have an account?"] <a class="fw-bold" asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">@L["Log in"]</a>
+                </p>
             </div>
-            <div class="form-floating mb-1">
-                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="@L["Password"]" />
-                <label asp-for="Input.Password">@L["Password"]</label>
-                <span asp-validation-for="Input.Password"></span>
-            </div>
-            <p class="form-text mb-3">@L["At least 6 characters, with an uppercase letter, a lowercase letter, a number and a symbol."]</p>
-            <div class="form-floating mb-4">
-                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="@L["Confirm password"]" />
-                <label asp-for="Input.ConfirmPassword">@L["Confirm password"]</label>
-                <span asp-validation-for="Input.ConfirmPassword"></span>
-            </div>
-
-            <button id="registerSubmit" type="submit" class="btn btn-primary w-100 py-2">@L["Create account"]</button>
-        </form>
-
-        <p class="text-center text-secondary mt-4 mb-0">
-            @L["Already have an account?"] <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">@L["Log in"]</a>
-        </p>
+        </div>
     </div>
 </div>
 
