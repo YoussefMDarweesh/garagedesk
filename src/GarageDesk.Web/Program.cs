@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using GarageDesk.Web.Data;
+using GarageDesk.Web.Models;
+using GarageDesk.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,9 +14,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddRazorPages();
+// The shop of the signed-in user, read from their login cookie, used by the DbContext's query filters.
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentShop, CurrentShop>();
+
+// No email sender exists in the MVP, so accounts can't be email-confirmed: sign-in works right after registering.
+builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddClaimsPrincipalFactory<AppUserClaimsPrincipalFactory>();
+
+builder.Services.AddRazorPages()
+    .AddMvcOptions(options => options.Filters.Add<RequireShopPageFilter>());
 
 var app = builder.Build();
 
