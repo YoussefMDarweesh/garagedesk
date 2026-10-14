@@ -128,6 +128,7 @@ public static class DemoData
         db.Customers.AddRange(customers);
 
         var vehicles = new List<Vehicle>();
+        var created = new List<JobCard>();
         foreach (var car in Cars)
         {
             var vehicle = new Vehicle
@@ -164,6 +165,7 @@ public static class DemoData
                     UnitPrice = l.UnitPrice,
                 }));
                 db.JobCards.Add(job);
+                created.Add(job);
             }
         }
 
@@ -179,6 +181,42 @@ public static class DemoData
                 IsDone = due.Done,
             });
         }
+
+        // Issued job cards get invoice numbers, oldest first, like the app would have given them.
+        var issued = created.Where(j => j.Status is JobStatus.Done or JobStatus.Paid).OrderBy(j => j.DateIn).ToList();
+        for (var i = 0; i < issued.Count; i++)
+        {
+            issued[i].InvoiceNumber = i + 1;
+        }
+        db.NumberSequences.Add(new NumberSequence { Kind = DocumentNumbers.Invoice, LastValue = issued.Count });
+
+        // Paid job cards were paid in full; finished ones that are not paid yet have a deposit, so "who owes me" has rows.
+        var methods = new[] { PaymentMethod.Cash, PaymentMethod.Card, PaymentMethod.Wallet };
+        var paidIndex = 0;
+        foreach (var job in created.Where(j => j.Status == JobStatus.Paid))
+        {
+            db.Payments.Add(new Payment { JobCard = job, Amount = job.Total, Method = methods[paidIndex++ % methods.Length], PaidOn = job.DateIn });
+        }
+        foreach (var job in created.Where(j => j.Status == JobStatus.Done).Take(2))
+        {
+            db.Payments.Add(new Payment { JobCard = job, Amount = JobTotals.Round(job.Total / 2), Method = PaymentMethod.Cash, PaidOn = today.AddDays(-1), Note = "Deposit" });
+        }
+
+        // One estimate waiting for the customer's answer.
+        var quote = new Estimate
+        {
+            Vehicle = vehicles[2],
+            Number = 1,
+            CreatedOn = today.AddDays(-2),
+            ValidUntil = today.AddDays(12),
+            Status = EstimateStatus.Sent,
+            Notes = "Brake discs worn, quote for the full front axle.",
+        };
+        quote.Lines.Add(new EstimateLine { Type = JobLineType.Part, Description = "Front brake discs (pair)", Quantity = 1, UnitPrice = 1_800m });
+        quote.Lines.Add(new EstimateLine { Type = JobLineType.Part, Description = "Front brake pads", Quantity = 1, UnitPrice = 900m });
+        quote.Lines.Add(new EstimateLine { Type = JobLineType.Labor, Description = "Fit brake pads and discs", Quantity = 1.5m, UnitPrice = 200m });
+        db.Estimates.Add(quote);
+        db.NumberSequences.Add(new NumberSequence { Kind = DocumentNumbers.Estimate, LastValue = 1 });
 
         await db.SaveChangesAsync(cancellationToken);
         return true;
