@@ -1,0 +1,41 @@
+# Only src/GarageDesk.Web is needed to build the image. Everything below stays out of the build context
+# (faster builds, and nothing private can end up inside the image).
+
+# Build output
+**/bin/
+**/obj/
+publish/
+artifacts/
+
+# Source control, editors, CI
+.git/
+.gitignore
+.gitattributes
+.github/
+.vs/
+.vscode/
+.idea/
+
+# Not part of the app
+tests/
+docs/
+*.md
+LICENSE
+GarageDesk.sln
+Dockerfile
+.dockerignore
+
+# Anything that could hold secrets or local settings
+**/secrets.json
+**/appsettings.*.local.json
+**/appsettings.Development.json
+**/Properties/launchSettings.json
+*.pubxml
+*.pubxml.user
+*.PublishSettings
+*.user
+.env
+.env.*
+*.pfx
+*.db
+*.sqlite
