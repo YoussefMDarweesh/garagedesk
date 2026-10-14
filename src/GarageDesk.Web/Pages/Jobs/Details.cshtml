@@ -1,0 +1,202 @@
+@page "{id:int}"
+@using GarageDesk.Web.Models
+@model DetailsModel
+@{
+    var job = Model.Job;
+    ViewData["Title"] = $"{L["Job card"]} #{job.Id}";
+    var vehicle = job.Vehicle;
+}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <a asp-page="Index" class="text-secondary">&larr; @L["Job cards"]</a>
+</nav>
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-4">
+    <div>
+        <h1 class="h2 fw-bold mb-1">
+            @L["Job card"] <span class="ltr">#@job.Id</span>
+            <partial name="_StatusBadge" model="job.Status" />
+        </h1>
+        <p class="text-secondary mb-0">
+            <span class="ltr">@job.DateIn.ToString("yyyy-MM-dd")</span> &middot; @vehicle?.Make @vehicle?.Model
+        </p>
+    </div>
+    @if (!job.IsLocked)
+    {
+        <a class="btn btn-outline-secondary" asp-page="Edit" asp-route-id="@job.Id">@L["Edit"]</a>
+    }
+</div>
+
+@if (!string.IsNullOrEmpty(Model.StatusMessage))
+{
+    <div class="alert alert-success" role="status">@Model.StatusMessage</div>
+}
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">@Model.ErrorMessage</div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body p-4">
+                <h2 class="h5 mb-3">@L["Parts and labor"]</h2>
+
+                @if (job.Lines.Count == 0)
+                {
+                    <p class="text-secondary">@L["No lines yet. Add the parts and labor below."]</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th scope="col">@L["Type"]</th>
+                                    <th scope="col">@L["Description"]</th>
+                                    <th scope="col" class="text-end">@L["Quantity"]</th>
+                                    <th scope="col" class="text-end">@L["Unit price"]</th>
+                                    <th scope="col" class="text-end">@L["Total"]</th>
+                                    @if (!job.IsLocked)
+                                    {
+                                        <th scope="col"><span class="visually-hidden">@L["Remove"]</span></th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var line in job.Lines)
+                            {
+                                <tr>
+                                    <td>@(line.Type == JobLineType.Part ? L["Part"] : L["Labor"])</td>
+                                    <td>@line.Description</td>
+                                    <td class="text-end"><span class="ltr">@line.Quantity.ToString("0.##")</span></td>
+                                    <td class="text-end"><partial name="_Money" model="line.UnitPrice" /></td>
+                                    <td class="text-end"><partial name="_Money" model="line.LineTotal" /></td>
+                                    @if (!job.IsLocked)
+                                    {
+                                        <td class="text-end">
+                                            <form method="post" asp-page-handler="RemoveLine" asp-route-id="@job.Id" asp-route-lineId="@line.Id">
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary">@L["Remove"]</button>
+                                            </form>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                @if (!job.IsLocked)
+                {
+                    <form method="post" asp-page-handler="AddLine" asp-route-id="@job.Id" novalidate class="border-top pt-3 mt-2">
+                        <h3 class="h6 mb-3">@L["Add a line"]</h3>
+                        <div class="row g-2 align-items-start">
+                            <div class="col-sm-3 col-md-2">
+                                <label asp-for="NewLine.Type" class="form-label small text-secondary"></label>
+                                <select asp-for="NewLine.Type" class="form-select">
+                                    <option value="@JobLineType.Part">@L["Part"]</option>
+                                    <option value="@JobLineType.Labor">@L["Labor"]</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-9 col-md-4">
+                                <label asp-for="NewLine.Description" class="form-label small text-secondary"></label>
+                                <input asp-for="NewLine.Description" class="form-control" autocomplete="off" />
+                                <span asp-validation-for="NewLine.Description"></span>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <label asp-for="NewLine.Quantity" class="form-label small text-secondary"></label>
+                                <input asp-for="NewLine.Quantity" type="number" step="0.01" min="0.01" inputmode="decimal" class="form-control" />
+                                <span asp-validation-for="NewLine.Quantity"></span>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <label asp-for="NewLine.UnitPrice" class="form-label small text-secondary"></label>
+                                <input asp-for="NewLine.UnitPrice" type="number" step="0.01" min="0" inputmode="decimal" class="form-control" />
+                                <span asp-validation-for="NewLine.UnitPrice"></span>
+                            </div>
+                            <div class="col-12 col-md-2 d-grid">
+                                <label class="form-label small d-none d-md-block">&nbsp;</label>
+                                <button type="submit" class="btn btn-primary">@L["Add line"]</button>
+                            </div>
+                        </div>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-body p-4">
+                <h2 class="h5 mb-3">@L["Total"]</h2>
+                <dl class="row mb-0">
+                    <dt class="col-6 text-secondary fw-normal">@L["Parts"]</dt>
+                    <dd class="col-6 text-end"><partial name="_Money" model="job.PartsTotal" /></dd>
+                    <dt class="col-6 text-secondary fw-normal">@L["Labor"]</dt>
+                    <dd class="col-6 text-end"><partial name="_Money" model="job.LaborTotal" /></dd>
+                    <dt class="col-6 border-top pt-2 mb-0">@L["Total"]</dt>
+                    <dd class="col-6 text-end border-top pt-2 mb-0 fw-bold fs-5" data-job-total><partial name="_Money" model="job.Total" /></dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body p-4">
+                <h2 class="h5 mb-3">@L["Status"]</h2>
+                <div class="d-grid gap-2">
+                    @if (Model.NextStatus is JobStatus next)
+                    {
+                        <form method="post" asp-page-handler="Status" asp-route-id="@job.Id" asp-route-to="@next">
+                            <button type="submit" class="btn btn-primary w-100">
+                                @(next switch
+                                {
+                                    JobStatus.InProgress => L["Start work"],
+                                    JobStatus.Done => L["Mark as done"],
+                                    _ => L["Mark as paid"],
+                                })
+                            </button>
+                        </form>
+                    }
+                    @if (Model.PreviousStatus is JobStatus previous)
+                    {
+                        <form method="post" asp-page-handler="Status" asp-route-id="@job.Id" asp-route-to="@previous">
+                            <button type="submit" class="btn btn-outline-secondary w-100 btn-sm">
+                                @L["Move back to"] <partial name="_StatusLabel" model="previous" />
+                            </button>
+                        </form>
+                    }
+                    @if (job.IsLocked)
+                    {
+                        <p class="text-secondary small mb-0">@L["This job card is paid and can no longer be changed."]</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body p-4">
+                <h2 class="h5 mb-3">@L["Details"]</h2>
+                <dl class="mb-0">
+                    <dt class="text-secondary fw-normal">@L["Vehicle"]</dt>
+                    <dd>
+                        <a class="plate" dir="auto" asp-page="/Vehicles/Details" asp-route-id="@job.VehicleId">@vehicle?.Plate</a>
+                        <span class="ms-1">@vehicle?.Make @vehicle?.Model</span>
+                    </dd>
+                    <dt class="text-secondary fw-normal">@L["Owner"]</dt>
+                    <dd><a asp-page="/Customers/Details" asp-route-id="@vehicle?.CustomerId">@vehicle?.Customer?.Name</a></dd>
+                    <dt class="text-secondary fw-normal">@L["Mileage at visit (km)"]</dt>
+                    <dd><span class="ltr">@job.MileageAtVisit.ToString("N0")</span></dd>
+                    @if (!string.IsNullOrWhiteSpace(job.Notes))
+                    {
+                        <dt class="text-secondary fw-normal">@L["Notes"]</dt>
+                        <dd class="mb-0" style="white-space: pre-line">@job.Notes</dd>
+                    }
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

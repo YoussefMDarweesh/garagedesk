@@ -156,6 +156,51 @@
   <data name="The value '{0}' is not valid for {1}." xml:space="preserve"><value>القيمة '{0}' غير صالحة للحقل {1}.</value></data>
   <data name="The value '{0}' is invalid." xml:space="preserve"><value>القيمة '{0}' غير صالحة.</value></data>
 
+  <!-- Job cards -->
+  <data name="Job card" xml:space="preserve"><value>أمر شغل</value></data>
+  <data name="Job" xml:space="preserve"><value>الأمر</value></data>
+  <data name="New job card" xml:space="preserve"><value>أمر شغل جديد</value></data>
+  <data name="Open job card" xml:space="preserve"><value>فتح أمر شغل</value></data>
+  <data name="Edit job card" xml:space="preserve"><value>تعديل أمر الشغل</value></data>
+  <data name="Open job cards" xml:space="preserve"><value>أوامر الشغل المفتوحة</value></data>
+  <data name="All" xml:space="preserve"><value>الكل</value></data>
+  <data name="Search by plate, owner or job number" xml:space="preserve"><value>ابحث برقم اللوحة أو المالك أو رقم أمر الشغل</value></data>
+  <data name="No job cards match your search." xml:space="preserve"><value>لا توجد أوامر شغل تطابق بحثك.</value></data>
+  <data name="No job cards yet. Open one from a vehicle's page, or use the button above." xml:space="preserve"><value>لا توجد أوامر شغل بعد. افتح أمر شغل من صفحة المركبة أو استخدم الزر أعلاه.</value></data>
+  <data name="Showing the newest {0} job cards. Use the search or a status to narrow the list." xml:space="preserve"><value>يتم عرض أحدث {0} أمر شغل. استخدم البحث أو الحالة لتضييق القائمة.</value></data>
+  <data name="A job card is opened for a vehicle. Add a vehicle first." xml:space="preserve"><value>يُفتح أمر الشغل لمركبة. أضف مركبة أولًا.</value></data>
+  <data name="Choose the vehicle." xml:space="preserve"><value>اختر المركبة.</value></data>
+  <data name="Enter a valid date." xml:space="preserve"><value>أدخل تاريخًا صحيحًا.</value></data>
+  <data name="Date in" xml:space="preserve"><value>تاريخ الدخول</value></data>
+  <data name="Mileage at visit (km)" xml:space="preserve"><value>المسافة المقطوعة وقت الزيارة (كم)</value></data>
+  <data name="Status" xml:space="preserve"><value>الحالة</value></data>
+  <data name="Booked" xml:space="preserve"><value>محجوز</value></data>
+  <data name="In progress" xml:space="preserve"><value>قيد التنفيذ</value></data>
+  <data name="Paid" xml:space="preserve"><value>مدفوع</value></data>
+  <data name="Status updated." xml:space="preserve"><value>تم تحديث الحالة.</value></data>
+  <data name="That status change is not allowed." xml:space="preserve"><value>هذا التغيير في الحالة غير مسموح به.</value></data>
+  <data name="A paid job card can no longer be changed." xml:space="preserve"><value>لا يمكن تعديل أمر شغل تم دفعه.</value></data>
+  <data name="This job card is paid and can no longer be changed." xml:space="preserve"><value>تم دفع أمر الشغل هذا ولا يمكن تعديله.</value></data>
+  <data name="Start work" xml:space="preserve"><value>بدء العمل</value></data>
+  <data name="Mark as done" xml:space="preserve"><value>تحديد كمنتهي</value></data>
+  <data name="Mark as paid" xml:space="preserve"><value>تحديد كمدفوع</value></data>
+  <data name="Move back to" xml:space="preserve"><value>الرجوع إلى</value></data>
+  <data name="Parts and labor" xml:space="preserve"><value>قطع الغيار والمصنعية</value></data>
+  <data name="No lines yet. Add the parts and labor below." xml:space="preserve"><value>لا توجد بنود بعد. أضف قطع الغيار والمصنعية أدناه.</value></data>
+  <data name="Add a line" xml:space="preserve"><value>إضافة بند</value></data>
+  <data name="Add line" xml:space="preserve"><value>إضافة</value></data>
+  <data name="Remove" xml:space="preserve"><value>حذف</value></data>
+  <data name="Type" xml:space="preserve"><value>النوع</value></data>
+  <data name="Part" xml:space="preserve"><value>قطعة غيار</value></data>
+  <data name="Parts" xml:space="preserve"><value>قطع الغيار</value></data>
+  <data name="Labor" xml:space="preserve"><value>مصنعية</value></data>
+  <data name="Description" xml:space="preserve"><value>الوصف</value></data>
+  <data name="Quantity" xml:space="preserve"><value>الكمية</value></data>
+  <data name="Unit price" xml:space="preserve"><value>سعر الوحدة</value></data>
+  <data name="Total" xml:space="preserve"><value>الإجمالي</value></data>
+  <data name="EGP" xml:space="preserve"><value>ج.م</value></data>
+  <data name="Details" xml:space="preserve"><value>التفاصيل</value></data>
+
   <!-- Shop settings and logo -->
   <data name="Shop settings" xml:space="preserve"><value>إعدادات الورشة</value></data>
   <data name="Shop logo" xml:space="preserve"><value>شعار الورشة</value></data>

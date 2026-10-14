@@ -1,0 +1,14 @@
+@* The translated name of a job card status. *@
+@model GarageDesk.Web.Models.JobStatus
+@using GarageDesk.Web.Models
+@{
+    var label = Model switch
+    {
+        JobStatus.Booked => L["Booked"],
+        JobStatus.InProgress => L["In progress"],
+        JobStatus.Done => L["Done"],
+        JobStatus.Paid => L["Paid"],
+        _ => L[Model.ToString()],
+    };
+}
+@label

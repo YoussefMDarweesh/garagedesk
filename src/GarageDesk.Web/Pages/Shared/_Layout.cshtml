@@ -72,6 +72,10 @@
                                    asp-area="" asp-page="/Vehicles/Index">@L["Vehicles"]</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link @(currentPage?.StartsWith("/Jobs") == true ? "active" : "")"
+                                   asp-area="" asp-page="/Jobs/Index">@L["Job cards"]</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link @(currentPage == "/ShopSettings" ? "active" : "")"
                                    asp-area="" asp-page="/ShopSettings">@L["Shop settings"]</a>
                             </li>

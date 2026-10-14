@@ -14,7 +14,10 @@
         <h1 class="h2 fw-bold mb-1"><span class="plate plate-lg" dir="auto">@vehicle.Plate</span></h1>
         <p class="text-secondary mb-0">@vehicle.Make @vehicle.Model &middot; @vehicle.Year</p>
     </div>
-    <a class="btn btn-outline-secondary" asp-page="Edit" asp-route-id="@vehicle.Id">@L["Edit"]</a>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-primary" asp-page="/Jobs/Create" asp-route-vehicleId="@vehicle.Id">@L["Open job card"]</a>
+        <a class="btn btn-outline-secondary" asp-page="Edit" asp-route-id="@vehicle.Id">@L["Edit"]</a>
+    </div>
 </div>
 
 <div class="card">

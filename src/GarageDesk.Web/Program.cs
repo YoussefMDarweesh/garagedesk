@@ -60,6 +60,7 @@ builder.Services.AddRazorPages()
         // Everything under these folders needs a signed-in user (and, via RequireShopPageFilter, a shop).
         options.Conventions.AuthorizeFolder("/Customers");
         options.Conventions.AuthorizeFolder("/Vehicles");
+        options.Conventions.AuthorizeFolder("/Jobs");
     })
     .AddMvcOptions(options => options.Filters.Add<RequireShopPageFilter>())
     .AddDataAnnotationsLocalization(options =>
@@ -82,10 +83,12 @@ else
 app.UseHttpsRedirection();
 
 // The language comes only from the cookie set by the navbar switcher; anything else falls back to English.
+// Only the *words* switch to Arabic (UI culture). Numbers and dates keep the English format in every language:
+// browsers always post decimals as "1.5", and Arabic's own separator would make ASP.NET reject that.
 app.UseRequestLocalization(options =>
 {
     options.SetDefaultCulture(Cultures.Default)
-        .AddSupportedCultures(Cultures.Supported)
+        .AddSupportedCultures(Cultures.Default)
         .AddSupportedUICultures(Cultures.Supported);
     options.RequestCultureProviders = [new CookieRequestCultureProvider()];
 });

@@ -25,7 +25,8 @@ Each shop is a separate tenant. One shop must never see another shop's data.
 
 ### M3 — Job cards
 - A job card is one visit: vehicle, date in, mileage at visit, status (Booked → In progress → Done → Paid), notes.
-- Job lines: type (Labor or Part), description, quantity, unit price. Totals calculated automatically.
+- Job lines: type (Labor or Part), description, quantity, unit price. Totals calculated automatically (line total = quantity × unit price, rounded to the piastre; job total = sum of the lines).
+- Status moves one step at a time (Booked → In progress → Done → Paid). One step back is allowed to fix a mistake, except out of Paid: a paid job card is final and locked.
 - **Done when:** I can open a job for a car, add 2 parts + 1 labor line, and see the correct total.
 
 ### M4 — Service history
@@ -81,5 +82,5 @@ Online payments, inventory/stock, multi-branch, staff roles, mobile app, SMS, em
 - `Customer` (Id, ShopId, Name, Phone, Notes)
 - `Vehicle` (Id, ShopId, CustomerId, Plate, PlateKey, Vin, Make, Model, Year, Mileage) — `PlateKey` is the plate reduced to letters/digits, used for searching
 - `JobCard` (Id, ShopId, VehicleId, DateIn, MileageAtVisit, Status, Notes)
-- `JobLine` (Id, JobCardId, Type, Description, Quantity, UnitPrice)
+- `JobLine` (Id, ShopId, JobCardId, Type, Description, Quantity, UnitPrice) — carries its own `ShopId` like every shop-owned row
 - `Reminder` (Id, ShopId, VehicleId, Type, DueDate?, DueMileage?, IsDone)

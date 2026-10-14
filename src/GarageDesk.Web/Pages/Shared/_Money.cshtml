@@ -1,0 +1,4 @@
+@* An amount in EGP, e.g. 1,250.00 EGP. The number stays left-to-right inside Arabic pages. *@
+@model decimal
+@using GarageDesk.Web.Services
+<span class="money"><span class="ltr">@MoneyFormat.Amount(Model)</span> @L["EGP"]</span>

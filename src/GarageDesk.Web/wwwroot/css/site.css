@@ -237,6 +237,42 @@ html[lang="ar"] * {
   border-color: var(--gd-accent-text);
 }
 
+/* Job card status pills. Same neutral palette: grey, accent, green. */
+.status-badge {
+  display: inline-block;
+  vertical-align: middle;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.status-booked {
+  color: var(--bs-secondary-color);
+  background: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-border-color);
+}
+
+.status-inprogress {
+  color: var(--gd-accent-text);
+  background: rgba(var(--gd-accent-rgb), 0.14);
+}
+
+.status-done {
+  color: var(--bs-success-text-emphasis);
+  background: var(--bs-success-bg-subtle);
+}
+
+.status-paid {
+  color: #fff;
+  background: var(--bs-success);
+}
+
+.money {
+  white-space: nowrap;
+}
+
 /* Centred card used by login, register and create-shop */
 .auth-card {
   max-width: 26rem;
