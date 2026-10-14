@@ -350,6 +350,7 @@
   <data name="Choose Save as PDF as the printer to get a PDF." xml:space="preserve"><value>اختر «حفظ كملف PDF» كطابعة للحصول على ملف PDF.</value></data>
   <data name="No lines on this job card." xml:space="preserve"><value>لا توجد بنود في أمر الشغل هذا.</value></data>
   <data name="Thank you for your business." xml:space="preserve"><value>شكرًا لتعاملكم معنا.</value></data>
+  <data name="Draft" xml:space="preserve"><value>مسودة</value></data>
 
   <!-- Shop settings and logo -->
   <data name="Shop settings" xml:space="preserve"><value>إعدادات الورشة</value></data>

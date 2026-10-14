@@ -40,6 +40,8 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
 
     public DbSet<Reminder> Reminders => Set<Reminder>();
 
+    public DbSet<NumberSequence> NumberSequences => Set<NumberSequence>();
+
     // Read by the query filters below. EF evaluates it per context instance, i.e. per request.
     private int? CurrentShopId => _currentShop.ShopId;
 
@@ -98,6 +100,8 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             job.HasOne(j => j.Vehicle).WithMany().HasForeignKey(j => j.VehicleId).OnDelete(DeleteBehavior.Restrict);
             job.HasOne<Shop>().WithMany().HasForeignKey(j => j.ShopId).OnDelete(DeleteBehavior.Restrict);
             // The totals are worked out from the lines, never stored.
+            job.HasIndex(j => new { j.ShopId, j.InvoiceNumber }).IsUnique();
+            job.Ignore(j => j.InvoiceLabel);
             job.Ignore(j => j.PartsTotal).Ignore(j => j.LaborTotal).Ignore(j => j.Total).Ignore(j => j.IsLocked);
         });
 
@@ -118,6 +122,13 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             reminder.HasIndex(r => new { r.ShopId, r.IsDone, r.DueDate });
             reminder.HasOne(r => r.Vehicle).WithMany().HasForeignKey(r => r.VehicleId).OnDelete(DeleteBehavior.Restrict);
             reminder.HasOne<Shop>().WithMany().HasForeignKey(r => r.ShopId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<NumberSequence>(sequence =>
+        {
+            sequence.Property(s => s.Kind).HasMaxLength(30);
+            sequence.HasIndex(s => new { s.ShopId, s.Kind }).IsUnique();
+            sequence.HasOne<Shop>().WithMany().HasForeignKey(s => s.ShopId).OnDelete(DeleteBehavior.Restrict);
         });
 
         // THE PATTERN: every entity that implements IShopOwned gets the same filter automatically.

@@ -134,6 +134,9 @@ namespace GarageDesk.Web.Data.Migrations
                     b.Property<DateOnly>("DateIn")
                         .HasColumnType("date");
 
+                    b.Property<int?>("InvoiceNumber")
+                        .HasColumnType("integer");
+
                     b.Property<int>("MileageAtVisit")
                         .HasColumnType("integer");
 
@@ -155,6 +158,9 @@ namespace GarageDesk.Web.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("VehicleId");
+
+                    b.HasIndex("ShopId", "InvoiceNumber")
+                        .IsUnique();
 
                     b.HasIndex("ShopId", "Status");
 
@@ -202,6 +208,33 @@ namespace GarageDesk.Web.Data.Migrations
                     b.HasIndex("ShopId");
 
                     b.ToTable("JobLines");
+                });
+
+            modelBuilder.Entity("GarageDesk.Web.Models.NumberSequence", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<int>("LastValue")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShopId", "Kind")
+                        .IsUnique();
+
+                    b.ToTable("NumberSequences");
                 });
 
             modelBuilder.Entity("GarageDesk.Web.Models.Reminder", b =>
@@ -544,6 +577,15 @@ namespace GarageDesk.Web.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("JobCard");
+                });
+
+            modelBuilder.Entity("GarageDesk.Web.Models.NumberSequence", b =>
+                {
+                    b.HasOne("GarageDesk.Web.Models.Shop", null)
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("GarageDesk.Web.Models.Reminder", b =>

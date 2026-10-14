@@ -15,7 +15,7 @@
 <div class="page-head">
     <div>
         <h1 class="h2 fw-bold mb-1">
-            @L["Job card"] <span class="ltr num">#@job.Id</span>
+            @L["Job card"] <span class="ltr num">#@job.Id</span>@if (job.InvoiceLabel is not null) { <span class="chip chip-info ltr num">@job.InvoiceLabel</span> }
             <partial name="_StatusBadge" model="job.Status" />
         </h1>
         <p class="page-sub">

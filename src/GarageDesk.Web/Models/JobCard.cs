@@ -1,3 +1,5 @@
+using GarageDesk.Web.Services;
+
 namespace GarageDesk.Web.Models;
 
 /// <summary>Where a job card is in its life. The order is the normal flow: Booked, then In progress, then Done, then Paid.</summary>
@@ -25,6 +27,12 @@ public class JobCard : IShopOwned
     public int MileageAtVisit { get; set; }
 
     public JobStatus Status { get; set; } = JobStatus.Booked;
+
+    /// <summary>Per-shop invoice number (1, 2, ...), given once when the job first reaches Done or Paid. Null until then, never changes.</summary>
+    public int? InvoiceNumber { get; set; }
+
+    /// <summary>"INV-0001", or null while the job card has not been issued yet.</summary>
+    public string? InvoiceLabel => InvoiceNumber is { } n ? DocumentNumbers.Format(DocumentNumbers.InvoicePrefix, n) : null;
 
     public string? Notes { get; set; }
 

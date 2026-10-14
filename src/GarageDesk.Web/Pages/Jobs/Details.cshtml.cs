@@ -104,7 +104,19 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
         }
 
         job.Status = to;
-        await db.SaveChangesAsync();
+
+        // The invoice number is given once, the first time the job card is issued (Done or Paid), and never changes.
+        if (job.InvoiceNumber is null && to is JobStatus.Done or JobStatus.Paid)
+        {
+            await using var tx = await db.Database.BeginTransactionAsync();
+            job.InvoiceNumber = await DocumentNumbers.NextAsync(db, job.ShopId, DocumentNumbers.Invoice);
+            await db.SaveChangesAsync();
+            await tx.CommitAsync();
+        }
+        else
+        {
+            await db.SaveChangesAsync();
+        }
 
         StatusMessage = localizer["Status updated."];
         OfferReminder = to == JobStatus.Done;

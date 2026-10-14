@@ -86,7 +86,7 @@ else
                 @foreach (var job in Model.Jobs)
                 {
                     <tr>
-                        <td><a class="identity-name" asp-page="Details" asp-route-id="@job.Id"><span class="ltr num">#@job.Id</span></a></td>
+                        <td><a class="identity-name" asp-page="Details" asp-route-id="@job.Id"><span class="ltr num">#@job.Id</span></a>@if (job.InvoiceLabel is not null) { <div class="small text-secondary ltr num">@job.InvoiceLabel</div> }</td>
                         <td><span class="ltr num">@job.DateIn.ToString("yyyy-MM-dd")</span></td>
                         <td>
                             <span class="plate" dir="auto">@job.Vehicle?.Plate</span>
