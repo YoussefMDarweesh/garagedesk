@@ -142,6 +142,7 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
         if (job.Status == JobStatus.Done && amount == balanceBefore)
         {
             job.Status = JobStatus.Paid;
+            job.StatusChangedAtUtc = DateTime.UtcNow;
         }
 
         await db.SaveChangesAsync();
@@ -202,7 +203,9 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
         }
 
         // A job that is done and already fully paid (deposits) is simply paid.
+        var requested = to;
         job.Status = to == JobStatus.Done && job.Total > 0 && job.Balance <= 0 ? JobStatus.Paid : to;
+        job.StatusChangedAtUtc = DateTime.UtcNow;
         to = job.Status;
 
         // The invoice number is given once, the first time the job card is issued (Done or Paid), and never changes.

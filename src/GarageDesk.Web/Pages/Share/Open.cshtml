@@ -1,0 +1,209 @@
+@page "/s/{token}"
+@using GarageDesk.Web.Models
+@using GarageDesk.Web.Services
+@model OpenModel
+@{
+    Layout = "_ShareLayout";
+    var v = Model.Content;
+    var isEstimate = v.Kind == ShareLinkKind.Estimate;
+    var isStatus = v.Kind == ShareLinkKind.Status;
+    var logoUrl = $"{Model.Request.PathBase}{Model.Request.Path}?handler=logo";
+    var phoneHref = "tel:" + new string(v.ShopPhone.Where(c => char.IsAsciiDigit(c) || c == '+').ToArray());
+    ViewData["Accent"] = v.ShopAccent;
+    ViewData["ShopName"] = v.ShopName;
+    ViewData["Title"] = isStatus
+        ? $"{L["Your car"]} {v.Plate}"
+        : $"{(isEstimate ? L["Estimate"] : L["Invoice"])} {v.Label ?? L["Draft"].Value}";
+}
+
+@if (isStatus)
+{
+    var steps = new[] { JobStatus.Booked, JobStatus.InProgress, JobStatus.Done, JobStatus.Paid };
+    var current = v.Status ?? JobStatus.Booked;
+    <article class="share-card" aria-labelledby="share-title" data-share-kind="status">
+        <header class="share-brand">
+            @if (v.HasLogo)
+            {
+                <img class="share-logo" src="@logoUrl" alt="@v.ShopName" />
+            }
+            <div>
+                <p class="share-shop" dir="auto">@v.ShopName</p>
+                <p class="share-shop-sub"><span class="ltr">@v.ShopPhone</span></p>
+            </div>
+        </header>
+
+        <h1 id="share-title" class="share-title">@L["Your car"]</h1>
+        <p class="share-vehicle">
+            <span class="plate" dir="auto">@v.Plate</span>
+            <span dir="auto">@v.VehicleTitle</span>
+        </p>
+
+        <ol class="stepper share-stepper" aria-label="@L["Status"]">
+            @foreach (var step in steps)
+            {
+                var state = step == current ? "current" : step < current ? "done" : "";
+                <li class="@state" aria-current="@(step == current ? "step" : null)">
+                    <span class="step-dot">@if (step < current) { <partial name="_Icon" model='"check"' /> }</span>
+                    <span class="step-label">
+                        @(step switch
+                        {
+                            JobStatus.Booked => L["Booked"],
+                            JobStatus.InProgress => L["In progress"],
+                            JobStatus.Done => L["Ready"],
+                            _ => L["Paid"],
+                        })
+                    </span>
+                </li>
+            }
+        </ol>
+
+        <dl class="share-facts">
+            <dt>@L["Last updated"]</dt>
+            <dd><span class="ltr">@v.LastUpdated?.ToString("yyyy-MM-dd")</span></dd>
+            @if (v.Balance > 0)
+            {
+                <dt>@L["Balance due"]</dt>
+                <dd data-share-balance class="share-balance"><partial name="_Money" model="v.Balance" /></dd>
+            }
+        </dl>
+
+        <div class="share-actions">
+            <a class="btn btn-primary" href="@phoneHref">@L["Call the shop"]</a>
+        </div>
+    </article>
+}
+else
+{
+    <div class="share-actions share-actions-top">
+        <button type="button" class="btn btn-primary" data-print><partial name="_Icon" model='"file-text"' />@L["Print / Save as PDF"]</button>
+        <a class="btn btn-outline-secondary" href="@phoneHref">@L["Call the shop"]</a>
+    </div>
+
+    <article class="invoice" aria-labelledby="doc-title" data-share-kind="@(isEstimate ? "estimate" : "invoice")">
+        <header class="inv-head">
+            <div class="inv-brand">
+                @if (v.HasLogo)
+                {
+                    <img class="inv-logo" src="@logoUrl" alt="@v.ShopName" />
+                }
+                else
+                {
+                    <p class="inv-wordmark" dir="auto">@v.ShopName</p>
+                }
+                <p class="inv-shop">
+                    @if (v.HasLogo)
+                    {
+                        <strong dir="auto">@v.ShopName</strong><br />
+                    }
+                    <span dir="auto">@v.ShopAddress</span><br />
+                    <span class="ltr">@v.ShopPhone</span>
+                </p>
+            </div>
+
+            <div class="inv-meta">
+                <h1 id="doc-title" class="inv-title">@(isEstimate ? L["Estimate"] : L["Invoice"])</h1>
+                <dl class="inv-facts">
+                    <dt>@(isEstimate ? L["Estimate no."] : L["Invoice no."])</dt>
+                    <dd><span class="ltr">@(v.Label ?? L["Draft"].Value)</span></dd>
+                    <dt>@L["Date"]</dt>
+                    <dd><span class="ltr">@v.Date.ToString("yyyy-MM-dd")</span></dd>
+                    @if (isEstimate)
+                    {
+                        <dt>@L["Valid until"]</dt>
+                        <dd><span class="ltr">@(v.ValidUntil?.ToString("yyyy-MM-dd") ?? "-")</span></dd>
+                    }
+                </dl>
+                @if (!isEstimate)
+                {
+                    <span class="inv-status @(v.PaymentState == PaymentState.Paid ? "is-paid" : "is-unpaid")">@(v.PaymentState switch { PaymentState.Paid => L["Paid"], PaymentState.Partial => L["Partly paid"], _ => L["Unpaid"] })</span>
+                }
+            </div>
+        </header>
+
+        <section class="inv-parties">
+            <div>
+                <h2 class="inv-label">@(isEstimate ? L["Prepared for"] : L["Bill to"])</h2>
+                <p class="inv-strong" dir="auto">@v.CustomerName</p>
+            </div>
+            <div>
+                <h2 class="inv-label">@L["Vehicle"]</h2>
+                <p class="inv-strong">@v.VehicleTitle <span class="ltr">@v.VehicleYear</span></p>
+                <p class="mb-0">@L["Plate number"]: <span class="inv-plate" dir="auto">@v.Plate</span></p>
+            </div>
+        </section>
+
+        <div class="inv-table-wrap">
+        <table class="inv-table">
+            <thead>
+                <tr>
+                    <th scope="col" class="inv-num">#</th>
+                    <th scope="col">@L["Description"]</th>
+                    <th scope="col">@L["Type"]</th>
+                    <th scope="col" class="inv-end">@L["Quantity"]</th>
+                    <th scope="col" class="inv-end">@L["Unit price"] (@L["EGP"])</th>
+                    <th scope="col" class="inv-end">@L["Total"] (@L["EGP"])</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (v.Lines.Count == 0)
+                {
+                    <tr><td colspan="6" class="inv-empty">@(isEstimate ? L["No lines on this estimate yet."] : L["No lines on this job card."])</td></tr>
+                }
+                @for (var i = 0; i < v.Lines.Count; i++)
+                {
+                    var line = v.Lines[i];
+                    <tr>
+                        <td class="inv-num"><span class="ltr">@(i + 1)</span></td>
+                        <td dir="auto">@line.Description</td>
+                        <td>@(line.Type == JobLineType.Part ? L["Part"] : L["Labor"])</td>
+                        <td class="inv-end"><span class="ltr">@line.Quantity.ToString("0.##")</span></td>
+                        <td class="inv-end"><span class="ltr">@MoneyFormat.Amount(line.UnitPrice)</span></td>
+                        <td class="inv-end inv-strong"><span class="ltr">@MoneyFormat.Amount(line.LineTotal)</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        </div>
+
+        <section class="inv-totals" aria-label="@L["Total"]">
+            <dl>
+                @if (!isEstimate)
+                {
+                    <dt>@L["Parts"]</dt>
+                    <dd><partial name="_Money" model="v.Parts" /></dd>
+                    <dt>@L["Labor"]</dt>
+                    <dd><partial name="_Money" model="v.Labor" /></dd>
+                }
+                @if (v.Discount > 0 || v.Vat > 0)
+                {
+                    <dt>@L["Subtotal"]</dt>
+                    <dd><partial name="_Money" model="v.Subtotal" /></dd>
+                }
+                @if (v.Discount > 0)
+                {
+                    <dt>@L["Discount"]@(v.DiscountPercent is > 0 ? $" ({v.DiscountPercent:0.##}%)" : "")</dt>
+                    <dd>&minus; <partial name="_Money" model="v.Discount" /></dd>
+                }
+                @if (v.Vat > 0)
+                {
+                    <dt>@L["VAT"] (<span class="ltr">@v.VatPercent?.ToString("0.##")%</span>)</dt>
+                    <dd><partial name="_Money" model="v.Vat" /></dd>
+                }
+                <dt class="inv-grand">@L["Total"]</dt>
+                <dd class="inv-grand" data-share-total><partial name="_Money" model="v.Total" /></dd>
+                @if (!isEstimate)
+                {
+                    <dt>@L["Received"]</dt>
+                    <dd><partial name="_Money" model="v.Received" /></dd>
+                    <dt class="inv-grand">@L["Balance due"]</dt>
+                    <dd class="inv-grand" data-share-balance><partial name="_Money" model="v.Balance" /></dd>
+                }
+            </dl>
+        </section>
+
+        <footer class="inv-foot">
+            <p class="mb-0">@(isEstimate ? L["This estimate is not an invoice. Prices are valid until the date shown."] : L["Thank you for your business."])</p>
+            <p class="mb-0 inv-muted">@v.ShopName &middot; <span class="ltr">@v.ShopPhone</span></p>
+        </footer>
+    </article>
+}

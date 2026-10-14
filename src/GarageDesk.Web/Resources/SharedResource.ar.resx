@@ -445,4 +445,14 @@
   <data name="We couldn't complete your request. Please try again, and if it keeps happening let us know." xml:space="preserve"><value>تعذّر إكمال طلبك. يُرجى المحاولة مرة أخرى، وإن تكرّر الأمر فأخبرنا.</value></data>
   <data name="Request ID" xml:space="preserve"><value>معرّف الطلب</value></data>
   <data name="Back to home" xml:space="preserve"><value>العودة إلى الرئيسية</value></data>
+
+  <!-- v1-2-share-links: public share pages and WhatsApp messages -->
+  <data name="Your car" xml:space="preserve"><value>سيارتك</value></data>
+  <data name="Ready" xml:space="preserve"><value>جاهزة</value></data>
+  <data name="Last updated" xml:space="preserve"><value>آخر تحديث</value></data>
+  <data name="Call the shop" xml:space="preserve"><value>اتصل بالورشة</value></data>
+  <data name="Hi {name}, here is your invoice from {shop} for your car {plate}: {link}" xml:space="preserve"><value>مرحبًا {name}، هذه فاتورتك من {shop} لسيارتك {plate}: {link}</value></data>
+  <data name="Hi {name}, here is your estimate from {shop} for your car {plate}: {link}" xml:space="preserve"><value>مرحبًا {name}، هذا عرض السعر من {shop} لسيارتك {plate}: {link}</value></data>
+  <data name="Hi {name}, your car {plate} is ready. Details: {link}" xml:space="preserve"><value>مرحبًا {name}، سيارتك {plate} جاهزة. التفاصيل: {link}</value></data>
+  <data name="Hi {name}, you can follow the status of your car {plate} here: {link}" xml:space="preserve"><value>مرحبًا {name}، تابع حالة سيارتك {plate} من هنا: {link}</value></data>
 </root>

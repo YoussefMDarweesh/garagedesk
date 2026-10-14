@@ -54,6 +54,9 @@ builder.Services.AddOptions<MvcOptions>()
         messages.SetValueIsInvalidAccessor(value => localizer["The value '{0}' is invalid.", value].Value);
     });
 
+// v1.2: secret public share links (/s/{token}), their rate limit and the owner-side link service.
+builder.Services.AddShareLinks(builder.Configuration);
+
 builder.Services.AddRazorPages()
     .AddRazorPagesOptions(options =>
     {
@@ -101,6 +104,8 @@ app.UseRequestLocalization(options =>
 });
 
 app.UseRouting();
+
+app.UseShareLinkProtections();
 
 app.UseAuthorization();
 

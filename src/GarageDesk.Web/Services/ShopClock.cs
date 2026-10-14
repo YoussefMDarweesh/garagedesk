@@ -8,6 +8,10 @@ public static class ShopClock
     public static DateOnly Today() =>
         DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, Cairo));
 
+    /// <summary>The shop-local calendar date of a UTC moment.</summary>
+    public static DateOnly ToLocalDate(DateTime utc) =>
+        DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(utc, DateTimeKind.Utc), Cairo));
+
     private static TimeZoneInfo FindCairo()
     {
         foreach (var id in new[] { "Africa/Cairo", "Egypt Standard Time" })

@@ -2759,3 +2759,172 @@ html[lang="ar"] .inv-table th {
     text-decoration: none;
   }
 }
+
+/* ===== v1.2 share links (branch v1-2-share-links): the customer's public pages (/s/{token}) and the owner's link manager ===== */
+
+.share-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 0.8rem clamp(1rem, 4vw, 2.5rem);
+}
+
+.share-bar-title {
+  font-weight: 800;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.share-main {
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: 230mm;
+  margin-inline: auto;
+  padding: 0.5rem clamp(0.75rem, 4vw, 2.5rem) 2.5rem;
+}
+
+.share-footer {
+  padding: 1rem clamp(1rem, 4vw, 2.5rem);
+  color: var(--text-3);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-block-start: var(--s-4);
+}
+
+.share-actions-top {
+  max-width: 210mm;
+  margin-inline: auto;
+  margin-block: 0 var(--s-4);
+}
+
+.share-card {
+  max-width: 34rem;
+  margin-inline: auto;
+  padding: clamp(1.1rem, 4vw, 2rem);
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-2);
+}
+
+.share-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding-block-end: var(--s-4);
+  margin-block-end: var(--s-4);
+  border-block-end: 1px solid var(--line);
+}
+
+.share-logo {
+  width: 3.25rem;
+  height: 3.25rem;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.share-shop {
+  margin: 0;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+.share-shop-sub {
+  margin: 0;
+  color: var(--text-3);
+  font-size: 0.9rem;
+}
+
+.share-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem;
+}
+
+.share-vehicle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 var(--s-5);
+  font-weight: 600;
+}
+
+.share-stepper {
+  margin-block: var(--s-4);
+}
+
+.share-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.4rem 1rem;
+  margin: var(--s-5) 0 0;
+  padding-block-start: var(--s-4);
+  border-block-start: 1px solid var(--line);
+}
+
+.share-facts dt {
+  color: var(--text-3);
+  font-weight: 600;
+}
+
+.share-facts dd {
+  margin: 0;
+  text-align: end;
+  font-weight: 700;
+}
+
+.share-balance {
+  font-size: 1.15rem;
+}
+
+@media (max-width: 600px) {
+  .share-main .invoice {
+    padding: 1.1rem 1rem 1rem;
+  }
+}
+
+.share-link-row {
+  display: grid;
+  gap: 0.5rem;
+  padding-block: 0.75rem;
+  border-block-end: 1px solid var(--line);
+}
+
+.share-link-row:last-child {
+  border-block-end: 0;
+}
+
+.share-link-url {
+  direction: ltr;
+  text-align: start;
+  font-size: 0.82rem;
+}
+
+.share-link-meta {
+  color: var(--text-3);
+  font-size: 0.8rem;
+}
+
+@media print {
+  .share-bar,
+  .share-footer,
+  .share-actions {
+    display: none !important;
+  }
+
+  .share-main {
+    max-width: none;
+    padding: 0;
+  }
+}
