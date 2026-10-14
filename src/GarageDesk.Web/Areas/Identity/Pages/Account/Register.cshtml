@@ -3,40 +3,40 @@
 @using Microsoft.AspNetCore.Identity.UI.V5.Pages.Account.Internal
 @model RegisterModel
 @{
-    ViewData["Title"] = "Create your account";
+    ViewData["Title"] = L["Create your account"].Value;
 }
 
 <div class="card shadow-sm auth-card">
     <div class="card-body p-4 p-md-5">
-        <p class="eyebrow mb-1">Step 1 of 2</p>
-        <h1 class="h3 fw-bold">Create your account</h1>
-        <p class="text-secondary mb-4">You'll set up your shop next.</p>
+        <p class="eyebrow mb-1">@L["Step {0} of {1}", 1, 2]</p>
+        <h1 class="h3 fw-bold">@L["Create your account"]</h1>
+        <p class="text-secondary mb-4">@L["You'll set up your shop next."]</p>
 
         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" novalidate>
-            <div asp-validation-summary="ModelOnly" role="alert"></div>
+            <partial name="_FormErrors" />
 
             <div class="form-floating mb-3">
                 <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                <label asp-for="Input.Email">Email</label>
+                <label asp-for="Input.Email">@L["Email"]</label>
                 <span asp-validation-for="Input.Email"></span>
             </div>
             <div class="form-floating mb-1">
-                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="Input.Password">Password</label>
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="@L["Password"]" />
+                <label asp-for="Input.Password">@L["Password"]</label>
                 <span asp-validation-for="Input.Password"></span>
             </div>
-            <p class="form-text mb-3">At least 6 characters, with an uppercase letter, a lowercase letter, a number and a symbol.</p>
+            <p class="form-text mb-3">@L["At least 6 characters, with an uppercase letter, a lowercase letter, a number and a symbol."]</p>
             <div class="form-floating mb-4">
-                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="Input.ConfirmPassword">Confirm password</label>
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="@L["Confirm password"]" />
+                <label asp-for="Input.ConfirmPassword">@L["Confirm password"]</label>
                 <span asp-validation-for="Input.ConfirmPassword"></span>
             </div>
 
-            <button id="registerSubmit" type="submit" class="btn btn-primary w-100 py-2">Create account</button>
+            <button id="registerSubmit" type="submit" class="btn btn-primary w-100 py-2">@L["Create account"]</button>
         </form>
 
         <p class="text-center text-secondary mt-4 mb-0">
-            Already have an account? <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Log in</a>
+            @L["Already have an account?"] <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">@L["Log in"]</a>
         </p>
     </div>
 </div>

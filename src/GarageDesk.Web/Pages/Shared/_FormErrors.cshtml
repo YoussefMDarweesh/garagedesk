@@ -1,0 +1,18 @@
+@* Form-level errors (not tied to one field), e.g. "Invalid login attempt." or Identity's password rules.
+   The Identity library adds some of these in English, so they go through the translation table here. *@
+@using Microsoft.AspNetCore.Mvc.ModelBinding
+@{
+    ModelStateEntry? entry = null;
+    ViewData.ModelState.TryGetValue(string.Empty, out entry);
+}
+@if (entry is { Errors.Count: > 0 })
+{
+    <div class="validation-summary-errors" role="alert">
+        <ul>
+            @foreach (var error in entry.Errors)
+            {
+                <li>@L[error.ErrorMessage]</li>
+            }
+        </ul>
+    </div>
+}

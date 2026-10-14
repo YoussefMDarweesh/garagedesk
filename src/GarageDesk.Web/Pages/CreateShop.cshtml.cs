@@ -24,9 +24,11 @@ public class CreateShopModel(
         public string Name { get; set; } = "";
 
         [Required, StringLength(30)]
+        [Display(Name = "Phone")]
         public string Phone { get; set; } = "";
 
         [Required, StringLength(200)]
+        [Display(Name = "Address")]
         public string Address { get; set; } = "";
     }
 

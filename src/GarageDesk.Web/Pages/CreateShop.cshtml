@@ -1,35 +1,35 @@
 @page
 @model CreateShopModel
 @{
-    ViewData["Title"] = "Create your shop";
+    ViewData["Title"] = L["Create your shop"].Value;
 }
 
 <div class="card shadow-sm auth-card">
     <div class="card-body p-4 p-md-5">
-        <p class="eyebrow mb-1">Step 2 of 2</p>
-        <h1 class="h3 fw-bold">Create your shop</h1>
-        <p class="text-secondary mb-4">Last step before you can start. Prices are in EGP.</p>
+        <p class="eyebrow mb-1">@L["Step {0} of {1}", 2, 2]</p>
+        <h1 class="h3 fw-bold">@L["Create your shop"]</h1>
+        <p class="text-secondary mb-4">@L["Last step before you can start. Prices are in EGP."]</p>
 
         <form method="post" novalidate>
-            <div asp-validation-summary="ModelOnly" role="alert"></div>
+            <partial name="_FormErrors" />
 
             <div class="form-floating mb-3">
-                <input asp-for="Input.Name" class="form-control" placeholder="Shop name" autocomplete="organization" />
+                <input asp-for="Input.Name" class="form-control" placeholder="@L["Shop name"]" autocomplete="organization" />
                 <label asp-for="Input.Name"></label>
                 <span asp-validation-for="Input.Name"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Phone" class="form-control" placeholder="Phone" autocomplete="tel" />
+                <input asp-for="Input.Phone" class="form-control" placeholder="@L["Phone"]" autocomplete="tel" />
                 <label asp-for="Input.Phone"></label>
                 <span asp-validation-for="Input.Phone"></span>
             </div>
             <div class="form-floating mb-4">
-                <input asp-for="Input.Address" class="form-control" placeholder="Address" autocomplete="street-address" />
+                <input asp-for="Input.Address" class="form-control" placeholder="@L["Address"]" autocomplete="street-address" />
                 <label asp-for="Input.Address"></label>
                 <span asp-validation-for="Input.Address"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 py-2">Create shop</button>
+            <button type="submit" class="btn btn-primary w-100 py-2">@L["Create shop"]</button>
         </form>
     </div>
 </div>
