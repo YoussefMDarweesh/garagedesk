@@ -1,0 +1,54 @@
+@page "{id:int}"
+@model EditModel
+@{
+    ViewData["Title"] = L["Edit job card"].Value;
+    var vehicle = Model.Job.Vehicle;
+}
+
+<div class="card shadow-sm auth-card">
+    <div class="card-body p-4 p-md-5">
+        <h1 class="h3 fw-bold mb-4">@L["Edit job card"] <span class="ltr text-secondary">#@Model.Job.Id</span></h1>
+
+        <form method="post" novalidate>
+            <partial name="_FormErrors" />
+
+            <div class="mb-3 p-3 rounded border">
+                <span class="plate" dir="auto">@vehicle?.Plate</span>
+                <span class="ms-1">@vehicle?.Make @vehicle?.Model</span>
+                <div class="text-secondary small mt-1">@vehicle?.Customer?.Name</div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-sm-6">
+                    <div class="form-floating">
+                        <input asp-for="Input.DateIn" type="date" class="form-control" placeholder="@L["Date in"]" />
+                        <label asp-for="Input.DateIn"></label>
+                    </div>
+                    <span asp-validation-for="Input.DateIn"></span>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-floating">
+                        <input asp-for="Input.MileageAtVisit" type="number" inputmode="numeric" class="form-control" placeholder="@L["Mileage at visit (km)"]" />
+                        <label asp-for="Input.MileageAtVisit"></label>
+                    </div>
+                    <span asp-validation-for="Input.MileageAtVisit"></span>
+                </div>
+            </div>
+
+            <div class="form-floating mb-4">
+                <textarea asp-for="Input.Notes" class="form-control" placeholder="@L["Notes"]" style="height: 7rem"></textarea>
+                <label asp-for="Input.Notes"></label>
+                <span asp-validation-for="Input.Notes"></span>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">@L["Save"]</button>
+                <a class="btn btn-outline-secondary" asp-page="Details" asp-route-id="@Model.Job.Id">@L["Cancel"]</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

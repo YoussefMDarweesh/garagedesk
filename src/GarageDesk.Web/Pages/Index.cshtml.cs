@@ -1,4 +1,5 @@
 using GarageDesk.Web.Data;
+using GarageDesk.Web.Models;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +13,11 @@ public class IndexModel(ApplicationDbContext db) : PageModel
 
     public int VehicleCount { get; private set; }
 
+    public int JobCount { get; private set; }
+
+    /// <summary>Job cards that are not paid yet.</summary>
+    public int OpenJobCount { get; private set; }
+
     public async Task OnGetAsync()
     {
         if (User.Identity?.IsAuthenticated == true)
@@ -20,6 +26,8 @@ public class IndexModel(ApplicationDbContext db) : PageModel
             ShopName = await db.Shops.Select(s => s.Name).FirstOrDefaultAsync();
             CustomerCount = await db.Customers.CountAsync();
             VehicleCount = await db.Vehicles.CountAsync();
+            JobCount = await db.JobCards.CountAsync();
+            OpenJobCount = await db.JobCards.CountAsync(j => j.Status != JobStatus.Paid);
         }
     }
 }
