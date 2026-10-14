@@ -239,6 +239,51 @@ namespace GarageDesk.Web.Data.Migrations
                     b.ToTable("EstimateLines");
                 });
 
+            modelBuilder.Entity("GarageDesk.Web.Models.JobAuditEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Detail")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("JobCardId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobCardId");
+
+                    b.HasIndex("ShopId", "JobCardId", "AtUtc");
+
+                    b.ToTable("JobAuditEntries");
+                });
+
             modelBuilder.Entity("GarageDesk.Web.Models.JobCard", b =>
                 {
                     b.Property<int>("Id")
@@ -890,6 +935,23 @@ namespace GarageDesk.Web.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Estimate");
+                });
+
+            modelBuilder.Entity("GarageDesk.Web.Models.JobAuditEntry", b =>
+                {
+                    b.HasOne("GarageDesk.Web.Models.JobCard", "JobCard")
+                        .WithMany()
+                        .HasForeignKey("JobCardId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GarageDesk.Web.Models.Shop", null)
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("JobCard");
                 });
 
             modelBuilder.Entity("GarageDesk.Web.Models.JobCard", b =>

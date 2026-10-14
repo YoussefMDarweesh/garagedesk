@@ -90,7 +90,7 @@ public class JobModel(ApplicationDbContext db, ICurrentStaff currentStaff, IStri
             return Fail(id, "That status change is not allowed.");
         }
 
-        await JobWorkflow.ChangeStatusAsync(db, job, to);
+        await JobWorkflow.ChangeStatusAsync(db, job, to, await currentStaff.GetAsync());
         StatusMessage = localizer["Status updated."];
         return RedirectToPage(new { id });
     }

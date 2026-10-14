@@ -11,7 +11,7 @@ using Microsoft.Extensions.Localization;
 namespace GarageDesk.Web.Pages.Jobs;
 
 [Authorize(Policy = Policies.Staff)]
-public class EditModel(ApplicationDbContext db, ICurrentShop currentShop, IStringLocalizer<SharedResource> localizer) : PageModel
+public class EditModel(ApplicationDbContext db, ICurrentShop currentShop, ICurrentStaff currentStaff, IStringLocalizer<SharedResource> localizer) : PageModel
 {
     [BindProperty]
     public JobInput Input { get; set; } = new();
@@ -84,6 +84,14 @@ public class EditModel(ApplicationDbContext db, ICurrentShop currentShop, IStrin
         {
             await LoadAssigneesAsync();
             return Page();
+        }
+
+        if (assignee != job.AssignedToUserId)
+        {
+            var person = assignee is null
+                ? null
+                : await db.MembersOf(currentShop.ShopId!.Value).AsNoTracking().FirstAsync(u => u.Id == assignee);
+            JobAudit.Add(db, await currentStaff.GetAsync(), job, JobAuditKind.Assigned, person?.DisplayLabel ?? "");
         }
 
         job.AssignedToUserId = assignee;

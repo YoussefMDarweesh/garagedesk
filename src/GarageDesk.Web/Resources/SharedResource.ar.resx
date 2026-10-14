@@ -558,6 +558,15 @@
   <data name="No commissions this month." xml:space="preserve"><value>لا توجد عمولات هذا الشهر.</value></data>
   <data name="Commission shows here once a paid job card is assigned to someone with a commission percent." xml:space="preserve"><value>تظهر العمولة هنا عندما يُسند أمر شغل مدفوع إلى شخص لديه نسبة عمولة.</value></data>
   <data name="{0} paid job cards this month have no technician, so they earn no commission." xml:space="preserve"><value>{0} من أوامر الشغل المدفوعة هذا الشهر بلا فني، لذلك لا تُحتسب عليها عمولة.</value></data>
+  <data name="History" xml:space="preserve"><value>السجل</value></data>
+  <data name="No history yet." xml:space="preserve"><value>لا يوجد سجل بعد.</value></data>
+  <data name="Job card created" xml:space="preserve"><value>تم إنشاء أمر الشغل</value></data>
+  <data name="Job card created from estimate {0}" xml:space="preserve"><value>تم إنشاء أمر الشغل من عرض السعر {0}</value></data>
+  <data name="Status changed from {0} to {1}" xml:space="preserve"><value>تغيّرت الحالة من {0} إلى {1}</value></data>
+  <data name="Payment of {0} EGP received ({1})" xml:space="preserve"><value>تم استلام دفعة {0} جنيه ({1})</value></data>
+  <data name="Payment of {0} EGP voided" xml:space="preserve"><value>تم إلغاء دفعة {0} جنيه</value></data>
+  <data name="Assigned to {0}" xml:space="preserve"><value>أُسند إلى {0}</value></data>
+  <data name="Unassigned" xml:space="preserve"><value>أُلغي الإسناد</value></data>
   <data name="You cannot deactivate your own account." xml:space="preserve"><value>لا يمكنك تعطيل حسابك بنفسك.</value></data>
   <data name="A shop needs at least one active owner." xml:space="preserve"><value>لا بد أن يبقى للورشة مالك نشط واحد على الأقل.</value></data>
   <data name="That change could not be saved." xml:space="preserve"><value>تعذّر حفظ هذا التغيير.</value></data>

@@ -11,7 +11,7 @@ using Microsoft.Extensions.Localization;
 namespace GarageDesk.Web.Pages.Jobs;
 
 [Authorize(Policy = Policies.Staff)]
-public class CreateModel(ApplicationDbContext db, ICurrentShop currentShop, IStringLocalizer<SharedResource> localizer) : PageModel
+public class CreateModel(ApplicationDbContext db, ICurrentShop currentShop, ICurrentStaff currentStaff, IStringLocalizer<SharedResource> localizer) : PageModel
 {
     [BindProperty]
     public JobInput Input { get; set; } = new();
@@ -98,6 +98,14 @@ public class CreateModel(ApplicationDbContext db, ICurrentShop currentShop, IStr
             VatPercent = await db.Shops.Select(s => s.VatPercent).FirstOrDefaultAsync(),
         };
         db.JobCards.Add(job); // ShopId is filled in by the DbContext
+
+        var actor = await currentStaff.GetAsync();
+        JobAudit.Add(db, actor, job, JobAuditKind.Created);
+        if (assignee is not null)
+        {
+            var person = await db.MembersOf(currentShop.ShopId!.Value).AsNoTracking().FirstAsync(u => u.Id == assignee);
+            JobAudit.Add(db, actor, job, JobAuditKind.Assigned, person.DisplayLabel);
+        }
 
         // The odometer reading at this visit becomes the vehicle's current mileage if it is higher.
         vehicle.RaiseMileageTo(job.MileageAtVisit);

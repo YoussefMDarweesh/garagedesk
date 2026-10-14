@@ -11,7 +11,7 @@ using Microsoft.Extensions.Localization;
 namespace GarageDesk.Web.Pages.Estimates;
 
 [Authorize(Policy = Policies.Staff)]
-public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResource> localizer, ShareLinkService shares) : PageModel
+public class DetailsModel(ApplicationDbContext db, ICurrentStaff currentStaff, IStringLocalizer<SharedResource> localizer, ShareLinkService shares) : PageModel
 {
     public Estimate Estimate { get; private set; } = null!;
 
@@ -191,6 +191,7 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
             UnitPrice = l.UnitPrice,
         }));
         db.JobCards.Add(job);
+        JobAudit.Add(db, await currentStaff.GetAsync(), job, JobAuditKind.Created, estimate.Label);
         await db.SaveChangesAsync();
 
         estimate.Status = EstimateStatus.Accepted;

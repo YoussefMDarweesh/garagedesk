@@ -12,6 +12,10 @@ public static class ShopClock
     public static DateOnly ToLocalDate(DateTime utc) =>
         DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(utc, DateTimeKind.Utc), Cairo));
 
+    /// <summary>A stored UTC moment as the shop's wall clock shows it.</summary>
+    public static DateTime ToShopTime(DateTime utc) =>
+        TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(utc, DateTimeKind.Utc), Cairo);
+
     private static TimeZoneInfo FindCairo()
     {
         foreach (var id in new[] { "Africa/Cairo", "Egypt Standard Time" })

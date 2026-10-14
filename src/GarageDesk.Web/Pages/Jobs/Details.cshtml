@@ -364,6 +364,11 @@
                 }
             </dl>
         </section>
+
+        @if (Model.CanSeeHistory)
+        {
+            <partial name="_JobHistory" model="Model.History" />
+        }
     </div>
 </div>
 

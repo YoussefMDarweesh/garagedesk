@@ -10,8 +10,13 @@ using Microsoft.Extensions.Localization;
 namespace GarageDesk.Web.Pages.Jobs;
 
 [Authorize(Policy = Policies.Staff)]
-public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResource> localizer, ShareLinkService shares) : PageModel
+public class DetailsModel(ApplicationDbContext db, ICurrentStaff currentStaff, IStringLocalizer<SharedResource> localizer, ShareLinkService shares) : PageModel
 {
+    /// <summary>The job card's history, newest first. Loaded for owners only.</summary>
+    public List<JobAuditEntry> History { get; private set; } = [];
+
+    public bool CanSeeHistory { get; private set; }
+
     public JobCard Job { get; private set; } = null!;
 
     [BindProperty]
@@ -138,6 +143,7 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
         }
 
         var balanceBefore = job.Balance;
+        var actor = await currentStaff.GetAsync();
         db.Payments.Add(new Payment
         {
             JobCardId = job.Id,
@@ -146,10 +152,12 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
             PaidOn = ShopClock.Today(),
             Note = string.IsNullOrWhiteSpace(NewPayment.Note) ? null : NewPayment.Note.Trim(),
         });
+        JobAudit.Add(db, actor, job, JobAuditKind.PaymentAdded, JobAudit.PaymentDetail(amount, NewPayment.Method));
 
         // Once a finished job is fully paid it becomes Paid, and Paid is final.
         if (job.Status == JobStatus.Done && amount == balanceBefore)
         {
+            JobAudit.Add(db, actor, job, JobAuditKind.StatusChanged, JobAudit.StatusDetail(job.Status, JobStatus.Paid));
             job.Status = JobStatus.Paid;
             job.StatusChangedAtUtc = DateTime.UtcNow;
         }
@@ -180,6 +188,7 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
         }
 
         db.Payments.Remove(latest);
+        JobAudit.Add(db, await currentStaff.GetAsync(), job, JobAuditKind.PaymentVoided, JobAudit.PaymentDetail(latest.Amount, latest.Method));
         await db.SaveChangesAsync();
         StatusMessage = localizer["Payment voided."];
         return RedirectToPage(new { id });
@@ -253,7 +262,7 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
         }
 
         var requested = to;
-        to = await JobWorkflow.ChangeStatusAsync(db, job, to);
+        to = await JobWorkflow.ChangeStatusAsync(db, job, to, await currentStaff.GetAsync());
 
         StatusMessage = localizer["Status updated."];
         OfferReminder = to == JobStatus.Done;
@@ -281,6 +290,18 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
         job.Payments = job.Payments.OrderBy(p => p.Id).ToList();
         Job = job;
         Links = new ShareLinksPanel(job.Id, await shares.ListLiveAsync(job.Id, ShareLinkKind.Status, ShareLinkKind.Invoice));
+
+        // The history is for owners only; for anyone else it is not even read.
+        CanSeeHistory = (await currentStaff.GetAsync())?.IsOwner == true;
+        if (CanSeeHistory)
+        {
+            History = await db.JobAuditEntries.AsNoTracking()
+                .Where(a => a.JobCardId == id)
+                .OrderByDescending(a => a.AtUtc).ThenByDescending(a => a.Id)
+                .Take(200)
+                .ToListAsync();
+        }
+
         return true;
     }
 

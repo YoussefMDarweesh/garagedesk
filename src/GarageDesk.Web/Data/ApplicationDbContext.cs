@@ -52,6 +52,8 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
 
     public DbSet<StaffInvite> StaffInvites => Set<StaffInvite>();
 
+    public DbSet<JobAuditEntry> JobAuditEntries => Set<JobAuditEntry>();
+
     // Read by the query filters below. EF evaluates it per context instance, i.e. per request.
     private int? CurrentShopId => _currentShop.ShopId;
 
@@ -219,6 +221,17 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             invite.HasOne<Shop>().WithMany().HasForeignKey(i => i.ShopId).OnDelete(DeleteBehavior.Restrict);
         });
 
+        builder.Entity<JobAuditEntry>(entry =>
+        {
+            entry.Property(a => a.Kind).HasConversion<string>().HasMaxLength(20);
+            entry.Property(a => a.Detail).HasMaxLength(200);
+            entry.Property(a => a.UserId).HasMaxLength(450);
+            entry.Property(a => a.UserName).HasMaxLength(100);
+            entry.HasIndex(a => new { a.ShopId, a.JobCardId, a.AtUtc });
+            entry.HasOne(a => a.JobCard).WithMany().HasForeignKey(a => a.JobCardId).OnDelete(DeleteBehavior.Restrict);
+            entry.HasOne<Shop>().WithMany().HasForeignKey(a => a.ShopId).OnDelete(DeleteBehavior.Restrict);
+        });
+
         // THE PATTERN: every entity that implements IShopOwned gets the same filter automatically.
         // Adding a new shop-owned entity later needs no extra filter code, just ": IShopOwned".
         foreach (var entityType in builder.Model.GetEntityTypes()
@@ -248,6 +261,12 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     /// <summary>New shop-owned rows get the current shop's id; writing into another shop is refused.</summary>
     private void EnforceShopOwnership()
     {
+        // The job card history is append-only: it can be added to, never edited or removed.
+        if (ChangeTracker.Entries<JobAuditEntry>().Any(e => e.State is EntityState.Modified or EntityState.Deleted))
+        {
+            throw new InvalidOperationException("The job card history is append-only.");
+        }
+
         foreach (var entry in ChangeTracker.Entries<IShopOwned>()
                      .Where(e => e.State is EntityState.Added or EntityState.Modified))
         {
