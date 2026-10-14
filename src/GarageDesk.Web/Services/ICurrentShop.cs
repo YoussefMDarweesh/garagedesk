@@ -13,6 +13,9 @@ public class CurrentShop(IHttpContextAccessor httpContextAccessor) : ICurrentSho
 {
     public const string ClaimType = "shop_id";
 
+    /// <summary>The shop's display name, kept in the cookie too so the navbar needs no database call.</summary>
+    public const string NameClaimType = "shop_name";
+
     public int? ShopId =>
         int.TryParse(httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimType), out var id) ? id : null;
 }
