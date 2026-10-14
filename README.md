@@ -34,6 +34,7 @@ All of these come from the seeded demo shop, "Demo Motors" (see [Run it locally]
 - **Service history:** every visit for a car, newest first, with date, mileage, what was done and the total.
 - **Reminders:** by date, by mileage, or both. Overdue and due-soon ones show on the dashboard and in a bell in the top bar, each with a **Send on WhatsApp** button that opens a pre-filled message (no paid API).
 - **Printable invoices:** one clean A4 page per job card, in EGP, in English or Arabic. No PDF library: the browser prints or saves it.
+- **Share links (WhatsApp-first):** send a customer a private link; they open it with no login and see their invoice, estimate or car status. Links are secret, expire, can be revoked and show only the minimum. Threat model: [docs/SECURITY_SHARE_LINKS.md](docs/SECURITY_SHARE_LINKS.md).
 - **English and Arabic (right to left)** and **light and dark** themes.
 - **Shop logo and accent colour** from a settings page, shown in the navigation and on invoices.
 - **Dashboard** with real numbers only: customers, vehicles, open job cards, revenue this month, a monthly activity chart and the latest service history.

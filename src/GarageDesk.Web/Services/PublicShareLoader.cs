@@ -70,6 +70,20 @@ public sealed class PublicShareView
 }
 
 /// <summary>
+/// Chat apps fetch a link to draw its preview (WhatsApp does it the moment the owner or the customer receives it).
+/// That is not the customer reading the page, so it is not counted as a view. A best-effort check on the User-Agent.
+/// </summary>
+public static class LinkPreviewBots
+{
+    private static readonly string[] Markers =
+        ["WhatsApp", "facebookexternalhit", "Facebot", "TelegramBot", "Twitterbot", "Slackbot", "LinkedInBot", "Discordbot", "SkypeUriPreview", "bot/", "crawler", "spider"];
+
+    public static bool IsPreviewBot(string? userAgent) =>
+        !string.IsNullOrEmpty(userAgent)
+        && Markers.Any(m => userAgent.Contains(m, StringComparison.OrdinalIgnoreCase));
+}
+
+/// <summary>
 /// The customer's side of share links. A request has no login and no shop, so this is the ONE place that
 /// reads across the tenant filter, and it does so under strict rules:
 /// the link is found only by the hash of its secret token; its own ShopId is then the only shop that is read; and

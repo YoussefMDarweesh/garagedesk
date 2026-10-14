@@ -302,6 +302,24 @@ public class ShareLinkTests(GarageDeskWebFactory factory) : IClassFixture<Garage
     }
 
     [Fact]
+    public async Task Chat_app_link_previews_are_not_counted_as_views()
+    {
+        var seed = await SeedAsync("PreviewBots");
+        var token = await LinkAsync(seed.ShopId, ShareLinkKind.Status, seed.JobId);
+        var client = Anonymous();
+
+        var preview = new HttpRequestMessage(HttpMethod.Get, $"/s/{token}");
+        preview.Headers.Add("User-Agent", "WhatsApp/2.23.20.0 A");
+        Assert.Equal(HttpStatusCode.OK, (await client.SendAsync(preview)).StatusCode); // it still gets the page
+        var human = new HttpRequestMessage(HttpMethod.Get, $"/s/{token}");
+        human.Headers.Add("User-Agent", "Mozilla/5.0 (Linux; Android 14) Chrome/120 Mobile Safari/537.36");
+        await client.SendAsync(human);
+
+        using var db = factory.CreateContextFor(seed.ShopId);
+        Assert.Equal(1, (await db.ShareLinks.SingleAsync()).ViewCount);
+    }
+
+    [Fact]
     public async Task The_page_follows_the_links_language_and_the_visitors_own_choice_and_is_right_to_left_in_arabic()
     {
         var seed = await SeedAsync("Languages");

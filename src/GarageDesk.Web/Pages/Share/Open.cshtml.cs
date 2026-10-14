@@ -37,7 +37,7 @@ public class OpenModel(PublicShareLoader loader) : PageModel
 
         // The owner previewing their own link while signed in should not inflate the customer's view count.
         var isOwnerPreview = User.FindFirst(CurrentShop.ClaimType)?.Value == link.ShopId.ToString(CultureInfo.InvariantCulture);
-        if (!isOwnerPreview)
+        if (!isOwnerPreview && !LinkPreviewBots.IsPreviewBot(Request.Headers.UserAgent.ToString()))
         {
             await loader.RecordViewAsync(link.Id, ct);
         }

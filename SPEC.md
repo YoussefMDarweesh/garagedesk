@@ -74,6 +74,13 @@ Each shop is a separate tenant. One shop must never see another shop's data.
 - A shop can choose its accent colour from a small preset palette in Shop settings.
 - Design notes: `docs/DESIGN.md`.
 
+### v1.2 — Share links and the customer status page
+- The owner sends a customer a WhatsApp message with a **link** (`/s/{token}`); the customer opens it with no login and sees one invoice, one estimate or the status of one car (Booked, In progress, Ready, Paid, last updated, balance due).
+- Links are secret (256-bit random token, only its SHA-256 hash is used to find the link), expire after 30 days and can be revoked at once. Unknown, expired and revoked links give the same 404. The public path takes no shop or object id. Pages are read-only, minimal, `noindex`, `no-store`, no referrer, and rate limited per visitor address. Details and limits: `docs/SECURITY_SHARE_LINKS.md`.
+- **Send on WhatsApp** buttons on the job card (status, invoice), the invoice and the estimate create or reuse the live link and open `wa.me` with the message; nothing is sent by the server. A link manager on the job card and the estimate lists live links with copy, views, last viewed and revoke.
+- The message wording is editable per shop in Shop settings (English and Arabic, placeholders `{name}`, `{plate}`, `{shop}`, `{link}`); empty means the built-in wording. After a job is marked Done a toast offers "Tell the customer on WhatsApp".
+- The customer's page uses the language the link was sent in, with a language switch, right-to-left in Arabic, dark mode and print.
+
 ## 4. Not in the MVP
 Online payments, inventory/stock, multi-branch, staff roles, mobile app, SMS, email notifications.
 
@@ -100,3 +107,4 @@ Online payments, inventory/stock, multi-branch, staff roles, mobile app, SMS, em
 - `JobCard` (Id, ShopId, VehicleId, DateIn, MileageAtVisit, Status, Notes)
 - `JobLine` (Id, ShopId, JobCardId, Type, Description, Quantity, UnitPrice) — carries its own `ShopId` like every shop-owned row
 - `Reminder` (Id, ShopId, VehicleId, Type, DueDate?, DueMileage?, IsDone)
+- `ShareLink` (Id, ShopId, Kind, TargetId, TokenHash, TokenProtected?, Language, CreatedAtUtc, ExpiresAtUtc, RevokedAtUtc?, LastViewedAtUtc?, ViewCount): a secret public link to one invoice, estimate or car status. `Shop` also has `ShareMessageEn?` / `ShareMessageAr?`, and `JobCard` has `StatusChangedAtUtc?`.
