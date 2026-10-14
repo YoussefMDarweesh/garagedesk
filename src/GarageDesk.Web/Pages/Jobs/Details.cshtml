@@ -36,6 +36,31 @@
     <div class="alert alert-danger" role="alert">@Model.ErrorMessage</div>
 }
 
+@if (Model.OfferReminder && job.Status == JobStatus.Done)
+{
+    // Suggest the next oil change: a few months from now, or a set distance past the vehicle's mileage.
+    var suggestedDate = GarageDesk.Web.Services.ShopClock.Today().AddMonths(Reminder.SuggestedOilChangeMonths);
+    var suggestedKm = Math.Max(job.MileageAtVisit, vehicle?.Mileage ?? 0) + Reminder.SuggestedOilChangeKm;
+    <div class="card border-primary mb-4">
+        <div class="card-body p-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <h2 class="h6 mb-1">@L["Job done. Create the next oil change reminder?"]</h2>
+                <p class="text-secondary small mb-0">
+                    @L["Suggested: {0} or {1} km. You can change both.", suggestedDate.ToString("yyyy-MM-dd"), suggestedKm.ToString("N0")]
+                </p>
+            </div>
+            <div class="d-flex gap-2">
+                <a class="btn btn-primary btn-sm" asp-page="/Reminders/Create"
+                   asp-route-vehicleId="@job.VehicleId"
+                   asp-route-type="@L["Oil change"].Value"
+                   asp-route-dueDate="@suggestedDate.ToString("yyyy-MM-dd")"
+                   asp-route-dueMileage="@suggestedKm">@L["Create reminder"]</a>
+                <a class="btn btn-outline-secondary btn-sm" asp-page="Details" asp-route-id="@job.Id">@L["Not now"]</a>
+            </div>
+        </div>
+    </div>
+}
+
 <div class="row g-4">
     <div class="col-lg-8">
         <div class="card">

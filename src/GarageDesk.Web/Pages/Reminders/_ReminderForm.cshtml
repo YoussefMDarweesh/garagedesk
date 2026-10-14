@@ -1,0 +1,57 @@
+@* The fields shared by the Add and Edit reminder pages. *@
+@model ReminderFormPageModel
+
+<partial name="_FormErrors" />
+
+@if (Model.Vehicle is { } vehicle)
+{
+    <input type="hidden" asp-for="Input.VehicleId" />
+    <div class="mb-3 p-3 rounded border">
+        <span class="plate" dir="auto">@vehicle.Plate</span>
+        <span class="ms-1">@vehicle.Make @vehicle.Model</span>
+        <div class="text-secondary small mt-1">@vehicle.Customer?.Name</div>
+    </div>
+}
+else
+{
+    <div class="mb-3">
+        <label asp-for="Input.VehicleId" class="form-label"></label>
+        <select asp-for="Input.VehicleId" asp-items="Model.VehicleOptions" class="form-select">
+            <option value="0">@L["Choose the vehicle."]</option>
+        </select>
+        <span asp-validation-for="Input.VehicleId"></span>
+    </div>
+}
+
+<div class="form-floating mb-3">
+    <input asp-for="Input.Type" class="form-control" placeholder="@L["What is due"]" list="reminder-types" autocomplete="off" />
+    <label asp-for="Input.Type"></label>
+    <span asp-validation-for="Input.Type"></span>
+</div>
+
+<datalist id="reminder-types">
+    <option value="@L["Oil change"]"></option>
+    <option value="@L["Brake inspection"]"></option>
+    <option value="@L["Tire rotation"]"></option>
+    <option value="@L["Annual inspection"]"></option>
+    <option value="@L["Battery check"]"></option>
+    <option value="@L["Timing belt"]"></option>
+</datalist>
+
+<div class="row g-3 mb-1">
+    <div class="col-sm-6">
+        <div class="form-floating">
+            <input asp-for="Input.DueDate" type="date" class="form-control" placeholder="@L["Due date"]" />
+            <label asp-for="Input.DueDate"></label>
+        </div>
+        <span asp-validation-for="Input.DueDate"></span>
+    </div>
+    <div class="col-sm-6">
+        <div class="form-floating">
+            <input asp-for="Input.DueMileage" type="number" inputmode="numeric" class="form-control" placeholder="@L["Due at mileage (km)"]" />
+            <label asp-for="Input.DueMileage"></label>
+        </div>
+        <span asp-validation-for="Input.DueMileage"></span>
+    </div>
+</div>
+<p class="form-text mb-4">@L["Fill in a date, a mileage, or both. Whichever comes first makes it due."]</p>

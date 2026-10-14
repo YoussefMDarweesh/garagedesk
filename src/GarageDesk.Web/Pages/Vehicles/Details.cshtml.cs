@@ -1,5 +1,6 @@
 using GarageDesk.Web.Data;
 using GarageDesk.Web.Models;
+using GarageDesk.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,13 @@ public class DetailsModel(ApplicationDbContext db) : PageModel
 
     /// <summary>Every job card of this vehicle, newest visit first: its service history.</summary>
     public List<JobCard> History { get; private set; } = [];
+
+    /// <summary>This vehicle's reminders that are still open, most urgent first.</summary>
+    public List<Reminder> OpenReminders { get; private set; } = [];
+
+    public DateOnly Today { get; private set; }
+
+    public string? ShopName => User.FindFirst(CurrentShop.NameClaimType)?.Value;
 
     /// <summary>What all the visits added up to.</summary>
     public decimal HistoryTotal => History.Sum(j => j.Total);
@@ -42,6 +50,21 @@ public class DetailsModel(ApplicationDbContext db) : PageModel
         {
             job.Lines = job.Lines.OrderBy(l => l.Id).ToList();
         }
+
+        Today = ShopClock.Today();
+        var reminders = await db.Reminders
+            .AsNoTracking()
+            .Where(r => r.VehicleId == id && !r.IsDone)
+            .ToListAsync();
+        foreach (var reminder in reminders)
+        {
+            reminder.Vehicle = vehicle; // already loaded with its owner; the row needs both
+        }
+        OpenReminders = reminders
+            .OrderByDescending(r => r.StatusFor(Today, vehicle.Mileage))
+            .ThenBy(r => r.DueDate ?? DateOnly.MaxValue)
+            .ThenBy(r => r.DueMileage ?? int.MaxValue)
+            .ToList();
 
         Vehicle = vehicle;
         return Page();

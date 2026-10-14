@@ -60,6 +60,32 @@
     </div>
 </div>
 
+<section class="mt-5" aria-labelledby="reminders-heading">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h2 id="reminders-heading" class="h4 fw-bold mb-0">@L["Reminders"]</h2>
+        <a class="btn btn-outline-secondary btn-sm" asp-page="/Reminders/Create" asp-route-vehicleId="@vehicle.Id">@L["Add reminder"]</a>
+    </div>
+
+    @if (Model.OpenReminders.Count == 0)
+    {
+        <div class="card"><div class="card-body p-4 text-center text-secondary">
+            <p class="mb-0">@L["No open reminders for this vehicle."]</p>
+        </div></div>
+    }
+    else
+    {
+        var vehicleReturn = Url.Page("/Vehicles/Details", new { id = vehicle.Id });
+        <div class="card">
+            <ul class="list-group list-group-flush">
+                @foreach (var reminder in Model.OpenReminders)
+                {
+                    <partial name="_ReminderRow" model="new GarageDesk.Web.Pages.Reminders.ReminderRowModel(reminder, Model.Today, vehicleReturn!, Model.ShopName, ShowVehicle: false)" />
+                }
+            </ul>
+        </div>
+    }
+</section>
+
 <section class="mt-5" aria-labelledby="history-heading">
     <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-3">
         <h2 id="history-heading" class="h4 fw-bold mb-0">@L["Service history"]</h2>
