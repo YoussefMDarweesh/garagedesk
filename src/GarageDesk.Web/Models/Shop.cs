@@ -18,4 +18,7 @@ public class Shop
 
     /// <summary>One of the Accents presets, or null for the default (orange).</summary>
     public string? AccentColor { get; set; }
+
+    /// <summary>VAT percent added to job cards, or null when the shop does not charge VAT.</summary>
+    public decimal? VatPercent { get; set; }
 }

@@ -54,6 +54,18 @@
         }
     </section>
 
+    <section class="panel panel-pad mt-4" aria-labelledby="vat-heading">
+        <div class="panel-head mb-1"><h2 id="vat-heading" class="panel-title">@L["VAT"]</h2></div>
+        <p class="text-secondary small">@L["Leave empty if your shop does not charge VAT. It is added to job cards when they are issued (Done or Paid)."]</p>
+        <form method="post" asp-page-handler="Vat" class="d-flex gap-2 align-items-end flex-wrap">
+            <div>
+                <label for="vatPercent" class="form-label small text-secondary">@L["VAT percent"]</label>
+                <input id="vatPercent" name="vatPercent" type="number" step="0.01" min="0" max="100" class="form-control" value="@Model.VatPercent?.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" data-vat-input />
+            </div>
+            <button type="submit" class="btn btn-primary">@L["Save"]</button>
+        </form>
+    </section>
+
     <section class="panel panel-pad" aria-labelledby="accent-heading">
         <div class="panel-head mb-1"><h2 id="accent-heading" class="panel-title">@L["Accent colour"]</h2></div>
         <p class="text-secondary">@L["Pick the colour used for buttons, highlights and the car on your vehicle pages."]</p>

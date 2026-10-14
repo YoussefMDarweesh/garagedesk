@@ -214,3 +214,27 @@ public class DemoDataTests
         Assert.Contains("Oil change", home);
     }
 }
+
+public class DemoMoneyTests
+{
+    [Fact]
+    public async Task Demo_shop_has_invoice_numbers_payments_an_estimate_and_a_balance()
+    {
+        using var factory = new GarageDeskWebFactory();
+        var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?> { ["Demo:Email"] = "demo@example.com", ["Demo:Password"] = "Demo-Pass-1" }).Build();
+        Assert.Equal(0, await Web.Services.DemoDataCommand.RunAsync(factory.Services, configuration, new StringWriter()));
+        using var scope = factory.Services.CreateScope();
+        var owner = (await scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>().FindByEmailAsync("demo@example.com"))!;
+
+        using var db = factory.CreateContextFor(owner.ShopId!.Value);
+        var jobs = await db.JobCards.Include(j => j.Lines).Include(j => j.Payments).ToListAsync();
+        var issued = jobs.Where(j => j.Status is JobStatus.Done or JobStatus.Paid).ToList();
+        Assert.Equal(Enumerable.Range(1, issued.Count), issued.Select(j => j.InvoiceNumber!.Value).Order());
+        Assert.Equal(issued.Count, (await db.NumberSequences.SingleAsync(s => s.Kind == "Invoice")).LastValue);
+        Assert.All(jobs.Where(j => j.Status == JobStatus.Paid), j => Assert.Equal(j.Total, j.PaidTotal));
+        Assert.Contains(jobs, j => j.Status == JobStatus.Done && j.Balance > 0 && j.PaidTotal > 0);
+        Assert.Equal("EST-0001", (await db.Estimates.SingleAsync()).Label);
+        Assert.True((await Web.Services.OutstandingBalances.LoadAsync(db)).Count > 0);
+    }
+}

@@ -16,6 +16,14 @@ public class JobInput
     [Display(Name = "Mileage at visit (km)")]
     public int MileageAtVisit { get; set; }
 
+    [Range(0, 10_000_000)]
+    [Display(Name = "Discount (EGP)")]
+    public decimal? DiscountAmount { get; set; }
+
+    [Range(0, 100)]
+    [Display(Name = "Discount (%)")]
+    public decimal? DiscountPercent { get; set; }
+
     [StringLength(2000)]
     [Display(Name = "Notes")]
     public string? Notes { get; set; }

@@ -34,7 +34,9 @@
             new("/Customers/Index", "/Customers", L["Customers"].Value, "users"),
             new("/Vehicles/Index", "/Vehicles", L["Vehicles"].Value, "car"),
             new("/Jobs/Index", "/Jobs", L["Job cards"].Value, "clipboard"),
+            new("/Estimates/Index", "/Estimates", L["Estimates"].Value, "file-text"),
             new("/Reminders/Index", "/Reminders", L["Reminders"].Value, "bell", dueCount),
+            new("/Receivables/Index", "/Receivables", L["Who owes me"].Value, "coins"),
             new("/ShopSettings", "/ShopSettings", L["Shop settings"].Value, "sliders"),
         };
         var section = items.FirstOrDefault(i => currentPage.StartsWith(i.Prefix, StringComparison.Ordinal))?.Label

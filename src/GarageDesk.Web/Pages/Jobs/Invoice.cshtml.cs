@@ -29,6 +29,7 @@ public class InvoiceModel(ApplicationDbContext db) : PageModel
             .AsNoTracking()
             .Include(j => j.Vehicle).ThenInclude(v => v!.Customer)
             .Include(j => j.Lines)
+            .Include(j => j.Payments)
             .FirstOrDefaultAsync(j => j.Id == id);
 
         if (job is null)

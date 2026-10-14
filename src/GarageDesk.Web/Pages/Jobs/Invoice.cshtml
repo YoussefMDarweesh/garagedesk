@@ -7,7 +7,7 @@
     var shop = Model.Shop;
     var vehicle = job.Vehicle;
     var customer = vehicle?.Customer;
-    ViewData["Title"] = $"{L["Invoice"]} #{job.Id}";
+    ViewData["Title"] = $"{L["Invoice"]} {job.InvoiceLabel ?? "#" + job.Id}";
 }
 
 @* On screen: a toolbar and the invoice as a sheet of A4 paper. On paper: only the invoice (see the print rules in site.css). *@
@@ -44,11 +44,11 @@
             <h1 id="invoice-title" class="inv-title">@L["Invoice"]</h1>
             <dl class="inv-facts">
                 <dt>@L["Invoice no."]</dt>
-                <dd><span class="ltr">#@job.Id</span></dd>
+                <dd><span class="ltr">@(job.InvoiceLabel ?? L["Draft"].Value)</span></dd>
                 <dt>@L["Date"]</dt>
                 <dd><span class="ltr">@job.DateIn.ToString("yyyy-MM-dd")</span></dd>
             </dl>
-            <span class="inv-status @(Model.IsPaid ? "is-paid" : "is-unpaid")">@(Model.IsPaid ? L["Paid"] : L["Unpaid"])</span>
+            <span class="inv-status @(job.PaymentState == PaymentState.Paid ? "is-paid" : "is-unpaid")">@(job.PaymentState switch { PaymentState.Paid => L["Paid"], PaymentState.Partial => L["Partly paid"], _ => L["Unpaid"] })</span>
         </div>
     </header>
 
@@ -107,8 +107,27 @@
             <dd><partial name="_Money" model="job.PartsTotal" /></dd>
             <dt>@L["Labor"]</dt>
             <dd><partial name="_Money" model="job.LaborTotal" /></dd>
+            @if (job.DiscountValue > 0 || job.VatValue > 0)
+            {
+                <dt>@L["Subtotal"]</dt>
+                <dd><partial name="_Money" model="job.Subtotal" /></dd>
+            }
+            @if (job.DiscountValue > 0)
+            {
+                <dt>@L["Discount"]@(job.DiscountPercent is > 0 ? $" ({job.DiscountPercent:0.##}%)" : "")</dt>
+                <dd data-invoice-discount>&minus; <partial name="_Money" model="job.DiscountValue" /></dd>
+            }
+            @if (job.VatValue > 0)
+            {
+                <dt>@L["VAT"] (<span class="ltr">@job.VatPercent?.ToString("0.##")%</span>)</dt>
+                <dd data-invoice-vat><partial name="_Money" model="job.VatValue" /></dd>
+            }
             <dt class="inv-grand">@L["Total"]</dt>
             <dd class="inv-grand" data-invoice-total><partial name="_Money" model="job.Total" /></dd>
+            <dt>@L["Received"]</dt>
+            <dd><partial name="_Money" model="job.PaidTotal" /></dd>
+            <dt class="inv-grand">@L["Balance due"]</dt>
+            <dd class="inv-grand" data-invoice-balance><partial name="_Money" model="job.Balance" /></dd>
         </dl>
     </section>
 

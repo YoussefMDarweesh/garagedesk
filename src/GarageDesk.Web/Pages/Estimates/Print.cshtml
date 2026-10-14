@@ -1,0 +1,127 @@
+@page "{id:int}"
+@using GarageDesk.Web.Models
+@using GarageDesk.Web.Services
+@model PrintModel
+@{
+    var e = Model.Estimate;
+    var shop = Model.Shop;
+    var vehicle = e.Vehicle;
+    var customer = vehicle?.Customer;
+    ViewData["Title"] = $"{L["Estimate"]} {e.Label}";
+}
+
+<div class="invoice-toolbar">
+    <a class="btn btn-outline-secondary" asp-page="Details" asp-route-id="@e.Id"><partial name="_Icon" model='"chevron-left"' />@L["Back to estimate"]</a>
+    <div class="d-flex align-items-center gap-3 flex-wrap">
+        <span class="text-secondary small">@L["Choose Save as PDF as the printer to get a PDF."]</span>
+        <button type="button" class="btn btn-primary" data-print><partial name="_Icon" model='"file-text"' />@L["Print / Save as PDF"]</button>
+    </div>
+</div>
+
+<article class="invoice" aria-labelledby="estimate-title">
+    <header class="inv-head">
+        <div class="inv-brand">
+            @if (Model.LogoVersion is not null)
+            {
+                <img class="inv-logo" src="@Url.Content("~" + ShopLogoEndpoint.Path)?v=@Model.LogoVersion" alt="@shop.Name" />
+            }
+            else
+            {
+                <p class="inv-wordmark" dir="auto">@shop.Name</p>
+            }
+            <p class="inv-shop">
+                @if (Model.LogoVersion is not null)
+                {
+                    <strong dir="auto">@shop.Name</strong><br />
+                }
+                <span dir="auto">@shop.Address</span><br />
+                <span class="ltr">@shop.Phone</span>
+            </p>
+        </div>
+
+        <div class="inv-meta">
+            <h1 id="estimate-title" class="inv-title">@L["Estimate"]</h1>
+            <dl class="inv-facts">
+                <dt>@L["Estimate no."]</dt>
+                <dd><span class="ltr">@e.Label</span></dd>
+                <dt>@L["Date"]</dt>
+                <dd><span class="ltr">@e.CreatedOn.ToString("yyyy-MM-dd")</span></dd>
+                <dt>@L["Valid until"]</dt>
+                <dd><span class="ltr">@(e.ValidUntil?.ToString("yyyy-MM-dd") ?? "-")</span></dd>
+            </dl>
+        </div>
+    </header>
+
+    <section class="inv-parties">
+        <div>
+            <h2 class="inv-label">@L["Prepared for"]</h2>
+            <p class="inv-strong" dir="auto">@customer?.Name</p>
+            <p class="mb-0"><span class="ltr">@customer?.Phone</span></p>
+        </div>
+        <div>
+            <h2 class="inv-label">@L["Vehicle"]</h2>
+            <p class="inv-strong">@vehicle?.Make @vehicle?.Model <span class="ltr">@vehicle?.Year</span></p>
+            <p class="mb-0">@L["Plate number"]: <span class="inv-plate" dir="auto">@vehicle?.Plate</span></p>
+        </div>
+    </section>
+
+    <div class="inv-table-wrap">
+    <table class="inv-table">
+        <thead>
+            <tr>
+                <th scope="col" class="inv-num">#</th>
+                <th scope="col">@L["Description"]</th>
+                <th scope="col">@L["Type"]</th>
+                <th scope="col" class="inv-end">@L["Quantity"]</th>
+                <th scope="col" class="inv-end">@L["Unit price"] (@L["EGP"])</th>
+                <th scope="col" class="inv-end">@L["Total"] (@L["EGP"])</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (e.Lines.Count == 0)
+            {
+                <tr><td colspan="6" class="inv-empty">@L["No lines on this estimate yet."]</td></tr>
+            }
+            @for (var i = 0; i < e.Lines.Count; i++)
+            {
+                var line = e.Lines[i];
+                <tr>
+                    <td class="inv-num"><span class="ltr">@(i + 1)</span></td>
+                    <td dir="auto">@line.Description</td>
+                    <td>@(line.Type == JobLineType.Part ? L["Part"] : L["Labor"])</td>
+                    <td class="inv-end"><span class="ltr">@line.Quantity.ToString("0.##")</span></td>
+                    <td class="inv-end"><span class="ltr">@MoneyFormat.Amount(line.UnitPrice)</span></td>
+                    <td class="inv-end inv-strong"><span class="ltr">@MoneyFormat.Amount(line.LineTotal)</span></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </div>
+
+    <section class="inv-totals" aria-label="@L["Total"]">
+        <dl>
+            @if (e.DiscountValue > 0 || e.VatValue > 0)
+            {
+                <dt>@L["Subtotal"]</dt>
+                <dd><partial name="_Money" model="e.Subtotal" /></dd>
+            }
+            @if (e.DiscountValue > 0)
+            {
+                <dt>@L["Discount"]</dt>
+                <dd>&minus; <partial name="_Money" model="e.DiscountValue" /></dd>
+            }
+            @if (e.VatValue > 0)
+            {
+                <dt>@L["VAT"] (<span class="ltr">@e.VatPercent?.ToString("0.##")%</span>)</dt>
+                <dd><partial name="_Money" model="e.VatValue" /></dd>
+            }
+            <dt class="inv-grand">@L["Total"]</dt>
+            <dd class="inv-grand" data-estimate-total><partial name="_Money" model="e.Total" /></dd>
+        </dl>
+    </section>
+
+    <footer class="inv-foot">
+        <p class="mb-0">@L["This estimate is not an invoice. Prices are valid until the date shown."]</p>
+        <p class="mb-0 inv-muted">@shop.Name &middot; <span class="ltr">@shop.Phone</span></p>
+    </footer>
+</article>

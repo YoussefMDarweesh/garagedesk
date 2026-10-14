@@ -15,12 +15,16 @@
 <div class="page-head">
     <div>
         <h1 class="h2 fw-bold mb-1">
-            @L["Job card"] <span class="ltr num">#@job.Id</span>
+            @L["Job card"] <span class="ltr num">#@job.Id</span>@if (job.InvoiceLabel is not null) { <span class="chip chip-info ltr num">@job.InvoiceLabel</span> }
             <partial name="_StatusBadge" model="job.Status" />
         </h1>
         <p class="page-sub">
             <span class="ltr num">@job.DateIn.ToString("yyyy-MM-dd")</span> &middot; @vehicle?.Make @vehicle?.Model
         </p>
+        @if (job.EstimateId is int estimateId)
+        {
+            <p class="small text-secondary mb-0"><a asp-page="/Estimates/Details" asp-route-id="@estimateId" data-from-estimate>@L["Created from an estimate"]</a></p>
+        }
     </div>
     <div class="page-actions">
         <a class="btn @(job.IsLocked ? "btn-primary" : "btn-outline-secondary")" asp-page="Invoice" asp-route-id="@job.Id"><partial name="_Icon" model='"file-text"' />@L["Invoice / Print"]</a>
@@ -168,9 +172,94 @@
                 <dd class="col-6 text-end mb-1"><partial name="_Money" model="job.PartsTotal" /></dd>
                 <dt class="col-6 text-secondary fw-normal">@L["Labor"]</dt>
                 <dd class="col-6 text-end mb-2"><partial name="_Money" model="job.LaborTotal" /></dd>
+                @if (job.DiscountValue > 0 || job.VatValue > 0)
+                {
+                    <dt class="col-6 text-secondary fw-normal">@L["Subtotal"]</dt>
+                    <dd class="col-6 text-end mb-1"><partial name="_Money" model="job.Subtotal" /></dd>
+                }
+                @if (job.DiscountValue > 0)
+                {
+                    <dt class="col-6 text-secondary fw-normal">@L["Discount"]@(job.DiscountPercent is > 0 ? $" ({job.DiscountPercent:0.##}%)" : "")</dt>
+                    <dd class="col-6 text-end mb-1" data-job-discount>&minus; <partial name="_Money" model="job.DiscountValue" /></dd>
+                }
+                @if (job.VatValue > 0)
+                {
+                    <dt class="col-6 text-secondary fw-normal">@L["VAT"] (<span class="ltr">@job.VatPercent?.ToString("0.##")%</span>)</dt>
+                    <dd class="col-6 text-end mb-2" data-job-vat><partial name="_Money" model="job.VatValue" /></dd>
+                }
                 <dt class="col-6 border-top pt-3 mb-0">@L["Total"]</dt>
                 <dd class="col-6 text-end border-top pt-3 mb-0 fw-bold fs-5" data-job-total><partial name="_Money" model="job.Total" /></dd>
             </dl>
+        </section>
+
+        <section class="panel panel-pad mb-3 mb-lg-4" aria-labelledby="payments-heading">
+            <div class="panel-head">
+                <h2 id="payments-heading" class="panel-title">@L["Payments"]</h2>
+                <span class="chip @(job.PaymentState == PaymentState.Paid ? "chip-ok" : job.PaymentState == PaymentState.Partial ? "chip-info" : "")" data-payment-state>
+                    @(job.PaymentState switch { PaymentState.Paid => L["Paid in full"], PaymentState.Partial => L["Partly paid"], _ => L["Unpaid"] })
+                </span>
+            </div>
+            <dl class="row mb-2 g-1">
+                <dt class="col-6 text-secondary fw-normal">@L["Received"]</dt>
+                <dd class="col-6 text-end mb-1"><partial name="_Money" model="job.PaidTotal" /></dd>
+                <dt class="col-6 fw-bold">@L["Balance due"]</dt>
+                <dd class="col-6 text-end fw-bold" data-job-balance><partial name="_Money" model="job.Balance" /></dd>
+            </dl>
+            @if (job.Payments.Count == 0)
+            {
+                <p class="text-secondary small mb-3">@L["No payments yet."]</p>
+            }
+            else
+            {
+                var latestId = job.Payments.Max(p => p.Id);
+                <ul class="list-unstyled small mb-3">
+                    @foreach (var p in job.Payments)
+                    {
+                        <li class="d-flex justify-content-between align-items-center gap-2 py-1 border-bottom">
+                            <span>
+                                <span class="ltr num">@p.PaidOn.ToString("yyyy-MM-dd")</span> &middot;
+                                @(p.Method switch { PaymentMethod.Card => L["Card"], PaymentMethod.BankTransfer => L["Bank transfer"], PaymentMethod.Wallet => L["Wallet"], _ => L["Cash"] })
+                            </span>
+                            <span class="d-flex align-items-center gap-2">
+                                <partial name="_Money" model="p.Amount" />
+                                @if (!job.IsLocked && p.Id == latestId)
+                                {
+                                    <form method="post" asp-page-handler="VoidPayment" asp-route-id="@job.Id" asp-route-paymentId="@p.Id"
+                                          data-confirm="@L["Void this payment?"]">
+                                        <button type="submit" class="icon-btn" title="@L["Void payment"]" aria-label="@L["Void payment"]"><partial name="_Icon" model='"x"' /></button>
+                                    </form>
+                                }
+                            </span>
+                        </li>
+                    }
+                </ul>
+            }
+            @if (!job.IsLocked && job.Balance > 0)
+            {
+                <form method="post" asp-page-handler="AddPayment" asp-route-id="@job.Id" novalidate>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label asp-for="NewPayment.Amount" class="form-label small text-secondary"></label>
+                            <input asp-for="NewPayment.Amount" value="@job.Balance.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)" type="number" step="0.01" min="0.01" max="@job.Balance.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)" class="form-control" inputmode="decimal" />
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="NewPayment.Method" class="form-label small text-secondary"></label>
+                            <select asp-for="NewPayment.Method" class="form-select">
+                                <option value="@PaymentMethod.Cash">@L["Cash"]</option>
+                                <option value="@PaymentMethod.Card">@L["Card"]</option>
+                                <option value="@PaymentMethod.BankTransfer">@L["Bank transfer"]</option>
+                                <option value="@PaymentMethod.Wallet">@L["Wallet"]</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <input asp-for="NewPayment.Note" class="form-control" placeholder="@L["Note"]" autocomplete="off" />
+                        </div>
+                        <div class="col-12 d-grid">
+                            <button type="submit" class="btn btn-primary"><partial name="_Icon" model='"plus"' />@L["Add payment"]</button>
+                        </div>
+                    </div>
+                </form>
+            }
         </section>
 
         <section class="panel panel-pad mb-3 mb-lg-4" aria-labelledby="status-heading">

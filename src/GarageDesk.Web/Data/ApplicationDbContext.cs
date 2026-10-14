@@ -40,6 +40,14 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
 
     public DbSet<Reminder> Reminders => Set<Reminder>();
 
+    public DbSet<Estimate> Estimates => Set<Estimate>();
+
+    public DbSet<EstimateLine> EstimateLines => Set<EstimateLine>();
+
+    public DbSet<Payment> Payments => Set<Payment>();
+
+    public DbSet<NumberSequence> NumberSequences => Set<NumberSequence>();
+
     // Read by the query filters below. EF evaluates it per context instance, i.e. per request.
     private int? CurrentShopId => _currentShop.ShopId;
 
@@ -58,6 +66,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
         {
             shop.HasQueryFilter(s => s.Id == CurrentShopId);
             shop.Property(s => s.AccentColor).HasMaxLength(20);
+            shop.Property(s => s.VatPercent).HasPrecision(5, 2);
         });
 
         // At most one logo per shop. (The tenant query filter comes from IShopOwned, below.)
@@ -93,12 +102,19 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
         {
             job.Property(j => j.Status).HasConversion<string>().HasMaxLength(20);
             job.Property(j => j.Notes).HasMaxLength(2000);
+            job.Property(j => j.DiscountAmount).HasPrecision(12, 2);
+            job.Property(j => j.DiscountPercent).HasPrecision(5, 2);
+            job.Property(j => j.VatPercent).HasPrecision(5, 2);
             job.HasIndex(j => new { j.ShopId, j.Status });
             job.HasIndex(j => new { j.ShopId, j.VehicleId });
             job.HasOne(j => j.Vehicle).WithMany().HasForeignKey(j => j.VehicleId).OnDelete(DeleteBehavior.Restrict);
             job.HasOne<Shop>().WithMany().HasForeignKey(j => j.ShopId).OnDelete(DeleteBehavior.Restrict);
             // The totals are worked out from the lines, never stored.
-            job.Ignore(j => j.PartsTotal).Ignore(j => j.LaborTotal).Ignore(j => j.Total).Ignore(j => j.IsLocked);
+            job.HasIndex(j => new { j.ShopId, j.InvoiceNumber }).IsUnique();
+            job.HasIndex(j => j.EstimateId);
+            job.Ignore(j => j.InvoiceLabel);
+            job.Ignore(j => j.PartsTotal).Ignore(j => j.LaborTotal).Ignore(j => j.Total).Ignore(j => j.IsLocked)
+                .Ignore(j => j.Subtotal).Ignore(j => j.DiscountValue).Ignore(j => j.VatValue).Ignore(j => j.PaidTotal).Ignore(j => j.Balance).Ignore(j => j.PaymentState);
         });
 
         builder.Entity<JobLine>(line =>
@@ -118,6 +134,48 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             reminder.HasIndex(r => new { r.ShopId, r.IsDone, r.DueDate });
             reminder.HasOne(r => r.Vehicle).WithMany().HasForeignKey(r => r.VehicleId).OnDelete(DeleteBehavior.Restrict);
             reminder.HasOne<Shop>().WithMany().HasForeignKey(r => r.ShopId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<Estimate>(estimate =>
+        {
+            estimate.Property(e => e.Status).HasConversion<string>().HasMaxLength(20);
+            estimate.Property(e => e.Notes).HasMaxLength(2000);
+            estimate.Property(e => e.DiscountAmount).HasPrecision(12, 2);
+            estimate.Property(e => e.DiscountPercent).HasPrecision(5, 2);
+            estimate.Property(e => e.VatPercent).HasPrecision(5, 2);
+            estimate.HasIndex(e => new { e.ShopId, e.Number }).IsUnique();
+            estimate.HasIndex(e => new { e.ShopId, e.Status });
+            estimate.HasOne(e => e.Vehicle).WithMany().HasForeignKey(e => e.VehicleId).OnDelete(DeleteBehavior.Restrict);
+            estimate.HasOne<Shop>().WithMany().HasForeignKey(e => e.ShopId).OnDelete(DeleteBehavior.Restrict);
+            estimate.Ignore(e => e.Label).Ignore(e => e.Subtotal).Ignore(e => e.DiscountValue).Ignore(e => e.VatValue).Ignore(e => e.Total).Ignore(e => e.IsLocked);
+        });
+
+        builder.Entity<EstimateLine>(line =>
+        {
+            line.Property(l => l.Type).HasConversion<string>().HasMaxLength(20);
+            line.Property(l => l.Description).HasMaxLength(200);
+            line.Property(l => l.Quantity).HasPrecision(10, 2);
+            line.Property(l => l.UnitPrice).HasPrecision(12, 2);
+            line.HasOne(l => l.Estimate).WithMany(e => e.Lines).HasForeignKey(l => l.EstimateId).OnDelete(DeleteBehavior.Cascade);
+            line.HasOne<Shop>().WithMany().HasForeignKey(l => l.ShopId).OnDelete(DeleteBehavior.Restrict);
+            line.Ignore(l => l.LineTotal);
+        });
+
+        builder.Entity<Payment>(payment =>
+        {
+            payment.Property(p => p.Amount).HasPrecision(12, 2);
+            payment.Property(p => p.Method).HasConversion<string>().HasMaxLength(20);
+            payment.Property(p => p.Note).HasMaxLength(200);
+            payment.HasIndex(p => new { p.ShopId, p.JobCardId });
+            payment.HasOne(p => p.JobCard).WithMany(j => j.Payments).HasForeignKey(p => p.JobCardId).OnDelete(DeleteBehavior.Cascade);
+            payment.HasOne<Shop>().WithMany().HasForeignKey(p => p.ShopId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<NumberSequence>(sequence =>
+        {
+            sequence.Property(s => s.Kind).HasMaxLength(30);
+            sequence.HasIndex(s => new { s.ShopId, s.Kind }).IsUnique();
+            sequence.HasOne<Shop>().WithMany().HasForeignKey(s => s.ShopId).OnDelete(DeleteBehavior.Restrict);
         });
 
         // THE PATTERN: every entity that implements IShopOwned gets the same filter automatically.

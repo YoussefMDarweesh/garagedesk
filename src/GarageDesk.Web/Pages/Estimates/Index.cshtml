@@ -1,0 +1,51 @@
+@page
+@model GarageDesk.Web.Pages.Estimates.IndexModel
+@using GarageDesk.Web.Models
+@{
+    ViewData["Title"] = L["Estimates"].Value;
+}
+
+<div class="page-head">
+    <div>
+        <h1>@L["Estimates"]</h1>
+        <p class="page-sub">@L["Quotations that become job cards once the customer says yes."]</p>
+    </div>
+    <div class="page-actions">
+        <a class="btn btn-primary" asp-page="Create"><partial name="_Icon" model='"plus"' />@L["New estimate"]</a>
+    </div>
+</div>
+
+@if (Model.Estimates.Count == 0)
+{
+    <section class="panel panel-pad"><p class="mb-0 text-secondary">@L["No estimates yet."]</p></section>
+}
+else
+{
+    <div class="data-table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th scope="col">@L["Estimate no."]</th>
+                    <th scope="col">@L["Date"]</th>
+                    <th scope="col">@L["Customers"]</th>
+                    <th scope="col">@L["Vehicle"]</th>
+                    <th scope="col">@L["Status"]</th>
+                    <th scope="col" class="cell-end">@L["Total"]</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var e in Model.Estimates)
+            {
+                <tr>
+                    <td><a class="identity-name" asp-page="Details" asp-route-id="@e.Id"><span class="ltr num">@e.Label</span></a></td>
+                    <td><span class="ltr num">@e.CreatedOn.ToString("yyyy-MM-dd")</span></td>
+                    <td>@e.Vehicle?.Customer?.Name</td>
+                    <td><span class="plate" dir="auto">@e.Vehicle?.Plate</span> @e.Vehicle?.Make @e.Vehicle?.Model</td>
+                    <td><partial name="_EstimateStatus" model="e.Status" /></td>
+                    <td class="cell-end fw-bold"><partial name="_Money" model="e.Total" /></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

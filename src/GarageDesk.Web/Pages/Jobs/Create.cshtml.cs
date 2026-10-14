@@ -80,6 +80,7 @@ public class CreateModel(ApplicationDbContext db, IStringLocalizer<SharedResourc
             MileageAtVisit = Input.MileageAtVisit,
             Notes = string.IsNullOrWhiteSpace(Input.Notes) ? null : Input.Notes.Trim(),
             Status = JobStatus.Booked,
+            VatPercent = await db.Shops.Select(s => s.VatPercent).FirstOrDefaultAsync(),
         };
         db.JobCards.Add(job); // ShopId is filled in by the DbContext
 
