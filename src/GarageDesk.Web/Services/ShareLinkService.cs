@@ -13,6 +13,9 @@ namespace GarageDesk.Web.Services;
 public sealed record ShareLinkRow(
     int Id, ShareLinkKind Kind, string? Url, DateTime CreatedAtUtc, DateTime ExpiresAtUtc, int ViewCount, DateTime? LastViewedAtUtc);
 
+/// <summary>What the _ShareLinks partial shows: the live links of one job card or estimate.</summary>
+public sealed record ShareLinksPanel(int TargetId, IReadOnlyList<ShareLinkRow> Rows);
+
 /// <summary>The outcome of "Send on WhatsApp": the public link, and the wa.me link (null if the customer has no usable phone).</summary>
 public sealed record WhatsAppShare(string PublicUrl, string? WhatsAppUrl, string Message);
 

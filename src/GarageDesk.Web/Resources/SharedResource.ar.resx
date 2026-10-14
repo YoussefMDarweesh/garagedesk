@@ -455,4 +455,38 @@
   <data name="Hi {name}, here is your estimate from {shop} for your car {plate}: {link}" xml:space="preserve"><value>مرحبًا {name}، هذا عرض السعر من {shop} لسيارتك {plate}: {link}</value></data>
   <data name="Hi {name}, your car {plate} is ready. Details: {link}" xml:space="preserve"><value>مرحبًا {name}، سيارتك {plate} جاهزة. التفاصيل: {link}</value></data>
   <data name="Hi {name}, you can follow the status of your car {plate} here: {link}" xml:space="preserve"><value>مرحبًا {name}، تابع حالة سيارتك {plate} من هنا: {link}</value></data>
+  <data name="The car is ready." xml:space="preserve"><value>السيارة جاهزة.</value></data>
+  <data name="Tell the customer on WhatsApp" xml:space="preserve"><value>أخبر العميل عبر واتساب</value></data>
+  <data name="Share with the customer" xml:space="preserve"><value>مشاركة مع العميل</value></data>
+  <data name="Send a private link on WhatsApp. The customer opens it without logging in and sees only this car." xml:space="preserve"><value>أرسل رابطًا خاصًا عبر واتساب. يفتحه العميل دون تسجيل دخول ولا يرى إلا هذه السيارة.</value></data>
+  <data name="Send a private link on WhatsApp. The customer opens it without logging in and sees only this estimate." xml:space="preserve"><value>أرسل رابطًا خاصًا عبر واتساب. يفتحه العميل دون تسجيل دخول ولا يرى إلا عرض السعر هذا.</value></data>
+  <data name="Send status on WhatsApp" xml:space="preserve"><value>إرسال الحالة عبر واتساب</value></data>
+  <data name="Send invoice on WhatsApp" xml:space="preserve"><value>إرسال الفاتورة عبر واتساب</value></data>
+  <data name="Get status link" xml:space="preserve"><value>الحصول على رابط الحالة</value></data>
+  <data name="Get invoice link" xml:space="preserve"><value>الحصول على رابط الفاتورة</value></data>
+  <data name="Get estimate link" xml:space="preserve"><value>الحصول على رابط عرض السعر</value></data>
+  <data name="This customer has no phone number WhatsApp can use. Get the link and send it yourself." xml:space="preserve"><value>ليس لدى هذا العميل رقم هاتف يمكن استخدامه في واتساب. احصل على الرابط وأرسله بنفسك.</value></data>
+  <data name="The link is ready. Copy it below." xml:space="preserve"><value>الرابط جاهز. انسخه من الأسفل.</value></data>
+  <data name="The link was revoked. It no longer works." xml:space="preserve"><value>تم إلغاء الرابط. لم يعد يعمل.</value></data>
+  <data name="No share links yet." xml:space="preserve"><value>لا توجد روابط مشاركة بعد.</value></data>
+  <data name="Invoice link" xml:space="preserve"><value>رابط الفاتورة</value></data>
+  <data name="Estimate link" xml:space="preserve"><value>رابط عرض السعر</value></data>
+  <data name="Status link" xml:space="preserve"><value>رابط الحالة</value></data>
+  <data name="Revoke this link? The customer will no longer be able to open it." xml:space="preserve"><value>إلغاء هذا الرابط؟ لن يتمكن العميل من فتحه بعد الآن.</value></data>
+  <data name="Revoke" xml:space="preserve"><value>إلغاء الرابط</value></data>
+  <data name="Link" xml:space="preserve"><value>الرابط</value></data>
+  <data name="Copy" xml:space="preserve"><value>نسخ</value></data>
+  <data name="Link copied." xml:space="preserve"><value>تم نسخ الرابط.</value></data>
+  <data name="This link cannot be shown again. Revoke it and send a new one." xml:space="preserve"><value>لا يمكن عرض هذا الرابط مرة أخرى. ألغِه وأرسل رابطًا جديدًا.</value></data>
+  <data name="Views" xml:space="preserve"><value>المشاهدات</value></data>
+  <data name="Last viewed" xml:space="preserve"><value>آخر مشاهدة</value></data>
+  <data name="Expires" xml:space="preserve"><value>ينتهي</value></data>
+  <data name="WhatsApp message" xml:space="preserve"><value>رسالة واتساب</value></data>
+  <data name="WhatsApp message saved." xml:space="preserve"><value>تم حفظ رسالة واتساب.</value></data>
+  <data name="The text that opens in WhatsApp when you send a link to a customer. Leave a box empty to use the built-in wording." xml:space="preserve"><value>النص الذي يظهر في واتساب عند إرسال رابط إلى عميل. اترك الحقل فارغًا لاستخدام الصيغة الجاهزة.</value></data>
+  <data name="You can use" xml:space="preserve"><value>يمكنك استخدام</value></data>
+  <data name="{name} is the customer, {plate} the car, {shop} your shop and {link} the private link." xml:space="preserve"><value>{name} اسم العميل، و{plate} السيارة، و{shop} ورشتك، و{link} الرابط الخاص.</value></data>
+  <data name="Message in English" xml:space="preserve"><value>الرسالة بالإنجليزية</value></data>
+  <data name="Message in Arabic" xml:space="preserve"><value>الرسالة بالعربية</value></data>
+  <data name="The message must include {link} and be at most 500 characters." xml:space="preserve"><value>يجب أن تتضمن الرسالة {link} ولا تزيد عن 500 حرف.</value></data>
 </root>

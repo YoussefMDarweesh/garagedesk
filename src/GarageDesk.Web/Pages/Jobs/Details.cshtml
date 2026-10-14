@@ -36,6 +36,13 @@
 </div>
 
 @* Server messages become toasts (site.js); without JavaScript they stay readable in place. *@
+@if (Model.OfferShare && job.Status is JobStatus.Done or JobStatus.Paid)
+{
+    @* The job just reached Done: a toast with a button that opens the WhatsApp message (a POST, so the link is made
+       on demand). Without JavaScript the plain text shows and the "Share with the customer" panel does the same. *@
+    <div class="toast-source" data-toast="success" data-toast-action="#ready-share-form" data-toast-action-label="@L["Tell the customer on WhatsApp"]" role="status">@L["The car is ready."]</div>
+    <form id="ready-share-form" method="post" asp-page-handler="Share" asp-route-id="@job.Id" asp-route-kind="@ShareLinkKind.Status" target="_blank" class="d-none"></form>
+}
 @if (!string.IsNullOrEmpty(Model.StatusMessage))
 {
     <div class="toast-source" data-toast="success" role="status">@Model.StatusMessage</div>
@@ -304,6 +311,28 @@
                     <p class="text-secondary small mb-0">@L["This job card is paid and can no longer be changed."]</p>
                 }
             </div>
+        </section>
+
+        <section class="panel panel-pad mb-3 mb-lg-4" aria-labelledby="share-heading" data-share-panel>
+            <div class="panel-head"><h2 id="share-heading" class="panel-title">@L["Share with the customer"]</h2></div>
+            <p class="text-secondary small">@L["Send a private link on WhatsApp. The customer opens it without logging in and sees only this car."]</p>
+            <div class="d-grid gap-2 mb-3">
+                <form method="post" asp-page-handler="Share" asp-route-id="@job.Id" asp-route-kind="@ShareLinkKind.Status" target="_blank">
+                    <button type="submit" class="btn btn-primary w-100" data-share-whatsapp="status"><partial name="_Icon" model='"whatsapp"' />@L["Send status on WhatsApp"]</button>
+                </form>
+                <form method="post" asp-page-handler="Share" asp-route-id="@job.Id" asp-route-kind="@ShareLinkKind.Invoice" target="_blank">
+                    <button type="submit" class="btn btn-outline-secondary w-100" data-share-whatsapp="invoice"><partial name="_Icon" model='"whatsapp"' />@L["Send invoice on WhatsApp"]</button>
+                </form>
+                <div class="d-flex gap-2">
+                    <form method="post" asp-page-handler="CreateLink" asp-route-id="@job.Id" asp-route-kind="@ShareLinkKind.Status" class="flex-fill">
+                        <button type="submit" class="btn btn-outline-secondary btn-sm w-100" data-create-link="status">@L["Get status link"]</button>
+                    </form>
+                    <form method="post" asp-page-handler="CreateLink" asp-route-id="@job.Id" asp-route-kind="@ShareLinkKind.Invoice" class="flex-fill">
+                        <button type="submit" class="btn btn-outline-secondary btn-sm w-100" data-create-link="invoice">@L["Get invoice link"]</button>
+                    </form>
+                </div>
+            </div>
+            <partial name="_ShareLinks" model="Model.Links" />
         </section>
 
         <section class="panel panel-pad" aria-labelledby="details-heading">

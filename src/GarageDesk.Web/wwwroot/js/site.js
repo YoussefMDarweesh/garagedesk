@@ -54,7 +54,8 @@
     info: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
   };
 
-  function toast(message, kind = "info") {
+  // `action` (optional): { label, run } adds a button to the toast, e.g. "Tell the customer on WhatsApp".
+  function toast(message, kind = "info", action = null) {
     if (!toasts || !message) return;
     const card = document.createElement("div");
     card.className = `toast-card ${kind}`;
@@ -66,15 +67,44 @@
       setTimeout(() => card.remove(), 260);
     };
     card.querySelector("button").addEventListener("click", close);
+    if (action) {
+      const act = document.createElement("button");
+      act.type = "button";
+      act.className = "btn btn-primary btn-sm toast-action";
+      act.textContent = action.label;
+      act.addEventListener("click", () => { action.run(); close(); });
+      card.insertBefore(act, card.querySelector("button"));
+    }
     toasts.appendChild(card);
-    setTimeout(close, kind === "danger" ? 7000 : 4500);
+    setTimeout(close, action ? 15000 : kind === "danger" ? 7000 : 4500);
   }
   window.gdToast = toast;
 
   // Server messages (TempData) are rendered as <div data-toast="success">…</div>. With JS they become toasts.
+  // data-toast-action="#form-id" + data-toast-action-label="…" adds a button that submits that form.
   document.querySelectorAll("[data-toast]").forEach((el) => {
-    toast(el.textContent.trim(), el.dataset.toast || "info");
+    let action = null;
+    const target = el.dataset.toastAction ? document.querySelector(el.dataset.toastAction) : null;
+    if (target instanceof HTMLFormElement && el.dataset.toastActionLabel) {
+      action = { label: el.dataset.toastActionLabel, run: () => target.requestSubmit() };
+    }
+    toast(el.textContent.trim(), el.dataset.toast || "info", action);
     el.remove();
+  });
+
+  // ---- copy a link: <button data-copy="https://..." data-copied="Link copied."> ----
+  document.addEventListener("click", async (event) => {
+    const button = event.target.closest("[data-copy]");
+    if (!button) return;
+    const text = button.dataset.copy;
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      // No clipboard permission (or an old browser): select the field next to the button so Ctrl+C works.
+      const field = button.parentElement && button.parentElement.querySelector("input");
+      if (field) { field.focus(); field.select(); }
+    }
+    toast(button.dataset.copied || text, "success");
   });
 
   // ---- confirm dialog: <form data-confirm="Are you sure?"> ----
@@ -106,7 +136,8 @@
     const form = event.target;
     if (!(form instanceof HTMLFormElement) || form.method.toLowerCase() !== "post" || event.defaultPrevented) return;
     const button = event.submitter || form.querySelector('button[type="submit"]');
-    if (button && !form.classList.contains("lang-switch")) {
+    // A form that opens a new tab (the WhatsApp buttons) leaves this page where it is, so it must not stay "busy".
+    if (button && !form.classList.contains("lang-switch") && form.target !== "_blank") {
       // Disable on the next tick so the button's own name/value is still posted.
       setTimeout(() => button.classList.add("is-busy"), 0);
     }

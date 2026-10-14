@@ -2928,3 +2928,21 @@ html[lang="ar"] .inv-table th {
     padding: 0;
   }
 }
+
+/* the "Tell the customer on WhatsApp" button inside a toast (see site.js) */
+.toast-card .toast-action {
+  flex: none;
+  margin-inline-start: auto;
+  padding: 0.3rem 0.75rem;
+  background: var(--accent-strong);
+  color: #fff;
+  border: 0;
+  border-radius: var(--r-pill);
+  font-weight: 700;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.toast-card .toast-action + button {
+  margin-inline-start: 0.4rem;
+}

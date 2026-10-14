@@ -101,7 +101,12 @@ public class EstimateTests(GarageDeskWebFactory factory) : IClassFixture<GarageD
         await AddLineAsync(client, id, "Part", "Filter", "1", "100");
 
         var page = await TestData.BodyAsync(await client.GetAsync($"/Estimates/Details/{id}"));
-        Assert.Contains("https://wa.me/201000000003?text=", page);
+        // Since v1.2 the button posts to the Share handler, which makes a private link and opens wa.me with it.
+        Assert.Contains("data-estimate-whatsapp", page);
+        var share = await TestData.SubmitFormAsync(client, $"/Estimates/Details/{id}?handler=Share");
+        Assert.Equal(HttpStatusCode.Redirect, share.StatusCode);
+        Assert.StartsWith("https://wa.me/201000000003?text=", share.Headers.Location!.ToString());
+        Assert.Contains("%2Fs%2F", share.Headers.Location.ToString());
 
         await TestData.SubmitFormAsync(client, $"/Estimates/Details/{id}?handler=Status&to=Sent");
         await TestData.SubmitFormAsync(client, $"/Estimates/Details/{id}?handler=Status&to=Accepted"); // not allowed by hand

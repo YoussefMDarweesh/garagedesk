@@ -9,7 +9,7 @@ using Microsoft.Extensions.Localization;
 
 namespace GarageDesk.Web.Pages.Estimates;
 
-public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResource> localizer) : PageModel
+public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResource> localizer, ShareLinkService shares) : PageModel
 {
     public Estimate Estimate { get; private set; } = null!;
 
@@ -25,24 +25,49 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
     [TempData]
     public string? ErrorMessage { get; set; }
 
-    public string? ShopName => User.FindFirst(CurrentShop.NameClaimType)?.Value;
-
-    /// <summary>"Send on WhatsApp": a pre-filled message with the total (there is no public link in this version).</summary>
-    public string? WhatsAppUrl
-    {
-        get
-        {
-            var vehicle = Estimate.Vehicle;
-            var valid = Estimate.ValidUntil?.ToString("yyyy-MM-dd") ?? "-";
-            var message = localizer[
-                "Hello {0}, this is {1}: estimate {2} for your {3} (plate {4}) is {5} EGP, valid until {6}. Reply to confirm and we will book you in. Thank you!",
-                vehicle?.Customer?.Name ?? "", ShopName ?? "GarageDesk", Estimate.Label,
-                $"{vehicle?.Make} {vehicle?.Model}".Trim(), vehicle?.Plate ?? "", MoneyFormat.Amount(Estimate.Total), valid];
-            return WhatsAppLink.Build(vehicle?.Customer?.Phone, message);
-        }
-    }
+    /// <summary>The live share links of this estimate.</summary>
+    public ShareLinksPanel Links { get; private set; } = new(0, []);
 
     public async Task<IActionResult> OnGetAsync(int id) => await LoadAsync(id) ? Page() : NotFound();
+
+    /// <summary>"Send on WhatsApp": creates the estimate's share link (or reuses the live one) and opens wa.me with the message.</summary>
+    public async Task<IActionResult> OnPostShareAsync(int id)
+    {
+        var share = await shares.PrepareWhatsAppAsync(ShareLinkKind.Estimate, id);
+        if (share is null)
+        {
+            return NotFound();
+        }
+
+        if (share.WhatsAppUrl is null)
+        {
+            return Fail(id, "This customer has no phone number WhatsApp can use. Get the link and send it yourself.");
+        }
+
+        return Redirect(share.WhatsAppUrl);
+    }
+
+    public async Task<IActionResult> OnPostCreateLinkAsync(int id)
+    {
+        if (await shares.GetOrCreateAsync(ShareLinkKind.Estimate, id) is null)
+        {
+            return NotFound();
+        }
+
+        StatusMessage = localizer["The link is ready. Copy it below."];
+        return RedirectToPage(new { id });
+    }
+
+    public async Task<IActionResult> OnPostRevokeLinkAsync(int id, int linkId)
+    {
+        if (!await shares.RevokeAsync(linkId, id, ShareLinkKind.Estimate))
+        {
+            return NotFound();
+        }
+
+        StatusMessage = localizer["The link was revoked. It no longer works."];
+        return RedirectToPage(new { id });
+    }
 
     public async Task<IActionResult> OnPostAddLineAsync(int id)
     {
@@ -189,6 +214,7 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
 
         estimate.Lines = estimate.Lines.OrderBy(l => l.Id).ToList();
         Estimate = estimate;
+        Links = new ShareLinksPanel(estimate.Id, await shares.ListLiveAsync(estimate.Id, ShareLinkKind.Estimate));
         return true;
     }
 

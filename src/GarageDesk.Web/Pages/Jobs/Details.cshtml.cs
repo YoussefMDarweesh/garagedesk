@@ -8,7 +8,7 @@ using Microsoft.Extensions.Localization;
 
 namespace GarageDesk.Web.Pages.Jobs;
 
-public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResource> localizer) : PageModel
+public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResource> localizer, ShareLinkService shares) : PageModel
 {
     public JobCard Job { get; private set; } = null!;
 
@@ -27,6 +27,13 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
     /// <summary>Set right after a job is marked Done: the page then offers to create the next oil change reminder.</summary>
     [TempData]
     public bool OfferReminder { get; set; }
+
+    /// <summary>Set right after a job is marked Done: the page then shows a toast offering to tell the customer on WhatsApp.</summary>
+    [TempData]
+    public bool OfferShare { get; set; }
+
+    /// <summary>The live share links of this job card (status and invoice).</summary>
+    public ShareLinksPanel Links { get; private set; } = new(0, []);
 
     public JobStatus? NextStatus => JobStatusFlow.Next(Job.Status);
 
@@ -176,6 +183,59 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
         return RedirectToPage(new { id });
     }
 
+    /// <summary>
+    /// "Send on WhatsApp": creates the share link (or reuses the live one) and opens wa.me with the message.
+    /// Nothing is sent by the server; the owner presses send in WhatsApp.
+    /// </summary>
+    public async Task<IActionResult> OnPostShareAsync(int id, ShareLinkKind kind)
+    {
+        if (kind is not (ShareLinkKind.Status or ShareLinkKind.Invoice))
+        {
+            return BadRequest();
+        }
+
+        var share = await shares.PrepareWhatsAppAsync(kind, id);
+        if (share is null)
+        {
+            return NotFound();
+        }
+
+        if (share.WhatsAppUrl is null)
+        {
+            return Fail(id, "This customer has no phone number WhatsApp can use. Get the link and send it yourself.");
+        }
+
+        return Redirect(share.WhatsAppUrl);
+    }
+
+    /// <summary>Creates the link (or finds the live one) without sending anything, so it can be copied below.</summary>
+    public async Task<IActionResult> OnPostCreateLinkAsync(int id, ShareLinkKind kind)
+    {
+        if (kind is not (ShareLinkKind.Status or ShareLinkKind.Invoice))
+        {
+            return BadRequest();
+        }
+
+        if (await shares.GetOrCreateAsync(kind, id) is null)
+        {
+            return NotFound();
+        }
+
+        StatusMessage = localizer["The link is ready. Copy it below."];
+        return RedirectToPage(new { id });
+    }
+
+    public async Task<IActionResult> OnPostRevokeLinkAsync(int id, int linkId)
+    {
+        if (!await shares.RevokeAsync(linkId, id, ShareLinkKind.Status, ShareLinkKind.Invoice))
+        {
+            return NotFound();
+        }
+
+        StatusMessage = localizer["The link was revoked. It no longer works."];
+        return RedirectToPage(new { id });
+    }
+
     public async Task<IActionResult> OnPostStatusAsync(int id, JobStatus to)
     {
         var job = await db.JobCards.Include(j => j.Lines).Include(j => j.Payments).FirstOrDefaultAsync(j => j.Id == id);
@@ -223,6 +283,7 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
 
         StatusMessage = localizer["Status updated."];
         OfferReminder = to == JobStatus.Done;
+        OfferShare = requested == JobStatus.Done;
         return RedirectToPage(new { id });
     }
 
@@ -244,6 +305,7 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
         job.Lines = job.Lines.OrderBy(l => l.Id).ToList();
         job.Payments = job.Payments.OrderBy(p => p.Id).ToList();
         Job = job;
+        Links = new ShareLinksPanel(job.Id, await shares.ListLiveAsync(job.Id, ShareLinkKind.Status, ShareLinkKind.Invoice));
         return true;
     }
 

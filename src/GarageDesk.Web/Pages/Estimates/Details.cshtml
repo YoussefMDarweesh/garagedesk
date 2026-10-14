@@ -29,10 +29,9 @@
     </div>
     <div class="page-actions">
         <a class="btn btn-outline-secondary" asp-page="Print" asp-route-id="@e.Id">@L["Print / Save as PDF"]</a>
-        @if (Model.WhatsAppUrl is { } wa)
-        {
-            <a class="btn btn-outline-secondary" href="@wa" target="_blank" rel="noopener" data-estimate-whatsapp><partial name="_Icon" model='"whatsapp"' />@L["Send on WhatsApp"]</a>
-        }
+        <form method="post" asp-page-handler="Share" asp-route-id="@e.Id" target="_blank" class="d-inline">
+            <button type="submit" class="btn btn-outline-secondary" data-estimate-whatsapp><partial name="_Icon" model='"whatsapp"' />@L["Send on WhatsApp"]</button>
+        </form>
         @if (e.JobCardId is int jobId)
         {
             <a class="btn btn-primary" asp-page="/Jobs/Details" asp-route-id="@jobId" data-estimate-job>@L["Open job card"]</a>
@@ -183,6 +182,15 @@
             {
                 <p class="small text-secondary mt-3 mb-0" dir="auto">@e.Notes</p>
             }
+        </section>
+
+        <section class="panel panel-pad mb-3" aria-labelledby="est-share-heading" data-share-panel>
+            <div class="panel-head"><h2 id="est-share-heading" class="panel-title">@L["Share with the customer"]</h2></div>
+            <p class="text-secondary small">@L["Send a private link on WhatsApp. The customer opens it without logging in and sees only this estimate."]</p>
+            <form method="post" asp-page-handler="CreateLink" asp-route-id="@e.Id" class="mb-3">
+                <button type="submit" class="btn btn-outline-secondary btn-sm w-100" data-create-link="estimate">@L["Get estimate link"]</button>
+            </form>
+            <partial name="_ShareLinks" model="Model.Links" />
         </section>
     </div>
 </div>
