@@ -18,7 +18,7 @@ I run an automotive software business and manage a fleet of cars, so I've been o
 - **Invoices:** clean A4 print or save as PDF, in EGP
 
 ## Roadmap
-- [ ] M0 — Project skeleton, CI
+- [x] M0 — Project skeleton, CI
 - [ ] M1 — Shop accounts & multi-tenancy
 - [ ] M2 — Customers & vehicles
 - [ ] M3 — Job cards
