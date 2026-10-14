@@ -26,6 +26,13 @@
   });
   syncThemeButtons();
 
+  // ---- print: <button data-print> opens the browser's print dialog (Save as PDF is a printer choice there) ----
+  document.addEventListener("click", (event) => {
+    if (event.target.closest("[data-print]")) {
+      window.print();
+    }
+  });
+
   // ---- sidebar: pin it open ----
   const pin = document.getElementById("sidebar-pin");
   if (pin) {

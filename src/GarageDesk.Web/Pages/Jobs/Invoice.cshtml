@@ -1,0 +1,119 @@
+@page "{id:int}"
+@using GarageDesk.Web.Models
+@using GarageDesk.Web.Services
+@model InvoiceModel
+@{
+    var job = Model.Job;
+    var shop = Model.Shop;
+    var vehicle = job.Vehicle;
+    var customer = vehicle?.Customer;
+    ViewData["Title"] = $"{L["Invoice"]} #{job.Id}";
+}
+
+@* On screen: a toolbar and the invoice as a sheet of A4 paper. On paper: only the invoice (see the print rules in site.css). *@
+<div class="invoice-toolbar">
+    <a class="btn btn-outline-secondary" asp-page="Details" asp-route-id="@job.Id"><partial name="_Icon" model='"chevron-left"' />@L["Back to job card"]</a>
+    <div class="d-flex align-items-center gap-3 flex-wrap">
+        <span class="text-secondary small">@L["Choose Save as PDF as the printer to get a PDF."]</span>
+        <button type="button" class="btn btn-primary" data-print><partial name="_Icon" model='"file-text"' />@L["Print / Save as PDF"]</button>
+    </div>
+</div>
+
+<article class="invoice" aria-labelledby="invoice-title">
+    <header class="inv-head">
+        <div class="inv-brand">
+            @if (Model.LogoVersion is not null)
+            {
+                <img class="inv-logo" src="@Url.Content("~" + ShopLogoEndpoint.Path)?v=@Model.LogoVersion" alt="@shop.Name" />
+            }
+            else
+            {
+                <p class="inv-wordmark" dir="auto">@shop.Name</p>
+            }
+            <p class="inv-shop">
+                @if (Model.LogoVersion is not null)
+                {
+                    <strong dir="auto">@shop.Name</strong><br />
+                }
+                <span dir="auto">@shop.Address</span><br />
+                <span class="ltr">@shop.Phone</span>
+            </p>
+        </div>
+
+        <div class="inv-meta">
+            <h1 id="invoice-title" class="inv-title">@L["Invoice"]</h1>
+            <dl class="inv-facts">
+                <dt>@L["Invoice no."]</dt>
+                <dd><span class="ltr">#@job.Id</span></dd>
+                <dt>@L["Date"]</dt>
+                <dd><span class="ltr">@job.DateIn.ToString("yyyy-MM-dd")</span></dd>
+            </dl>
+            <span class="inv-status @(Model.IsPaid ? "is-paid" : "is-unpaid")">@(Model.IsPaid ? L["Paid"] : L["Unpaid"])</span>
+        </div>
+    </header>
+
+    <section class="inv-parties">
+        <div>
+            <h2 class="inv-label">@L["Bill to"]</h2>
+            <p class="inv-strong" dir="auto">@customer?.Name</p>
+            <p class="mb-0"><span class="ltr">@customer?.Phone</span></p>
+        </div>
+        <div>
+            <h2 class="inv-label">@L["Vehicle"]</h2>
+            <p class="inv-strong">@vehicle?.Make @vehicle?.Model <span class="ltr">@vehicle?.Year</span></p>
+            <p class="mb-0">
+                @L["Plate number"]: <span class="inv-plate" dir="auto">@vehicle?.Plate</span><br />
+                @L["Mileage at visit (km)"]: <span class="ltr">@job.MileageAtVisit.ToString("N0")</span>
+            </p>
+        </div>
+    </section>
+
+    <div class="inv-table-wrap">
+    <table class="inv-table">
+        <thead>
+            <tr>
+                <th scope="col" class="inv-num">#</th>
+                <th scope="col">@L["Description"]</th>
+                <th scope="col">@L["Type"]</th>
+                <th scope="col" class="inv-end">@L["Quantity"]</th>
+                <th scope="col" class="inv-end">@L["Unit price"] (@L["EGP"])</th>
+                <th scope="col" class="inv-end">@L["Total"] (@L["EGP"])</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (job.Lines.Count == 0)
+            {
+                <tr><td colspan="6" class="inv-empty">@L["No lines on this job card."]</td></tr>
+            }
+            @for (var i = 0; i < job.Lines.Count; i++)
+            {
+                var line = job.Lines[i];
+                <tr>
+                    <td class="inv-num"><span class="ltr">@(i + 1)</span></td>
+                    <td dir="auto">@line.Description</td>
+                    <td>@(line.Type == JobLineType.Part ? L["Part"] : L["Labor"])</td>
+                    <td class="inv-end"><span class="ltr">@line.Quantity.ToString("0.##")</span></td>
+                    <td class="inv-end"><span class="ltr">@MoneyFormat.Amount(line.UnitPrice)</span></td>
+                    <td class="inv-end inv-strong"><span class="ltr">@MoneyFormat.Amount(line.LineTotal)</span></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </div>
+
+    <section class="inv-totals" aria-label="@L["Total"]">
+        <dl>
+            <dt>@L["Parts"]</dt>
+            <dd><partial name="_Money" model="job.PartsTotal" /></dd>
+            <dt>@L["Labor"]</dt>
+            <dd><partial name="_Money" model="job.LaborTotal" /></dd>
+            <dt class="inv-grand">@L["Total"]</dt>
+            <dd class="inv-grand" data-invoice-total><partial name="_Money" model="job.Total" /></dd>
+        </dl>
+    </section>
+
+    <footer class="inv-foot">
+        <p class="mb-0">@L["Thank you for your business."]</p>
+        <p class="mb-0 inv-muted">@shop.Name &middot; <span class="ltr">@shop.Phone</span></p>
+    </footer>
+</article>

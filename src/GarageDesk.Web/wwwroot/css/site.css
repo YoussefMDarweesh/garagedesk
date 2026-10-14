@@ -2325,3 +2325,437 @@ dialog.confirm .actions { display: flex; justify-content: flex-end; gap: var(--s
     stroke-dashoffset: 0;
   }
 }
+
+/* =====================================================================================================
+   10. Invoice and print
+   The invoice is a sheet of paper: its own light palette, so dark mode and the shop's accent never make it
+   unreadable. On screen it sits in the app shell with a toolbar; on paper only the invoice is printed.
+   ===================================================================================================== */
+
+.invoice-toolbar {
+  max-width: 210mm;
+  margin-inline: auto;
+  margin-block-end: var(--s-4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.invoice {
+  --inv-ink: #0f172a;
+  --inv-muted: #5b6478;
+  --inv-line: #d9dee8;
+  --inv-soft: #f4f6fa;
+  --inv-accent: var(--accent);
+
+  max-width: 210mm;
+  margin-inline: auto;
+  padding: 14mm 15mm 12mm;
+  background: #fff;
+  color: var(--inv-ink);
+  border-radius: 6px;
+  border-block-start: 7px solid var(--inv-accent);
+  box-shadow: var(--sh-3);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.invoice h1,
+.invoice h2,
+.invoice p,
+.invoice dd,
+.invoice dt,
+.invoice td,
+.invoice th,
+.invoice strong {
+  color: var(--inv-ink);
+}
+
+.invoice p,
+.invoice dl,
+.invoice h1,
+.invoice h2 {
+  margin: 0;
+}
+
+.invoice .inv-muted,
+.invoice dt {
+  color: var(--inv-muted);
+}
+
+.inv-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--s-5);
+  padding-block-end: 6mm;
+  border-block-end: 1px solid var(--inv-line);
+}
+
+.inv-wordmark {
+  font-size: 1.55rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-block-end: 0.35rem !important;
+}
+
+.inv-logo {
+  display: block;
+  max-height: 18mm;
+  max-width: 58mm;
+  object-fit: contain;
+  margin-block-end: 0.5rem;
+}
+
+.inv-shop {
+  color: var(--inv-muted) !important;
+  font-size: 0.85rem;
+}
+
+.inv-shop strong {
+  color: var(--inv-ink);
+}
+
+.inv-meta {
+  text-align: end;
+  flex: none;
+}
+
+.inv-title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--inv-ink);
+}
+
+html[lang="ar"] .inv-title {
+  text-transform: none;
+}
+
+.inv-facts {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: end;
+  gap: 0.1rem 0.9rem;
+  margin-block: 0.6rem 0.7rem !important;
+  font-size: 0.85rem;
+}
+
+.inv-facts dd {
+  margin: 0;
+  font-weight: 700;
+  text-align: end;
+}
+
+.inv-status {
+  display: inline-block;
+  padding: 0.15rem 0.7rem;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+html[lang="ar"] .inv-status {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.inv-status.is-paid { color: #15803d; background: #e7f6ec; }
+.inv-status.is-unpaid { color: #b45309; background: #fff4e0; }
+
+.inv-parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-4);
+  margin-block-start: 6mm;
+}
+
+.inv-parties > div {
+  padding: 0.8rem 1rem;
+  background: var(--inv-soft);
+  border-radius: 8px;
+}
+
+.inv-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--inv-muted) !important;
+  margin-block-end: 0.3rem !important;
+}
+
+html[lang="ar"] .inv-label {
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.8rem;
+}
+
+.inv-strong {
+  font-weight: 700;
+}
+
+.inv-plate {
+  display: inline-block;
+  padding: 0 0.4rem;
+  border: 1.5px solid var(--inv-ink);
+  border-radius: 5px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.inv-table-wrap {
+  margin-block-start: 6mm;
+  overflow-x: auto;
+}
+
+.inv-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.inv-table thead {
+  display: table-header-group; /* repeated on every page when the table breaks */
+}
+
+.inv-table th {
+  padding: 0.55rem 0.6rem;
+  background: var(--inv-soft);
+  border-block: 1px solid var(--inv-line);
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  text-align: start;
+  white-space: nowrap;
+}
+
+html[lang="ar"] .inv-table th {
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.8rem;
+}
+
+.inv-table td {
+  padding: 0.5rem 0.6rem;
+  vertical-align: top;
+  border-block-end: 1px solid var(--inv-line);
+}
+
+.inv-table tr {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.inv-table .inv-num {
+  width: 2rem;
+  color: var(--inv-muted);
+}
+
+.inv-table .inv-end {
+  text-align: end;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.inv-empty {
+  text-align: center;
+  color: var(--inv-muted) !important;
+  padding-block: 1.2rem !important;
+}
+
+.inv-totals {
+  margin-block-start: 5mm;
+  margin-inline-start: auto;
+  width: min(100%, 78mm);
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.inv-totals dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.35rem 0;
+}
+
+.inv-totals dt {
+  padding-inline-end: 1rem;
+}
+
+.inv-totals dd {
+  margin: 0;
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.inv-totals .inv-grand {
+  margin-block-start: 0.25rem;
+  padding-block-start: 0.55rem;
+  border-block-start: 2px solid var(--inv-ink);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--inv-ink);
+}
+
+.inv-foot {
+  margin-block-start: 10mm;
+  padding-block-start: 4mm;
+  border-block-start: 1px solid var(--inv-line);
+  text-align: center;
+  font-size: 0.85rem;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+@media (max-width: 720px) {
+  .invoice {
+    padding: 1.1rem 1rem;
+  }
+
+  .inv-head,
+  .inv-parties {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .inv-meta {
+    text-align: start;
+  }
+
+  .inv-facts {
+    justify-content: start;
+  }
+}
+
+/* ---------- print ---------- */
+
+@page {
+  size: A4;
+  margin: 12mm;
+}
+
+@media print {
+  /* Paper is always white with dark text, whatever theme the app is in. */
+  html,
+  body,
+  body.app,
+  body.public,
+  .sheet {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  body {
+    display: block;
+    min-height: 0;
+    font-size: 10pt;
+  }
+
+  body.app::before {
+    display: none !important;
+  }
+
+  /* Everything that is not the page's own content. */
+  .sidebar,
+  .topbar,
+  .tabbar,
+  .toasts,
+  .app-footer,
+  .public-header,
+  .public-footer,
+  .invoice-toolbar,
+  .visually-hidden-focusable,
+  dialog {
+    display: none !important;
+  }
+
+  .app-shell {
+    display: block;
+    padding: 0;
+    min-height: 0;
+  }
+
+  .app-main {
+    margin-inline-start: 0 !important;
+  }
+
+  .sheet {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    min-height: 0;
+  }
+
+  .sheet-body,
+  .public-main {
+    padding: 0;
+    max-width: none;
+  }
+
+  .invoice {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    font-size: 10pt;
+  }
+
+  /* Tighter vertical rhythm on paper, so a typical job (about 15 lines) fits one A4 page. Longer ones flow onto
+     the next page with the table header repeated and no row or the totals block split. */
+  .invoice {
+    line-height: 1.35;
+  }
+
+  .inv-head {
+    padding-block-end: 4mm;
+  }
+
+  .inv-parties {
+    margin-block-start: 4mm;
+  }
+
+  .inv-parties > div {
+    padding: 0.5rem 0.8rem;
+  }
+
+  .inv-table-wrap {
+    margin-block-start: 4mm;
+    overflow: visible;
+  }
+
+  .inv-table th {
+    padding-block: 0.4rem;
+  }
+
+  .inv-table td {
+    padding-block: 0.28rem;
+  }
+
+  .inv-totals {
+    margin-block-start: 4mm;
+  }
+
+  .inv-foot {
+    margin-block-start: 6mm;
+    padding-block-start: 3mm;
+  }
+
+  /* Keep the tinted blocks and the accent bar where they matter; the page stays readable without colour. */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}

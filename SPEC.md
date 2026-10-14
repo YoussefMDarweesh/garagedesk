@@ -46,6 +46,8 @@ Each shop is a separate tenant. One shop must never see another shop's data.
 - Printable invoice page for a job card (shop details, customer, car, lines, total in EGP).
 - User prints or saves as PDF from the browser. No PDF library needed.
 - **Done when:** the invoice prints cleanly on one A4 page.
+- Decisions: the invoice lives at `/Jobs/Invoice/{id}` and is reached from the job card page ("Invoice / Print"). It reuses the job card's own totals code, so the two can never disagree. The invoice number is the job card number (`#id`) and the date is the visit date; there is no separate invoice sequence yet. Payment status is "Paid" only when the job card is Paid. Internal notes are never printed. Printing hides the app chrome, always uses white paper with dark text whatever the theme, repeats the table header on every page and never splits a row or the totals block. A typical job (about 15 lines) fits one A4 page.
+- Not included: emailing invoices, invoice numbering sequences, taxes/VAT, discounts, server-side PDF generation.
 
 ### M7 — Ship
 - Deployed online, demo shop with seed data, README with screenshots and a short demo video.
