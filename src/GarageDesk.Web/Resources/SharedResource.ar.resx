@@ -201,6 +201,13 @@
   <data name="EGP" xml:space="preserve"><value>ج.م</value></data>
   <data name="Details" xml:space="preserve"><value>التفاصيل</value></data>
 
+  <!-- Service history -->
+  <data name="Visits: {0}" xml:space="preserve"><value>عدد الزيارات: {0}</value></data>
+  <data name="All visits total" xml:space="preserve"><value>إجمالي كل الزيارات</value></data>
+  <data name="No visits yet. Open a job card to start this vehicle's history." xml:space="preserve"><value>لا توجد زيارات بعد. افتح أمر شغل لبدء سجل هذه المركبة.</value></data>
+  <data name="What was done" xml:space="preserve"><value>ما تم تنفيذه</value></data>
+  <data name="km" xml:space="preserve"><value>كم</value></data>
+
   <!-- Shop settings and logo -->
   <data name="Shop settings" xml:space="preserve"><value>إعدادات الورشة</value></data>
   <data name="Shop logo" xml:space="preserve"><value>شعار الورشة</value></data>
