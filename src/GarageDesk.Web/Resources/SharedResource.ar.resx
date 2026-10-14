@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Arabic translations. The name of each entry is the English text used in the views and code.
+  To translate a new string: add the English text in the view as @L["..."], then add a <data> entry here
+  with the exact same text as the name. Anything missing here simply shows in English.
+-->
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Layout and navigation -->
+  <data name="Skip to content" xml:space="preserve"><value>انتقل إلى المحتوى</value></data>
+  <data name="Toggle navigation" xml:space="preserve"><value>تبديل التنقل</value></data>
+  <data name="Home" xml:space="preserve"><value>الرئيسية</value></data>
+  <data name="Language" xml:space="preserve"><value>اللغة</value></data>
+  <data name="Switch between light and dark theme" xml:space="preserve"><value>التبديل بين المظهر الفاتح والداكن</value></data>
+  <data name="Prices in EGP" xml:space="preserve"><value>الأسعار بالجنيه المصري</value></data>
+  <data name="Privacy" xml:space="preserve"><value>الخصوصية</value></data>
+  <data name="Your shop" xml:space="preserve"><value>ورشتك</value></data>
+  <data name="Account" xml:space="preserve"><value>الحساب</value></data>
+  <data name="Account settings" xml:space="preserve"><value>إعدادات الحساب</value></data>
+  <data name="Log out" xml:space="preserve"><value>تسجيل الخروج</value></data>
+  <data name="Log in" xml:space="preserve"><value>تسجيل الدخول</value></data>
+  <data name="Create your shop" xml:space="preserve"><value>أنشئ ورشتك</value></data>
+
+  <!-- Home: visitors -->
+  <data name="For small car service shops" xml:space="preserve"><value>لورش خدمة السيارات الصغيرة</value></data>
+  <data name="One place for every job, car and customer." xml:space="preserve"><value>مكان واحد لكل أمر شغل وسيارة وعميل.</value></data>
+  <data name="Replace paper job cards, WhatsApp scrolling and Excel sheets with a simple workshop manager. Know what was done, what it cost, and when each car is due back." xml:space="preserve"><value>استبدل أوراق أوامر الشغل ورسائل واتساب وجداول إكسل بنظام بسيط لإدارة الورشة. اعرف ما تم إنجازه وتكلفته ومتى يحين موعد عودة كل سيارة.</value></data>
+  <data name="What GarageDesk does" xml:space="preserve"><value>ماذا يقدّم GarageDesk</value></data>
+  <data name="Available" xml:space="preserve"><value>متاح</value></data>
+  <data name="Coming soon" xml:space="preserve"><value>قريبًا</value></data>
+  <data name="Shop accounts" xml:space="preserve"><value>حسابات الورش</value></data>
+  <data name="Every shop is its own private space. One shop never sees another shop's data." xml:space="preserve"><value>لكل ورشة مساحتها الخاصة. لا ترى أي ورشة بيانات ورشة أخرى.</value></data>
+  <data name="Customers &amp; vehicles" xml:space="preserve"><value>العملاء والمركبات</value></data>
+  <data name="Find any customer or car in seconds by name, phone or plate number." xml:space="preserve"><value>اعثر على أي عميل أو سيارة في ثوانٍ بالاسم أو الهاتف أو رقم اللوحة.</value></data>
+  <data name="Job cards" xml:space="preserve"><value>أوامر الشغل</value></data>
+  <data name="Parts and labor lines with totals worked out for you, from booked to paid." xml:space="preserve"><value>بنود قطع الغيار والمصنعية مع حساب الإجمالي تلقائيًا، من الحجز حتى الدفع.</value></data>
+  <data name="Service history" xml:space="preserve"><value>سجل الصيانة</value></data>
+  <data name="Every visit for a car, newest first, with mileage and what was done." xml:space="preserve"><value>كل زيارة للسيارة، الأحدث أولًا، مع عدد الكيلومترات وما تم تنفيذه.</value></data>
+  <data name="Reminders" xml:space="preserve"><value>التذكيرات</value></data>
+  <data name="See who is due or overdue and message them on WhatsApp in one tap." xml:space="preserve"><value>اعرف من حان موعده أو تأخر عنه وراسله على واتساب بضغطة واحدة.</value></data>
+  <data name="Invoices" xml:space="preserve"><value>الفواتير</value></data>
+  <data name="Clean A4 invoices in EGP, ready to print or save as PDF." xml:space="preserve"><value>فواتير A4 أنيقة بالجنيه المصري، جاهزة للطباعة أو الحفظ بصيغة PDF.</value></data>
+
+  <!-- Home: signed-in owner -->
+  <data name="Welcome" xml:space="preserve"><value>أهلًا بك</value></data>
+  <data name="Your shop is set up and ready." xml:space="preserve"><value>ورشتك جاهزة للعمل.</value></data>
+  <data name="Getting started" xml:space="preserve"><value>البداية</value></data>
+  <data name="Create your account" xml:space="preserve"><value>أنشئ حسابك</value></data>
+  <data name="Set up your shop" xml:space="preserve"><value>جهّز ورشتك</value></data>
+  <data name="Done" xml:space="preserve"><value>تم</value></data>
+  <data name="Add your first customer and car" xml:space="preserve"><value>أضف أول عميل وسيارة</value></data>
+  <data name="Open your first job card" xml:space="preserve"><value>افتح أول أمر شغل</value></data>
+
+  <!-- Login, register, create shop -->
+  <data name="Step {0} of {1}" xml:space="preserve"><value>الخطوة {0} من {1}</value></data>
+  <data name="Welcome back to your workshop." xml:space="preserve"><value>مرحبًا بعودتك إلى ورشتك.</value></data>
+  <data name="Email" xml:space="preserve"><value>البريد الإلكتروني</value></data>
+  <data name="Password" xml:space="preserve"><value>كلمة المرور</value></data>
+  <data name="Confirm password" xml:space="preserve"><value>تأكيد كلمة المرور</value></data>
+  <data name="Keep me signed in" xml:space="preserve"><value>أبقني مسجّلًا للدخول</value></data>
+  <data name="New here?" xml:space="preserve"><value>جديد هنا؟</value></data>
+  <data name="You'll set up your shop next." xml:space="preserve"><value>ستجهّز ورشتك في الخطوة التالية.</value></data>
+  <data name="At least 6 characters, with an uppercase letter, a lowercase letter, a number and a symbol." xml:space="preserve"><value>6 أحرف على الأقل، وتتضمن حرفًا كبيرًا وحرفًا صغيرًا ورقمًا ورمزًا.</value></data>
+  <data name="Create account" xml:space="preserve"><value>إنشاء الحساب</value></data>
+  <data name="Already have an account?" xml:space="preserve"><value>لديك حساب بالفعل؟</value></data>
+  <data name="Last step before you can start. Prices are in EGP." xml:space="preserve"><value>خطوة أخيرة قبل أن تبدأ. الأسعار بالجنيه المصري.</value></data>
+  <data name="Shop name" xml:space="preserve"><value>اسم الورشة</value></data>
+  <data name="Phone" xml:space="preserve"><value>رقم الهاتف</value></data>
+  <data name="Address" xml:space="preserve"><value>العنوان</value></data>
+  <data name="Create shop" xml:space="preserve"><value>إنشاء الورشة</value></data>
+
+  <!-- Validation messages -->
+  <data name="The {0} field is required." xml:space="preserve"><value>حقل {0} مطلوب.</value></data>
+  <data name="The {0} field is not a valid e-mail address." xml:space="preserve"><value>حقل {0} ليس بريدًا إلكترونيًا صالحًا.</value></data>
+  <data name="The field {0} must be a string with a maximum length of {1}." xml:space="preserve"><value>يجب ألا يتجاوز طول حقل {0} عدد {1} حرفًا.</value></data>
+  <data name="The {0} must be at least {2} and at max {1} characters long." xml:space="preserve"><value>يجب أن يتراوح طول {0} بين {2} و{1} حرفًا.</value></data>
+  <data name="The password and confirmation password do not match." xml:space="preserve"><value>كلمة المرور وتأكيدها غير متطابقتين.</value></data>
+  <data name="Invalid login attempt." xml:space="preserve"><value>محاولة تسجيل دخول غير صحيحة.</value></data>
+
+  <!-- Account errors (from ASP.NET Identity) -->
+  <data name="An unknown failure has occurred." xml:space="preserve"><value>حدث خطأ غير معروف.</value></data>
+  <data name="Incorrect password." xml:space="preserve"><value>كلمة المرور غير صحيحة.</value></data>
+  <data name="Email '{0}' is invalid." xml:space="preserve"><value>البريد الإلكتروني '{0}' غير صالح.</value></data>
+  <data name="Username '{0}' is already taken." xml:space="preserve"><value>اسم المستخدم '{0}' مستخدم بالفعل.</value></data>
+  <data name="Email '{0}' is already taken." xml:space="preserve"><value>البريد الإلكتروني '{0}' مستخدم بالفعل.</value></data>
+  <data name="Username '{0}' is invalid, can only contain letters or digits." xml:space="preserve"><value>اسم المستخدم '{0}' غير صالح، ويمكن أن يحتوي على أحرف وأرقام فقط.</value></data>
+  <data name="Passwords must be at least {0} characters." xml:space="preserve"><value>يجب ألا تقل كلمة المرور عن {0} أحرف.</value></data>
+  <data name="Passwords must use at least {0} different characters." xml:space="preserve"><value>يجب أن تستخدم كلمة المرور {0} أحرف مختلفة على الأقل.</value></data>
+  <data name="Passwords must have at least one non alphanumeric character." xml:space="preserve"><value>يجب أن تحتوي كلمة المرور على رمز واحد على الأقل.</value></data>
+  <data name="Passwords must have at least one digit ('0'-'9')." xml:space="preserve"><value>يجب أن تحتوي كلمة المرور على رقم واحد على الأقل (0-9).</value></data>
+  <data name="Passwords must have at least one lowercase ('a'-'z')." xml:space="preserve"><value>يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل (a-z).</value></data>
+  <data name="Passwords must have at least one uppercase ('A'-'Z')." xml:space="preserve"><value>يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل (A-Z).</value></data>
+
+  <!-- Privacy -->
+  <data name="GarageDesk is a workshop manager that is still under development. This page explains, in plain terms, what it stores." xml:space="preserve"><value>GarageDesk نظام لإدارة الورش لا يزال قيد التطوير. توضّح هذه الصفحة ببساطة ما الذي يخزّنه.</value></data>
+  <data name="What we store" xml:space="preserve"><value>ما الذي نخزّنه</value></data>
+  <data name="Your account: your email address and a securely hashed password (we never store the password itself)." xml:space="preserve"><value>حسابك: بريدك الإلكتروني وكلمة مرور مشفّرة بشكل آمن (لا نخزّن كلمة المرور نفسها).</value></data>
+  <data name="Your shop's details and, as the app grows, the customers, vehicles and jobs you enter." xml:space="preserve"><value>بيانات ورشتك، ومع نمو التطبيق، العملاء والمركبات وأوامر الشغل التي تُدخلها.</value></data>
+  <data name="Who can see it" xml:space="preserve"><value>من يمكنه رؤيتها</value></data>
+  <data name="Each shop is separate. Signed-in users only ever see their own shop's data." xml:space="preserve"><value>كل ورشة منفصلة عن غيرها. لا يرى المستخدم المسجّل إلا بيانات ورشته.</value></data>
+  <data name="Cookies" xml:space="preserve"><value>ملفات تعريف الارتباط</value></data>
+  <data name="One cookie keeps you signed in and another remembers your language. Your light or dark theme is saved in your browser. There is no advertising or tracking." xml:space="preserve"><value>ملف تعريف ارتباط يُبقيك مسجّلًا للدخول وآخر يتذكّر لغتك. ويُحفظ اختيارك للمظهر الفاتح أو الداكن في متصفحك. لا توجد إعلانات ولا تتبّع.</value></data>
+
+  <!-- Error page -->
+  <data name="Error" xml:space="preserve"><value>خطأ</value></data>
+  <data name="Something went wrong" xml:space="preserve"><value>حدث خطأ ما</value></data>
+  <data name="We couldn't complete your request. Please try again, and if it keeps happening let us know." xml:space="preserve"><value>تعذّر إكمال طلبك. يُرجى المحاولة مرة أخرى، وإن تكرّر الأمر فأخبرنا.</value></data>
+  <data name="Request ID" xml:space="preserve"><value>معرّف الطلب</value></data>
+  <data name="Back to home" xml:space="preserve"><value>العودة إلى الرئيسية</value></data>
+</root>

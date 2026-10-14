@@ -1,18 +1,18 @@
 @page
 @model ErrorModel
 @{
-    ViewData["Title"] = "Something went wrong";
+    ViewData["Title"] = L["Something went wrong"].Value;
 }
 
 <div class="text-center narrow mx-auto py-4">
-    <p class="eyebrow">Error</p>
-    <h1 class="display-6 fw-bold">Something went wrong</h1>
-    <p class="text-secondary">We couldn't complete your request. Please try again, and if it keeps happening let us know.</p>
+    <p class="eyebrow">@L["Error"]</p>
+    <h1 class="display-6 fw-bold">@L["Something went wrong"]</h1>
+    <p class="text-secondary">@L["We couldn't complete your request. Please try again, and if it keeps happening let us know."]</p>
 
     @if (Model.ShowRequestId)
     {
-        <p class="small text-secondary">Request ID: <code>@Model.RequestId</code></p>
+        <p class="small text-secondary">@L["Request ID"]: <code>@Model.RequestId</code></p>
     }
 
-    <a class="btn btn-primary mt-2" asp-area="" asp-page="/Index">Back to home</a>
+    <a class="btn btn-primary mt-2" asp-area="" asp-page="/Index">@L["Back to home"]</a>
 </div>

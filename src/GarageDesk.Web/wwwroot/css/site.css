@@ -1,22 +1,47 @@
-/* GarageDesk: a thin layer on top of Bootstrap 5.
-   Neutral greys + ONE accent colour (--gd-accent). System fonts, no build step. */
+/* GarageDesk: a thin layer on top of Bootstrap 5.3.
+   Neutral greys + ONE accent colour. Light and dark themes (data-bs-theme on <html>) both run on
+   Bootstrap's CSS variables, and only logical properties are used so right-to-left (Arabic) flips cleanly. */
 
-:root {
-  --gd-accent: #c2410c;        /* white text on this passes WCAG AA */
+/* ---------- theme variables ---------- */
+
+:root,
+[data-bs-theme="light"] {
+  --gd-accent: #c2410c;          /* buttons: white text on this passes WCAG AA */
   --gd-accent-hover: #9a3412;
+  --gd-accent-text: #c2410c;     /* accent used as text/links on the page background */
+  --gd-accent-rgb: 194, 65, 12;
+  --gd-surface: #ffffff;         /* navbar, cards */
 
   --bs-body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --bs-body-bg: #f8f9fa;
+  --bs-body-bg-rgb: 248, 249, 250;
   --bs-body-color: #212529;
+  --bs-body-color-rgb: 33, 37, 41;
   --bs-border-radius: 0.5rem;
   --bs-border-radius-lg: 0.75rem;
 
   --bs-primary: var(--gd-accent);
   --bs-primary-rgb: 194, 65, 12;
-  --bs-link-color: var(--gd-accent);
+  --bs-link-color: var(--gd-accent-text);
   --bs-link-color-rgb: 194, 65, 12;
   --bs-link-hover-color: var(--gd-accent-hover);
   --bs-link-hover-color-rgb: 154, 52, 18;
+}
+
+[data-bs-theme="dark"] {
+  --gd-accent-text: #fb923c;     /* lighter orange so it reads on a dark background */
+  --gd-surface: #171b22;
+
+  --bs-body-bg: #0f1216;
+  --bs-body-bg-rgb: 15, 18, 22;
+  --bs-body-color: #dee2e6;
+  --bs-body-color-rgb: 222, 226, 230;
+  --bs-border-color: #2b313b;
+
+  --bs-link-color: #fb923c;
+  --bs-link-color-rgb: 251, 146, 60;
+  --bs-link-hover-color: #fdba74;
+  --bs-link-hover-color-rgb: 253, 186, 116;
 }
 
 html {
@@ -37,6 +62,11 @@ h1, h2, h3 {
   letter-spacing: -0.015em;
 }
 
+/* Negative/positive letter-spacing breaks the joined letters of Arabic script. */
+html[lang="ar"] * {
+  letter-spacing: normal !important;
+}
+
 /* ---------- buttons & focus ---------- */
 
 .btn-primary {
@@ -54,8 +84,8 @@ h1, h2, h3 {
 .form-control:focus,
 .form-check-input:focus,
 .btn:focus-visible {
-  border-color: var(--gd-accent);
-  box-shadow: 0 0 0 0.25rem rgba(194, 65, 12, 0.2);
+  border-color: var(--gd-accent-text);
+  box-shadow: 0 0 0 0.25rem rgba(var(--gd-accent-rgb), 0.25);
 }
 
 .form-check-input:checked {
@@ -63,10 +93,20 @@ h1, h2, h3 {
   border-color: var(--gd-accent);
 }
 
+/* ---------- surfaces ---------- */
+
+.card {
+  --bs-card-bg: var(--gd-surface);
+}
+
+.list-group {
+  --bs-list-group-bg: transparent;
+}
+
 /* ---------- navbar & footer ---------- */
 
 .app-navbar {
-  background: #fff;
+  background: var(--gd-surface);
   border-bottom: 1px solid var(--bs-border-color);
 }
 
@@ -79,13 +119,13 @@ h1, h2, h3 {
   display: inline-block;
   width: 0.55rem;
   height: 0.55rem;
-  margin-right: 0.4rem;
+  margin-inline-end: 0.4rem;
   border-radius: 50%;
   background: var(--gd-accent);
 }
 
 .app-navbar .nav-link.active {
-  color: var(--gd-accent);
+  color: var(--gd-accent-text);
   font-weight: 600;
 }
 
@@ -94,6 +134,18 @@ h1, h2, h3 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* The hamburger icon is a dark image; give it light strokes in dark mode. */
+[data-bs-theme="dark"] .app-navbar .navbar-toggler {
+  --bs-navbar-toggler-border-color: rgba(255, 255, 255, 0.25);
+  --bs-navbar-toggler-icon-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Theme toggle: show the moon in light mode (switch to dark), the sun in dark mode. */
+[data-bs-theme="dark"] .theme-toggle .icon-moon,
+:root:not([data-bs-theme="dark"]) .theme-toggle .icon-sun {
+  display: none;
 }
 
 .app-footer {
@@ -109,7 +161,7 @@ h1, h2, h3 {
   letter-spacing: 0.08em;
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--gd-accent);
+  color: var(--gd-accent-text);
 }
 
 .narrow {
@@ -128,7 +180,7 @@ h1, h2, h3 {
 
 /* ---------- form validation states ----------
    The ASP.NET validation scripts add their own classes (not Bootstrap's is-invalid),
-   so we map them onto Bootstrap's colours here. */
+   so we map them onto Bootstrap's colours here. These colours adapt to the active theme. */
 
 .input-validation-error,
 .form-control.input-validation-error:focus {
@@ -161,5 +213,5 @@ h1, h2, h3 {
 
 .validation-summary-errors ul {
   margin: 0;
-  padding-left: 1.1rem;
+  padding-inline-start: 1.1rem;
 }

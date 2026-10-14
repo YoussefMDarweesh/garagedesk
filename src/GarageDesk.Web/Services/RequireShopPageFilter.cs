@@ -16,6 +16,7 @@ public class RequireShopPageFilter(ICurrentShop currentShop) : IAsyncPageFilter
         var page = context.ActionDescriptor.ViewEnginePath;
         var isExempt = context.ActionDescriptor.AreaName == "Identity" // login, register, logout, manage account
                        || page == "/CreateShop"
+                       || page == "/SetCulture" // language switcher must work before a shop exists
                        || page == "/Error";
 
         var needsShop = !isExempt

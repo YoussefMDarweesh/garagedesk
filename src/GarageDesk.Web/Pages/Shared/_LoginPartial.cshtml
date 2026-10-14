@@ -10,25 +10,25 @@
     @if (!string.IsNullOrEmpty(shopName))
     {
         <li class="nav-item">
-            <span class="navbar-text shop-name d-block fw-semibold" title="Your shop">@shopName</span>
+            <span class="navbar-text shop-name d-block fw-semibold" title="@L["Your shop"]">@shopName</span>
         </li>
     }
     <li class="nav-item">
-        <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Account settings">Account</a>
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="@L["Account settings"]">@L["Account"]</a>
     </li>
     <li class="nav-item">
         <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })" method="post">
-            <button type="submit" class="btn btn-outline-secondary btn-sm">Log out</button>
+            <button type="submit" class="btn btn-outline-secondary btn-sm">@L["Log out"]</button>
         </form>
     </li>
 }
 else
 {
     <li class="nav-item">
-        <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Log in</a>
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">@L["Log in"]</a>
     </li>
     <li class="nav-item">
-        <a class="btn btn-primary btn-sm" asp-area="Identity" asp-page="/Account/Register">Create your shop</a>
+        <a class="btn btn-primary btn-sm" asp-area="Identity" asp-page="/Account/Register">@L["Create your shop"]</a>
     </li>
 }
 </ul>

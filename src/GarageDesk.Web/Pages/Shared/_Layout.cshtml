@@ -1,33 +1,73 @@
+@using System.Globalization
+@using GarageDesk.Web.Services
+@{
+    var lang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    if (!Cultures.Supported.Contains(lang)) { lang = Cultures.Default; }
+    var isRtl = Cultures.IsRightToLeft(lang);
+    // Bootstrap ships a mirrored stylesheet for right-to-left languages.
+    var bootstrapCss = Url.Content("~/lib/bootstrap/dist/css/" + (isRtl ? "bootstrap.rtl.min.css" : "bootstrap.min.css"));
+    var currentUrl = $"{Context.Request.PathBase}{Context.Request.Path}{Context.Request.QueryString}";
+}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@lang" dir="@(isRtl ? "rtl" : "ltr")">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="GarageDesk: a simple workshop manager for small car service shops." />
     <title>@ViewData["Title"] · GarageDesk</title>
     <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @* Set the theme before first paint (saved choice, else the OS setting) so the page never flashes the wrong one. *@
+    <script>
+        (function () {
+            try {
+                var theme = localStorage.getItem("gd-theme");
+                if (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches) { theme = "dark"; }
+                if (theme) { document.documentElement.setAttribute("data-bs-theme", theme); }
+            } catch (e) { }
+        })();
+    </script>
+    <link rel="stylesheet" href="@bootstrapCss" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
-    <a class="visually-hidden-focusable position-absolute m-2 p-2 bg-white rounded" href="#main">Skip to content</a>
+    <a class="visually-hidden-focusable position-absolute m-2 p-2 bg-body rounded" href="#main">@L["Skip to content"]</a>
 
     <header>
         <nav class="navbar navbar-expand-md app-navbar" aria-label="Main">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-page="/Index"><span class="brand-dot"></span>GarageDesk</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
-                        aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                        aria-controls="mainNav" aria-expanded="false" aria-label="@L["Toggle navigation"]">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString() == "/Index" ? "active" : "")"
-                               asp-area="" asp-page="/Index">Home</a>
+                               asp-area="" asp-page="/Index">@L["Home"]</a>
                         </li>
                     </ul>
-                    <partial name="_LoginPartial" />
+
+                    <div class="d-flex flex-column flex-md-row align-items-md-center gap-3 gap-md-2 mt-3 mt-md-0">
+                        <partial name="_LoginPartial" />
+
+                        <form asp-area="" asp-page="/SetCulture" method="post" class="d-flex align-items-center gap-2 lang-switch" aria-label="@L["Language"]">
+                            <input type="hidden" name="returnUrl" value="@currentUrl" />
+                            <button type="submit" name="culture" value="en" lang="en"
+                                    class="btn btn-link btn-sm p-0 text-decoration-none @(lang == "en" ? "fw-bold text-body" : "text-secondary")"
+                                    aria-pressed="@(lang == "en" ? "true" : "false")">EN</button>
+                            <span class="text-secondary" aria-hidden="true">|</span>
+                            <button type="submit" name="culture" value="ar" lang="ar"
+                                    class="btn btn-link btn-sm p-0 text-decoration-none @(lang == "ar" ? "fw-bold text-body" : "text-secondary")"
+                                    aria-pressed="@(lang == "ar" ? "true" : "false")">العربية</button>
+                        </form>
+
+                        <button id="theme-toggle" type="button" class="btn btn-outline-secondary btn-sm theme-toggle"
+                                aria-label="@L["Switch between light and dark theme"]" aria-pressed="false">
+                            <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                            <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -39,8 +79,8 @@
 
     <footer class="app-footer py-3">
         <div class="container d-flex flex-wrap justify-content-between gap-2">
-            <span>&copy; @DateTime.Now.Year GarageDesk &middot; Prices in EGP</span>
-            <a class="link-secondary" asp-area="" asp-page="/Privacy">Privacy</a>
+            <span>&copy; @DateTime.Now.Year GarageDesk &middot; @L["Prices in EGP"]</span>
+            <a class="link-secondary" asp-area="" asp-page="/Privacy">@L["Privacy"]</a>
         </div>
     </footer>
 

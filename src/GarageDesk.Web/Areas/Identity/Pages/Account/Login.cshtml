@@ -3,37 +3,37 @@
 @using Microsoft.AspNetCore.Identity.UI.V5.Pages.Account.Internal
 @model LoginModel
 @{
-    ViewData["Title"] = "Log in";
+    ViewData["Title"] = L["Log in"].Value;
 }
 
 <div class="card shadow-sm auth-card">
     <div class="card-body p-4 p-md-5">
-        <h1 class="h3 fw-bold">Log in</h1>
-        <p class="text-secondary mb-4">Welcome back to your workshop.</p>
+        <h1 class="h3 fw-bold">@L["Log in"]</h1>
+        <p class="text-secondary mb-4">@L["Welcome back to your workshop."]</p>
 
         <form id="account" method="post" novalidate>
-            <div asp-validation-summary="ModelOnly" role="alert"></div>
+            <partial name="_FormErrors" />
 
             <div class="form-floating mb-3">
                 <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                <label asp-for="Input.Email">Email</label>
+                <label asp-for="Input.Email">@L["Email"]</label>
                 <span asp-validation-for="Input.Email"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                <label asp-for="Input.Password">Password</label>
+                <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="@L["Password"]" />
+                <label asp-for="Input.Password">@L["Password"]</label>
                 <span asp-validation-for="Input.Password"></span>
             </div>
             <div class="form-check mb-4">
                 <input asp-for="Input.RememberMe" class="form-check-input" />
-                <label asp-for="Input.RememberMe" class="form-check-label">Keep me signed in</label>
+                <label asp-for="Input.RememberMe" class="form-check-label">@L["Keep me signed in"]</label>
             </div>
 
-            <button id="login-submit" type="submit" class="btn btn-primary w-100 py-2">Log in</button>
+            <button id="login-submit" type="submit" class="btn btn-primary w-100 py-2">@L["Log in"]</button>
         </form>
 
         <p class="text-center text-secondary mt-4 mb-0">
-            New here? <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Create your shop</a>
+            @L["New here?"] <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">@L["Create your shop"]</a>
         </p>
     </div>
 </div>
