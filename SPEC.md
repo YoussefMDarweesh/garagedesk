@@ -79,7 +79,7 @@ Online payments, inventory/stock, multi-branch, staff roles, mobile app, SMS, em
 - `ShopLogo` (Id, ShopId, Bytes, ContentType, UpdatedAtUtc), one per shop, stored in the database
 - `AppUser` (Identity user + ShopId)
 - `Customer` (Id, ShopId, Name, Phone, Notes)
-- `Vehicle` (Id, ShopId, CustomerId, Plate, Vin, Make, Model, Year, Mileage)
+- `Vehicle` (Id, ShopId, CustomerId, Plate, PlateKey, Vin, Make, Model, Year, Mileage) — `PlateKey` is the plate reduced to letters/digits, used for searching
 - `JobCard` (Id, ShopId, VehicleId, DateIn, MileageAtVisit, Status, Notes)
 - `JobLine` (Id, JobCardId, Type, Description, Quantity, UnitPrice)
 - `Reminder` (Id, ShopId, VehicleId, Type, DueDate?, DueMileage?, IsDone)
