@@ -31,6 +31,7 @@ Each shop is a separate tenant. One shop must never see another shop's data.
 
 ### M4 — Service history
 - Vehicle page shows every past job card, newest first, with totals.
+- A job card's mileage reading raises the vehicle's current mileage when it is higher (when the job card is opened or its mileage corrected). A lower reading never lowers it.
 - **Done when:** a car with 3 past visits shows all 3 with dates, mileage, and what was done.
 
 ### M5 — Reminders + WhatsApp
