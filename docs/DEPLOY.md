@@ -1,14 +1,18 @@
-# Deploying GarageDesk on Render (free, no card)
+# Deploying GarageDesk with Docker (guide written for Render)
 
-The app runs as a **Docker container on Render's free web service** and uses a **Neon database**.
-Render builds the container from the `Dockerfile` in this repository and redeploys on every push to `main`.
-There are no deploy secrets in GitHub: Render pulls the code itself.
+> **Status: not deployed.** No host has been chosen yet, so GarageDesk is not running anywhere online and there is
+> no live URL. This guide is written so that deploying is quick **when you decide to**. Nothing in it has been
+> run against a real Render account, so treat the dashboard labels as a guide, not a guarantee.
 
-You do this setup once, by hand.
+The app is packaged as a **Docker container** (see the `Dockerfile`) and uses a **Neon database**.
+On Render's free web service, Render builds the container from this repository and redeploys on every push to
+`main`, so no deploy secrets live in GitHub: Render pulls the code itself.
 
-> **Stop rule:** Render's free web service and the sign-up with GitHub do not ask for a card.
-> If Render ever asks you for payment details, **stop**: close the page and do not enter anything.
-> The free instance type is all this project needs.
+You would do this setup once, by hand.
+
+> **Stop rule:** a free instance should not need payment details. If any host (Render or another) asks you for a
+> card or payment details, **stop**: close the page and do not enter anything. Being card-free is a hard
+> requirement for this project; a host that needs a card is simply not an option.
 
 ## 0. What you need
 
