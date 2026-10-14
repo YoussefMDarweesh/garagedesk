@@ -131,7 +131,9 @@ public class RolesAndPoliciesTests(GarageDeskWebFactory factory) : IClassFixture
     [InlineData("/Reminders", 200, 200, 403)]
     [InlineData("/Receivables", 200, 200, 403)]
     [InlineData("/ShopSettings", 200, 403, 403)]
-    [InlineData("/", 200, 200, 403)]
+    [InlineData("/", 200, 200, 302)] // a technician's home is /Work (My jobs)
+    [InlineData("/Staff", 200, 403, 403)]
+    [InlineData("/Work", 200, 200, 200)]
     public async Task Each_role_gets_the_right_answer_and_forbidden_is_a_403_not_a_404(string path, int owner, int cashier, int technician)
     {
         var (ownerId, shop) = await TestData.CreateOwnerAsync(factory, "Roles Garage");

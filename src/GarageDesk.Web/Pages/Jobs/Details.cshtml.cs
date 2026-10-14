@@ -252,36 +252,8 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
             return Fail(id, "That status change is not allowed.");
         }
 
-        // VAT is fixed when the job card is issued, so later changes of the shop setting never alter an invoice.
-        if (job.InvoiceNumber is null && to is JobStatus.Done or JobStatus.Paid)
-        {
-            job.VatPercent = await db.Shops.Select(s => s.VatPercent).FirstOrDefaultAsync();
-        }
-
-        // Marking a job paid by hand records the rest of the balance as a cash payment, so balance and status agree.
-        if (to == JobStatus.Paid && job.Balance > 0)
-        {
-            db.Payments.Add(new Payment { JobCardId = job.Id, Amount = job.Balance, Method = PaymentMethod.Cash, PaidOn = ShopClock.Today(), Note = "Marked as paid" });
-        }
-
-        // A job that is done and already fully paid (deposits) is simply paid.
         var requested = to;
-        job.Status = to == JobStatus.Done && job.Total > 0 && job.Balance <= 0 ? JobStatus.Paid : to;
-        job.StatusChangedAtUtc = DateTime.UtcNow;
-        to = job.Status;
-
-        // The invoice number is given once, the first time the job card is issued (Done or Paid), and never changes.
-        if (job.InvoiceNumber is null && to is JobStatus.Done or JobStatus.Paid)
-        {
-            await using var tx = await db.Database.BeginTransactionAsync();
-            job.InvoiceNumber = await DocumentNumbers.NextAsync(db, job.ShopId, DocumentNumbers.Invoice);
-            await db.SaveChangesAsync();
-            await tx.CommitAsync();
-        }
-        else
-        {
-            await db.SaveChangesAsync();
-        }
+        to = await JobWorkflow.ChangeStatusAsync(db, job, to);
 
         StatusMessage = localizer["Status updated."];
         OfferReminder = to == JobStatus.Done;
@@ -297,6 +269,7 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
             .Include(j => j.Vehicle).ThenInclude(v => v!.Customer)
             .Include(j => j.Lines)
             .Include(j => j.Payments)
+            .Include(j => j.AssignedTo)
             .FirstOrDefaultAsync(j => j.Id == id);
 
         if (job is null)

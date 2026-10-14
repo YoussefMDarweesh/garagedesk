@@ -46,7 +46,7 @@ public static partial class TestData
 
     /// <summary>One customer, one vehicle and one job card with a priced part and a priced labor line. Returns the job id.</summary>
     public static async Task<int> SeedJobAsync(
-        GarageDeskWebFactory factory, int shopId, JobStatus status = JobStatus.Booked,
+        GarageDeskWebFactory factory, int shopId, JobStatus status = JobStatus.Booked, string? assignedTo = null,
         string plate = "SEC 100", string customerName = "Hidden Customer", string phone = "+201000000077",
         decimal partPrice = 123.45m, decimal laborPrice = 80m, DateOnly? dateIn = null)
     {
@@ -59,6 +59,7 @@ public static partial class TestData
             DateIn = dateIn ?? new DateOnly(2026, 3, 1),
             MileageAtVisit = 1000,
             Status = status,
+            AssignedToUserId = assignedTo,
             Notes = "internal note",
         };
         job.Lines.Add(new JobLine { Type = JobLineType.Part, Description = "Oil filter", Quantity = 1, UnitPrice = partPrice });

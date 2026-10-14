@@ -126,6 +126,9 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             // The totals are worked out from the lines, never stored.
             job.HasIndex(j => new { j.ShopId, j.InvoiceNumber }).IsUnique();
             job.HasIndex(j => j.EstimateId);
+            job.Property(j => j.AssignedToUserId).HasMaxLength(450);
+            job.HasIndex(j => new { j.ShopId, j.AssignedToUserId });
+            job.HasOne(j => j.AssignedTo).WithMany().HasForeignKey(j => j.AssignedToUserId).OnDelete(DeleteBehavior.Restrict);
             job.Ignore(j => j.InvoiceLabel);
             job.Ignore(j => j.PartsTotal).Ignore(j => j.LaborTotal).Ignore(j => j.Total).Ignore(j => j.IsLocked)
                 .Ignore(j => j.Subtotal).Ignore(j => j.DiscountValue).Ignore(j => j.VatValue).Ignore(j => j.PaidTotal).Ignore(j => j.Balance).Ignore(j => j.PaymentState);

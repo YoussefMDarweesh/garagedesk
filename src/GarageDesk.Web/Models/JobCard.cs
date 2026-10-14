@@ -42,6 +42,11 @@ public class JobCard : IShopOwned
 
     public string? Notes { get; set; }
 
+    /// <summary>The team member (a technician, or an owner who works on cars) doing this job. Always someone of the same shop.</summary>
+    public string? AssignedToUserId { get; set; }
+
+    public AppUser? AssignedTo { get; set; }
+
     public List<JobLine> Lines { get; set; } = [];
 
     public List<Payment> Payments { get; set; } = [];

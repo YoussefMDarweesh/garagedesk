@@ -9,9 +9,15 @@ using Microsoft.EntityFrameworkCore;
 namespace GarageDesk.Web.Pages.Jobs;
 
 [Authorize(Policy = Policies.Staff)]
-public class IndexModel(ApplicationDbContext db) : PageModel
+public class IndexModel(ApplicationDbContext db, ICurrentStaff currentStaff) : PageModel
 {
     public const int PageSize = 20;
+
+    /// <summary>"me" (my jobs), "none" (unassigned) or a team member's id. Anything else means everybody.</summary>
+    [BindProperty(SupportsGet = true)]
+    public string? Assigned { get; set; }
+
+    public bool MineOnly => string.Equals(Assigned, "me", StringComparison.OrdinalIgnoreCase);
 
     [BindProperty(SupportsGet = true)]
     public string? Q { get; set; }
@@ -33,11 +39,26 @@ public class IndexModel(ApplicationDbContext db) : PageModel
     public int PageCount { get; private set; } = 1;
 
     public PagerModel Pager => new(P, PageCount, Total, PageSize, "/Jobs/Index",
-        new Dictionary<string, string?> { ["q"] = Q, ["status"] = StatusFilter?.ToString() });
+        new Dictionary<string, string?> { ["q"] = Q, ["status"] = StatusFilter?.ToString(), ["assigned"] = Assigned });
 
     public async Task OnGetAsync()
     {
         var query = db.JobCards.AsNoTracking().Search(Q);
+
+        if (MineOnly)
+        {
+            var me = (await currentStaff.GetAsync())!.UserId;
+            query = query.Where(j => j.AssignedToUserId == me);
+        }
+        else if (string.Equals(Assigned, "none", StringComparison.OrdinalIgnoreCase))
+        {
+            query = query.Where(j => j.AssignedToUserId == null);
+        }
+        else if (!string.IsNullOrWhiteSpace(Assigned))
+        {
+            var who = Assigned;
+            query = query.Where(j => j.AssignedToUserId == who); // the shop filter already limits this to this shop's jobs
+        }
 
         if (StatusFilter is JobStatus status)
         {
@@ -52,6 +73,7 @@ public class IndexModel(ApplicationDbContext db) : PageModel
         Jobs = await query
             .Include(j => j.Vehicle).ThenInclude(v => v!.Customer)
             .Include(j => j.Lines)
+            .Include(j => j.AssignedTo)
             .OrderByDescending(j => j.DateIn).ThenByDescending(j => j.Id)
             .Skip((P - 1) * PageSize)
             .Take(PageSize)

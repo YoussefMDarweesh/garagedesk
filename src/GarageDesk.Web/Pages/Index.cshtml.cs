@@ -90,7 +90,7 @@ public class IndexModel(ApplicationDbContext db, ICurrentStaff currentStaff) : P
         // A user with no shop yet is sent to CreateShop by RequireShopPageFilter before they get here.
         if (staff.IsTechnician)
         {
-            return Forbid();
+            return RedirectToPage("/Work/Index");
         }
 
         CanSeeReports = staff.IsOwner;

@@ -55,6 +55,17 @@
                     </div>
                 </div>
 
+                @if (Model.AssigneeOptions.Count > 0)
+                {
+                    <div class="form-floating mb-3">
+                        <select asp-for="Input.AssignedToUserId" asp-items="Model.AssigneeOptions" class="form-select">
+                            <option value="">@L["Not assigned"]</option>
+                        </select>
+                        <label asp-for="Input.AssignedToUserId"></label>
+                        <span asp-validation-for="Input.AssignedToUserId"></span>
+                    </div>
+                }
+
                 <div class="form-floating mb-4">
                     <textarea asp-for="Input.Notes" class="form-control" placeholder="@L["Notes"]" style="height: 7rem"></textarea>
                     <label asp-for="Input.Notes"></label>

@@ -353,6 +353,8 @@
                         </span>
                     }
                 </dd>
+                <dt class="text-secondary fw-normal">@L["Assigned to"]</dt>
+                <dd data-assigned-to>@if (job.AssignedTo is { } assignee) { @assignee.DisplayLabel } else { <span class="text-secondary">@L["Not assigned"]</span> }</dd>
                 <dt class="text-secondary fw-normal">@L["Mileage at visit (km)"]</dt>
                 <dd class="num"><span class="ltr">@job.MileageAtVisit.ToString("N0")</span></dd>
                 @if (!string.IsNullOrWhiteSpace(job.Notes))

@@ -4,7 +4,7 @@
 @model IndexModel
 @{
     ViewData["Title"] = L["Job cards"].Value;
-    var searching = !string.IsNullOrWhiteSpace(Model.Q) || Model.StatusFilter is not null;
+    var searching = !string.IsNullOrWhiteSpace(Model.Q) || Model.StatusFilter is not null || !string.IsNullOrWhiteSpace(Model.Assigned);
     var statuses = new[] { JobStatus.Booked, JobStatus.InProgress, JobStatus.Done, JobStatus.Paid };
 }
 
@@ -20,20 +20,29 @@
 
 <div class="toolbar">
     <div class="seg" role="group" aria-label="@L["Status"]">
-        <a class="@(Model.StatusFilter is null ? "active" : "")" asp-page="Index" asp-route-q="@Model.Q">@L["All"]</a>
+        <a class="@(Model.StatusFilter is null ? "active" : "")" asp-page="Index" asp-route-q="@Model.Q" asp-route-assigned="@Model.Assigned">@L["All"]</a>
         @foreach (var status in statuses)
         {
             <a class="@(Model.StatusFilter == status ? "active" : "")"
-               asp-page="Index" asp-route-q="@Model.Q" asp-route-status="@status">
+               asp-page="Index" asp-route-q="@Model.Q" asp-route-status="@status" asp-route-assigned="@Model.Assigned">
                 <partial name="_StatusLabel" model="status" />
             </a>
         }
+    </div>
+
+    <div class="seg" role="group" aria-label="@L["Assigned to"]">
+        <a class="@(string.IsNullOrWhiteSpace(Model.Assigned) ? "active" : "")" asp-page="Index" asp-route-q="@Model.Q" asp-route-status="@(Model.StatusFilter?.ToString())">@L["Everyone"]</a>
+        <a class="@(Model.MineOnly ? "active" : "")" data-my-jobs asp-page="Index" asp-route-q="@Model.Q" asp-route-status="@(Model.StatusFilter?.ToString())" asp-route-assigned="me">@L["My jobs"]</a>
     </div>
 
     <form method="get" role="search" class="d-flex flex-wrap gap-2 flex-fill justify-content-end">
         @if (Model.StatusFilter is JobStatus current)
         {
             <input type="hidden" name="status" value="@current" />
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.Assigned))
+        {
+            <input type="hidden" name="assigned" value="@Model.Assigned" />
         }
         <div class="search-field">
             <partial name="_Icon" model='"search"' />
@@ -78,6 +87,7 @@ else
                         <th scope="col">@L["Date in"]</th>
                         <th scope="col">@L["Vehicle"]</th>
                         <th scope="col">@L["Owner"]</th>
+                        <th scope="col">@L["Assigned to"]</th>
                         <th scope="col">@L["Status"]</th>
                         <th scope="col" class="cell-end">@L["Total"]</th>
                     </tr>
@@ -101,6 +111,7 @@ else
                                 </div>
                             }
                         </td>
+                        <td>@if (job.AssignedTo is { } assignee) { <span>@assignee.DisplayLabel</span> } else { <span class="text-secondary">&mdash;</span> }</td>
                         <td><partial name="_StatusBadge" model="job.Status" /></td>
                         <td class="cell-end fw-bold"><partial name="_Money" model="job.Total" /></td>
                     </tr>

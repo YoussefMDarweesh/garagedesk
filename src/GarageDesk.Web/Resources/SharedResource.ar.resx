@@ -529,6 +529,21 @@
   <data name="Create my login" xml:space="preserve"><value>إنشاء حسابي</value></data>
   <data name="This invitation link does not work" xml:space="preserve"><value>رابط الدعوة هذا لا يعمل</value></data>
   <data name="It may have expired, been used already or been cancelled. Ask the shop owner for a new one." xml:space="preserve"><value>ربما انتهت صلاحيته أو استُخدم من قبل أو أُلغي. اطلب من صاحب الورشة رابطًا جديدًا.</value></data>
+  <data name="My jobs" xml:space="preserve"><value>مهامي</value></data>
+  <data name="Assigned to you" xml:space="preserve"><value>مُسندة إليك</value></data>
+  <data name="Show" xml:space="preserve"><value>عرض</value></data>
+  <data name="Open" xml:space="preserve"><value>المفتوحة</value></data>
+  <data name="Nothing assigned to you right now." xml:space="preserve"><value>لا توجد مهام مُسندة إليك الآن.</value></data>
+  <data name="When the shop gives you a job card it shows up here." xml:space="preserve"><value>عندما تُسند إليك الورشة أمر شغل سيظهر هنا.</value></data>
+  <data name="Vehicle history" xml:space="preserve"><value>سجل السيارة</value></data>
+  <data name="Nothing noted yet. Add the parts and labor you use below." xml:space="preserve"><value>لا توجد ملاحظات بعد. أضف القطع والأعمال التي تستخدمها أدناه.</value></data>
+  <data name="Add a note" xml:space="preserve"><value>إضافة ملاحظة</value></data>
+  <data name="Add" xml:space="preserve"><value>إضافة</value></data>
+  <data name="This job card is closed and can no longer be changed." xml:space="preserve"><value>أمر الشغل هذا مغلق ولا يمكن تغييره.</value></data>
+  <data name="Assigned to" xml:space="preserve"><value>مُسند إلى</value></data>
+  <data name="Not assigned" xml:space="preserve"><value>غير مُسند</value></data>
+  <data name="Everyone" xml:space="preserve"><value>الجميع</value></data>
+  <data name="Choose someone from your team." xml:space="preserve"><value>اختر شخصًا من فريقك.</value></data>
   <data name="You cannot deactivate your own account." xml:space="preserve"><value>لا يمكنك تعطيل حسابك بنفسك.</value></data>
   <data name="A shop needs at least one active owner." xml:space="preserve"><value>لا بد أن يبقى للورشة مالك نشط واحد على الأقل.</value></data>
   <data name="That change could not be saved." xml:space="preserve"><value>تعذّر حفظ هذا التغيير.</value></data>

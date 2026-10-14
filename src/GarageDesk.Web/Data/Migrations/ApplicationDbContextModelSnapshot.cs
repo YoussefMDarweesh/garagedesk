@@ -247,6 +247,10 @@ namespace GarageDesk.Web.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AssignedToUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
                     b.Property<DateOnly>("DateIn")
                         .HasColumnType("date");
 
@@ -291,9 +295,13 @@ namespace GarageDesk.Web.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AssignedToUserId");
+
                     b.HasIndex("EstimateId");
 
                     b.HasIndex("VehicleId");
+
+                    b.HasIndex("ShopId", "AssignedToUserId");
 
                     b.HasIndex("ShopId", "InvoiceNumber")
                         .IsUnique();
@@ -886,6 +894,11 @@ namespace GarageDesk.Web.Data.Migrations
 
             modelBuilder.Entity("GarageDesk.Web.Models.JobCard", b =>
                 {
+                    b.HasOne("GarageDesk.Web.Models.AppUser", "AssignedTo")
+                        .WithMany()
+                        .HasForeignKey("AssignedToUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("GarageDesk.Web.Models.Shop", null)
                         .WithMany()
                         .HasForeignKey("ShopId")
@@ -897,6 +910,8 @@ namespace GarageDesk.Web.Data.Migrations
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("AssignedTo");
 
                     b.Navigation("Vehicle");
                 });

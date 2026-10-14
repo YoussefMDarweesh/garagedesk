@@ -36,6 +36,7 @@
         if (role == ShopRole.Technician)
         {
             // A technician's whole world: the jobs assigned to them. No money, no customers list, no reminders.
+            items.Add(new("/Work/Index", "/Work", L["My jobs"].Value, "clipboard"));
         }
         else
         {

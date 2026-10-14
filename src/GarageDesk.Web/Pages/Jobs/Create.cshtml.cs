@@ -11,10 +11,13 @@ using Microsoft.Extensions.Localization;
 namespace GarageDesk.Web.Pages.Jobs;
 
 [Authorize(Policy = Policies.Staff)]
-public class CreateModel(ApplicationDbContext db, IStringLocalizer<SharedResource> localizer) : PageModel
+public class CreateModel(ApplicationDbContext db, ICurrentShop currentShop, IStringLocalizer<SharedResource> localizer) : PageModel
 {
     [BindProperty]
     public JobInput Input { get; set; } = new();
+
+    /// <summary>The people this job can be given to (active technicians and owners of this shop).</summary>
+    public List<SelectListItem> AssigneeOptions { get; private set; } = [];
 
     /// <summary>Set when the page was opened from a vehicle's page: the vehicle is fixed.</summary>
     public Vehicle? Vehicle { get; private set; }
@@ -44,6 +47,7 @@ public class CreateModel(ApplicationDbContext db, IStringLocalizer<SharedResourc
             await LoadVehicleOptionsAsync();
         }
 
+        await LoadAssigneesAsync();
         return Page();
     }
 
@@ -65,6 +69,13 @@ public class CreateModel(ApplicationDbContext db, IStringLocalizer<SharedResourc
             ModelState.AddModelError("Input.DateIn", localizer["Enter a valid date."]);
         }
 
+        // A forged user id of another shop (or of someone who cannot take jobs) is refused here.
+        var assignee = string.IsNullOrWhiteSpace(Input.AssignedToUserId) ? null : Input.AssignedToUserId;
+        if (assignee is not null && !await db.CanBeAssignedAsync(currentShop.ShopId!.Value, assignee))
+        {
+            ModelState.AddModelError("Input.AssignedToUserId", localizer["Choose someone from your team."]);
+        }
+
         if (!ModelState.IsValid)
         {
             Vehicle = vehicle;
@@ -72,11 +83,13 @@ public class CreateModel(ApplicationDbContext db, IStringLocalizer<SharedResourc
             {
                 await LoadVehicleOptionsAsync();
             }
+            await LoadAssigneesAsync();
             return Page();
         }
 
         var job = new JobCard
         {
+            AssignedToUserId = assignee,
             VehicleId = vehicle!.Id,
             DateIn = Input.DateIn,
             MileageAtVisit = Input.MileageAtVisit,
@@ -93,6 +106,9 @@ public class CreateModel(ApplicationDbContext db, IStringLocalizer<SharedResourc
 
         return RedirectToPage("Details", new { id = job.Id });
     }
+
+    private async Task LoadAssigneesAsync() =>
+        AssigneeOptions = (await db.AssigneesAsync(currentShop.ShopId!.Value)).ToOptions(Input.AssignedToUserId);
 
     private async Task LoadVehicleOptionsAsync()
     {

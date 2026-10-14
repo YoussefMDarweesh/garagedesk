@@ -27,6 +27,11 @@ public class JobInput
     [StringLength(2000)]
     [Display(Name = "Notes")]
     public string? Notes { get; set; }
+
+    /// <summary>The technician doing the job. Checked on the server: it must be an active member of the same shop.</summary>
+    [StringLength(450)]
+    [Display(Name = "Assigned to")]
+    public string? AssignedToUserId { get; set; }
 }
 
 /// <summary>The "add a line" form on a job card.</summary>

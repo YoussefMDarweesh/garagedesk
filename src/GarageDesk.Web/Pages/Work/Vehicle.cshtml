@@ -1,0 +1,104 @@
+@page "{id:int}"
+@using GarageDesk.Web.Models
+@model GarageDesk.Web.Pages.Work.VehicleModel
+@{
+    ViewData["Title"] = Model.Plate;
+}
+
+<nav class="mb-3">
+    <a asp-page="Index" class="text-secondary text-decoration-none"><partial name="_Icon" model='"chevron-left"' /> @L["My jobs"]</a>
+</nav>
+
+<section class="vehicle-hero mb-4">
+    <div>
+        <p class="hero-kicker">@Model.Make @Model.ModelName &middot; <span class="num">@Model.Year</span></p>
+        <h1><span class="plate plate-lg" dir="auto">@Model.Plate</span></h1>
+        <p class="mb-0">@Model.OwnerName</p>
+
+        <dl class="hero-stats">
+            <div class="hero-stat"><dt>@L["Mileage (km)"]</dt><dd class="num">@Model.Mileage.ToString("N0")</dd></div>
+            <div class="hero-stat"><dt>@L["Visits"]</dt><dd class="num">@Model.History.Count</dd></div>
+            @if (!string.IsNullOrEmpty(Model.Vin))
+            {
+                <div class="hero-stat"><dt>@L["VIN"]</dt><dd><span class="ltr">@Model.Vin</span></dd></div>
+            }
+        </dl>
+    </div>
+    <div class="hero-car"><partial name="_CarSilhouette" /></div>
+</section>
+
+<section class="panel panel-pad" aria-labelledby="history-heading">
+    <div class="panel-head">
+        <h2 id="history-heading" class="panel-title">@L["Service history"]</h2>
+    </div>
+
+    @if (Model.History.Count == 0)
+    {
+        <div class="empty">
+            <span class="icon-tile"><partial name="_Icon" model='"clock"' /></span>
+            <h3>@L["No visits yet."]</h3>
+        </div>
+    }
+    else
+    {
+        <ul class="timeline" data-history>
+            @foreach (var visit in Model.History)
+            {
+                var dot = visit.Status switch
+                {
+                    JobStatus.Done => "info",
+                    JobStatus.InProgress => "accent",
+                    _ => "",
+                };
+                <li>
+                    <span class="tl-dot @dot"><partial name="_Icon" model='visit.Status == JobStatus.Done ? "check" : visit.Status == JobStatus.InProgress ? "tool" : "calendar"' /></span>
+                    <div class="min-w-0">
+                        <p class="tl-title">
+                            <span class="ltr">@visit.DateIn.ToString("yyyy-MM-dd")</span>
+                            <span class="text-secondary fw-normal"> &middot; <span class="ltr num">@visit.MileageAtVisit.ToString("N0")</span> @L["km"]</span>
+                        </p>
+                        <p class="tl-meta">@L["What was done"]</p>
+                        @if (visit.Lines.Count == 0)
+                        {
+                            <p class="text-secondary mb-0">&mdash;</p>
+                        }
+                        else
+                        {
+                            <ul class="mb-0 ps-3">
+                                @foreach (var line in visit.Lines)
+                                {
+                                    <li class="d-list-item">
+                                        @line.Description
+                                        @if (line.Quantity != 1)
+                                        {
+                                            <span class="text-secondary">&times; <span class="ltr">@line.Quantity.ToString("0.##")</span></span>
+                                        }
+                                        @if (line.Type == JobLineType.Labor)
+                                        {
+                                            <span class="text-secondary small">(@L["Labor"])</span>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(visit.Notes))
+                        {
+                            <p class="tl-meta mb-0 mt-2" style="white-space: pre-line">@visit.Notes</p>
+                        }
+                    </div>
+                    <div class="tl-aside">
+                        <partial name="_StatusBadge" model="visit.Status" />
+                        @if (visit.CanOpen)
+                        {
+                            <a class="small" asp-page="Job" asp-route-id="@visit.JobId"><span class="ltr">#@visit.JobId</span></a>
+                        }
+                        else
+                        {
+                            <span class="small text-secondary ltr">#@visit.JobId</span>
+                        }
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+</section>
