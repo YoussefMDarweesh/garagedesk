@@ -51,6 +51,9 @@ Each shop is a separate tenant. One shop must never see another shop's data.
 
 ### M7 — Ship
 - Deployed online, demo shop with seed data, README with screenshots and a short demo video.
+- Decisions: the demo shop is created by `dotnet run --project src/GarageDesk.Web -- --seed-demo`, which makes the shop "Demo Motors", its owner login and the data, then exits without starting the website. The data is 10 customers, 15 cars (three each of Skoda, Volkswagen, Hyundai, Kia and Toyota), about 50 job cards over the last year (every status) and a mix of overdue, due-soon, upcoming and finished reminders. All dates are relative to today, so the dashboard always has due reminders. It only fills an empty shop, so running it twice changes nothing, and it refuses to run if migrations are pending. The login is `Demo:Email` (default `demo@garagedesk.app`) with `Demo:Password`; without a password setting a random one is printed once. No password is stored in the repository.
+- Deployment: `.github/workflows/deploy.yml` builds, tests and publishes on every push to `main` and deploys to Azure App Service (Free F1, Linux, .NET 10). The deploy job is skipped until the `AZURE_WEBAPP_NAME` repository variable exists. The connection string is the `ConnectionStrings__Default` app setting in Azure. Migrations are applied by hand from a developer machine (`dotnet ef database update`), never automatically on startup. Step by step: `docs/DEPLOY.md`.
+- Not included: a "reset demo" command, applying migrations at startup, staging environments, a custom domain.
 
 ### UI — Arabic and dark mode
 - English is the default language. Arabic (right-to-left) is chosen with the navbar switcher; the choice is kept in a cookie and anything unsupported falls back to English.
