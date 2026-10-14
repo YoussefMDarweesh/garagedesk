@@ -20,6 +20,33 @@
         </div>
     </div>
 
+    <section class="mb-5" aria-labelledby="due-heading">
+        <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-3">
+            <h2 id="due-heading" class="h4 fw-bold mb-0">@L["Reminders due"]</h2>
+            <a asp-page="/Reminders/Index">@L["See all reminders"]</a>
+        </div>
+
+        @if (Model.DueReminders.Count == 0)
+        {
+            <div class="card"><div class="card-body p-4 text-center text-secondary">
+                <p class="mb-3">@L["Nothing is due in the next 14 days. Nice work."]</p>
+                <a class="btn btn-outline-secondary btn-sm" asp-page="/Reminders/Create">@L["Add reminder"]</a>
+            </div></div>
+        }
+        else
+        {
+            var dashboardReturn = Url.Page("/Index");
+            <div class="card">
+                <ul class="list-group list-group-flush">
+                    @foreach (var reminder in Model.DueReminders)
+                    {
+                        <partial name="_ReminderRow" model="new GarageDesk.Web.Pages.Reminders.ReminderRowModel(reminder, Model.Today, dashboardReturn!, Model.ReminderShopName)" />
+                    }
+                </ul>
+            </div>
+        }
+    </section>
+
     <div class="row g-4 mb-4">
         <div class="col-sm-4">
             <a class="card h-100 text-decoration-none" asp-page="/Customers/Index">

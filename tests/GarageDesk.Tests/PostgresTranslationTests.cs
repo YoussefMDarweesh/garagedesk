@@ -74,6 +74,23 @@ public class PostgresTranslationTests
     }
 
     [Fact]
+    public void The_dashboard_reminder_query_translates_to_postgresql()
+    {
+        using var db = NewPostgresContext();
+
+        var sql = db.Reminders.AsNoTracking()
+            .DueOrOverdue(new DateOnly(2026, 10, 14))
+            .Include(r => r.Vehicle).ThenInclude(v => v!.Customer)
+            .Take(200)
+            .ToQueryString();
+
+        Assert.Contains("\"Reminders\"", sql);
+        Assert.Contains("\"IsDone\"", sql);
+        Assert.Contains("\"DueMileage\"", sql);
+        Assert.Contains("\"ShopId\"", sql);
+    }
+
+    [Fact]
     public void The_open_job_count_translates_to_postgresql()
     {
         using var db = NewPostgresContext();

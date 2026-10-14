@@ -21,6 +21,10 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
     [TempData]
     public string? ErrorMessage { get; set; }
 
+    /// <summary>Set right after a job is marked Done: the page then offers to create the next oil change reminder.</summary>
+    [TempData]
+    public bool OfferReminder { get; set; }
+
     public JobStatus? NextStatus => JobStatusFlow.Next(Job.Status);
 
     public JobStatus? PreviousStatus => JobStatusFlow.Previous(Job.Status);
@@ -103,6 +107,7 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
         await db.SaveChangesAsync();
 
         StatusMessage = localizer["Status updated."];
+        OfferReminder = to == JobStatus.Done;
         return RedirectToPage(new { id });
     }
 

@@ -269,6 +269,23 @@ html[lang="ar"] * {
   background: var(--bs-success);
 }
 
+/* Reminder status pills. */
+.status-upcoming {
+  color: var(--bs-secondary-color);
+  background: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-border-color);
+}
+
+.status-duesoon {
+  color: var(--gd-accent-text);
+  background: rgba(var(--gd-accent-rgb), 0.14);
+}
+
+.status-overdue {
+  color: var(--bs-danger-text-emphasis);
+  background: var(--bs-danger-bg-subtle);
+}
+
 .money {
   white-space: nowrap;
 }

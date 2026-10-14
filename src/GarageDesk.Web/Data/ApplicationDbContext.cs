@@ -38,6 +38,8 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
 
     public DbSet<JobLine> JobLines => Set<JobLine>();
 
+    public DbSet<Reminder> Reminders => Set<Reminder>();
+
     // Read by the query filters below. EF evaluates it per context instance, i.e. per request.
     private int? CurrentShopId => _currentShop.ShopId;
 
@@ -104,6 +106,14 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             line.HasOne(l => l.JobCard).WithMany(j => j.Lines).HasForeignKey(l => l.JobCardId).OnDelete(DeleteBehavior.Cascade);
             line.HasOne<Shop>().WithMany().HasForeignKey(l => l.ShopId).OnDelete(DeleteBehavior.Restrict);
             line.Ignore(l => l.LineTotal);
+        });
+
+        builder.Entity<Reminder>(reminder =>
+        {
+            reminder.Property(r => r.Type).HasMaxLength(60);
+            reminder.HasIndex(r => new { r.ShopId, r.IsDone, r.DueDate });
+            reminder.HasOne(r => r.Vehicle).WithMany().HasForeignKey(r => r.VehicleId).OnDelete(DeleteBehavior.Restrict);
+            reminder.HasOne<Shop>().WithMany().HasForeignKey(r => r.ShopId).OnDelete(DeleteBehavior.Restrict);
         });
 
         // THE PATTERN: every entity that implements IShopOwned gets the same filter automatically.

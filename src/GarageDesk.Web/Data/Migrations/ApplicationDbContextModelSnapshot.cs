@@ -204,6 +204,43 @@ namespace GarageDesk.Web.Data.Migrations
                     b.ToTable("JobLines");
                 });
 
+            modelBuilder.Entity("GarageDesk.Web.Models.Reminder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly?>("DueDate")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("DueMileage")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDone")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VehicleId");
+
+                    b.HasIndex("ShopId", "IsDone", "DueDate");
+
+                    b.ToTable("Reminders");
+                });
+
             modelBuilder.Entity("GarageDesk.Web.Models.Shop", b =>
                 {
                     b.Property<int>("Id")
@@ -503,6 +540,23 @@ namespace GarageDesk.Web.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("JobCard");
+                });
+
+            modelBuilder.Entity("GarageDesk.Web.Models.Reminder", b =>
+                {
+                    b.HasOne("GarageDesk.Web.Models.Shop", null)
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GarageDesk.Web.Models.Vehicle", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Vehicle");
                 });
 
             modelBuilder.Entity("GarageDesk.Web.Models.ShopLogo", b =>

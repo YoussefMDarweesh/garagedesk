@@ -1,0 +1,72 @@
+@* One reminder: what is due and when, who to tell, and the buttons. Used on the dashboard, the reminders list and a vehicle's page. *@
+@model GarageDesk.Web.Pages.Reminders.ReminderRowModel
+@using GarageDesk.Web.Models
+@using GarageDesk.Web.Services
+@{
+    var reminder = Model.Reminder;
+    var vehicle = reminder.Vehicle;
+    var customer = vehicle?.Customer;
+    var mileage = vehicle?.Mileage ?? 0;
+    var status = reminder.StatusFor(Model.Today, mileage);
+    var dueText = ReminderText.DueText(reminder, Model.Today, mileage, L);
+    var whatsApp = customer is null
+        ? null
+        : WhatsAppLink.Build(customer.Phone, ReminderText.WhatsAppMessage(reminder, customer.Name, Model.ShopName, L));
+}
+<li class="list-group-item p-3 p-md-4">
+    <div class="d-flex flex-wrap justify-content-between gap-3">
+        <div>
+            <span class="fw-semibold">@reminder.Type</span>
+            @if (reminder.IsDone)
+            {
+                <span class="status-badge status-done">@L["Done"]</span>
+            }
+            else
+            {
+                <span class="status-badge status-@status.ToString().ToLowerInvariant()">
+                    @(status switch
+                    {
+                        ReminderStatus.Overdue => L["Overdue"],
+                        ReminderStatus.DueSoon => L["Due soon"],
+                        _ => L["Upcoming"],
+                    })
+                </span>
+            }
+            <div class="text-secondary">@dueText</div>
+            @if (Model.ShowVehicle && vehicle is not null)
+            {
+                <div class="mt-1">
+                    <a class="plate" dir="auto" asp-page="/Vehicles/Details" asp-route-id="@vehicle.Id">@vehicle.Plate</a>
+                    <span class="text-secondary">@vehicle.Make @vehicle.Model</span>
+                    @if (customer is not null)
+                    {
+                        <span class="text-secondary"> &middot; </span>
+                        <a asp-page="/Customers/Details" asp-route-id="@customer.Id">@customer.Name</a>
+                        <span class="ltr text-secondary ms-1">@customer.Phone</span>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 align-items-start">
+            @if (!reminder.IsDone && whatsApp is not null)
+            {
+                @* Opens WhatsApp with the message already typed in. The shop can still edit it there before sending. *@
+                <a class="btn btn-primary btn-sm" href="@whatsApp" target="_blank" rel="noopener noreferrer">@L["Send on WhatsApp"]</a>
+            }
+            @if (reminder.IsDone)
+            {
+                <form method="post" asp-page="/Reminders/Index" asp-page-handler="Reopen" asp-route-id="@reminder.Id" asp-route-returnUrl="@Model.ReturnUrl">
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">@L["Reopen"]</button>
+                </form>
+            }
+            else
+            {
+                <form method="post" asp-page="/Reminders/Index" asp-page-handler="Done" asp-route-id="@reminder.Id" asp-route-returnUrl="@Model.ReturnUrl">
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">@L["Mark done"]</button>
+                </form>
+            }
+            <a class="btn btn-outline-secondary btn-sm" asp-page="/Reminders/Edit" asp-route-id="@reminder.Id">@L["Edit"]</a>
+        </div>
+    </div>
+</li>

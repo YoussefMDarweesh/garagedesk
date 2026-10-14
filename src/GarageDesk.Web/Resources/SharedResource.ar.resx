@@ -208,6 +208,46 @@
   <data name="What was done" xml:space="preserve"><value>ما تم تنفيذه</value></data>
   <data name="km" xml:space="preserve"><value>كم</value></data>
 
+  <!-- Reminders and WhatsApp -->
+  <data name="Add reminder" xml:space="preserve"><value>إضافة تذكير</value></data>
+  <data name="Edit reminder" xml:space="preserve"><value>تعديل التذكير</value></data>
+  <data name="Create reminder" xml:space="preserve"><value>إنشاء تذكير</value></data>
+  <data name="Not now" xml:space="preserve"><value>ليس الآن</value></data>
+  <data name="Open" xml:space="preserve"><value>المفتوحة</value></data>
+  <data name="No completed reminders yet." xml:space="preserve"><value>لا توجد تذكيرات مكتملة بعد.</value></data>
+  <data name="No reminders yet. Add one from here or from a vehicle's page." xml:space="preserve"><value>لا توجد تذكيرات بعد. أضف تذكيرًا من هنا أو من صفحة المركبة.</value></data>
+  <data name="A reminder is for a vehicle. Add a vehicle first." xml:space="preserve"><value>التذكير يخص مركبة. أضف مركبة أولًا.</value></data>
+  <data name="No open reminders for this vehicle." xml:space="preserve"><value>لا توجد تذكيرات مفتوحة لهذه المركبة.</value></data>
+  <data name="What is due" xml:space="preserve"><value>المطلوب</value></data>
+  <data name="Due date" xml:space="preserve"><value>تاريخ الاستحقاق</value></data>
+  <data name="Due at mileage (km)" xml:space="preserve"><value>الاستحقاق عند مسافة (كم)</value></data>
+  <data name="Enter a due date, a due mileage, or both." xml:space="preserve"><value>أدخل تاريخ استحقاق أو مسافة استحقاق أو الاثنين معًا.</value></data>
+  <data name="Fill in a date, a mileage, or both. Whichever comes first makes it due." xml:space="preserve"><value>أدخل تاريخًا أو مسافة أو الاثنين معًا. أيهما يحل أولًا يجعل التذكير مستحقًا.</value></data>
+  <data name="Oil change" xml:space="preserve"><value>تغيير زيت</value></data>
+  <data name="Brake inspection" xml:space="preserve"><value>فحص الفرامل</value></data>
+  <data name="Tire rotation" xml:space="preserve"><value>تبديل الإطارات</value></data>
+  <data name="Annual inspection" xml:space="preserve"><value>الفحص السنوي</value></data>
+  <data name="Battery check" xml:space="preserve"><value>فحص البطارية</value></data>
+  <data name="Timing belt" xml:space="preserve"><value>سير الكاتينة</value></data>
+  <data name="Overdue" xml:space="preserve"><value>متأخر</value></data>
+  <data name="Due soon" xml:space="preserve"><value>مستحق قريبًا</value></data>
+  <data name="Upcoming" xml:space="preserve"><value>قادم</value></data>
+  <data name="Send on WhatsApp" xml:space="preserve"><value>إرسال عبر واتساب</value></data>
+  <data name="Mark done" xml:space="preserve"><value>تحديد كمنجز</value></data>
+  <data name="Reopen" xml:space="preserve"><value>إعادة فتح</value></data>
+  <data name="Reminders due" xml:space="preserve"><value>التذكيرات المستحقة</value></data>
+  <data name="See all reminders" xml:space="preserve"><value>عرض كل التذكيرات</value></data>
+  <data name="Nothing is due in the next 14 days. Nice work." xml:space="preserve"><value>لا يوجد شيء مستحق خلال الـ 14 يومًا القادمة. عمل ممتاز.</value></data>
+  <data name="{0} days overdue" xml:space="preserve"><value>متأخر {0} يومًا</value></data>
+  <data name="1 day overdue" xml:space="preserve"><value>متأخر يوم واحد</value></data>
+  <data name="Due today" xml:space="preserve"><value>مستحق اليوم</value></data>
+  <data name="Due tomorrow" xml:space="preserve"><value>مستحق غدًا</value></data>
+  <data name="Due in {0} days" xml:space="preserve"><value>مستحق بعد {0} يومًا</value></data>
+  <data name="Due at {0} km (now {1} km)" xml:space="preserve"><value>مستحق عند {0} كم (الآن {1} كم)</value></data>
+  <data name="Hello {0}, this is a reminder from {1}: your {2} (plate {3}) is due for: {4}. Please contact us to book a time. Thank you!" xml:space="preserve"><value>مرحبًا {0}، هذا تذكير من {1}: سيارتك {2} (لوحة {3}) حان موعد: {4}. يُرجى التواصل معنا لحجز موعد. شكرًا لك!</value></data>
+  <data name="Job done. Create the next oil change reminder?" xml:space="preserve"><value>تم الانتهاء من أمر الشغل. هل تريد إنشاء تذكير بتغيير الزيت القادم؟</value></data>
+  <data name="Suggested: {0} or {1} km. You can change both." xml:space="preserve"><value>المقترح: {0} أو {1} كم. يمكنك تغييرهما.</value></data>
+
   <!-- Shop settings and logo -->
   <data name="Shop settings" xml:space="preserve"><value>إعدادات الورشة</value></data>
   <data name="Shop logo" xml:space="preserve"><value>شعار الورشة</value></data>

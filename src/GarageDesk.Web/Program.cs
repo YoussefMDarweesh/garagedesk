@@ -61,6 +61,7 @@ builder.Services.AddRazorPages()
         options.Conventions.AuthorizeFolder("/Customers");
         options.Conventions.AuthorizeFolder("/Vehicles");
         options.Conventions.AuthorizeFolder("/Jobs");
+        options.Conventions.AuthorizeFolder("/Reminders");
     })
     .AddMvcOptions(options => options.Filters.Add<RequireShopPageFilter>())
     .AddDataAnnotationsLocalization(options =>
