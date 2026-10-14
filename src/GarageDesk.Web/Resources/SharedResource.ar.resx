@@ -248,6 +248,96 @@
   <data name="Job done. Create the next oil change reminder?" xml:space="preserve"><value>تم الانتهاء من أمر الشغل. هل تريد إنشاء تذكير بتغيير الزيت القادم؟</value></data>
   <data name="Suggested: {0} or {1} km. You can change both." xml:space="preserve"><value>المقترح: {0} أو {1} كم. يمكنك تغييرهما.</value></data>
 
+  <!-- App shell, dashboard and lists -->
+  <data name="Dashboard" xml:space="preserve"><value>لوحة التحكم</value></data>
+  <data name="Main navigation" xml:space="preserve"><value>التنقل الرئيسي</value></data>
+  <data name="Keep the menu open" xml:space="preserve"><value>إبقاء القائمة مفتوحة</value></data>
+  <data name="Search customers, phones, plates" xml:space="preserve"><value>ابحث في العملاء والهواتف واللوحات</value></data>
+  <data name="Account menu" xml:space="preserve"><value>قائمة الحساب</value></data>
+  <data name="Signed in as" xml:space="preserve"><value>تم تسجيل الدخول باسم</value></data>
+  <data name="Are you sure?" xml:space="preserve"><value>هل أنت متأكد؟</value></data>
+  <data name="Yes, continue" xml:space="preserve"><value>نعم، تابع</value></data>
+  <data name="Here's what is happening in your garage today." xml:space="preserve"><value>هذا ما يحدث في ورشتك اليوم.</value></data>
+  <data name="Revenue this month" xml:space="preserve"><value>إيرادات هذا الشهر</value></data>
+  <data name="vs last month" xml:space="preserve"><value>مقارنة بالشهر الماضي</value></data>
+  <data name="From {0} paid job cards" xml:space="preserve"><value>من {0} أمر شغل مدفوع</value></data>
+  <data name="{0} booked · {1} in progress · {2} done" xml:space="preserve"><value>{0} محجوز · {1} قيد التنفيذ · {2} منتهي</value></data>
+  <data name="Registered in your shop" xml:space="preserve"><value>المسجلون في ورشتك</value></data>
+  <data name="Across {0} customers" xml:space="preserve"><value>موزعة على {0} عميل</value></data>
+  <data name="Activity" xml:space="preserve"><value>النشاط</value></data>
+  <data name="Revenue" xml:space="preserve"><value>الإيرادات</value></data>
+  <data name="What to chart" xml:space="preserve"><value>ما يُعرض في المخطط</value></data>
+  <data name="Time range" xml:space="preserve"><value>الفترة الزمنية</value></data>
+  <data name="3M" xml:space="preserve"><value>3 أشهر</value></data>
+  <data name="6M" xml:space="preserve"><value>6 أشهر</value></data>
+  <data name="1Y" xml:space="preserve"><value>سنة</value></data>
+  <data name="Month" xml:space="preserve"><value>الشهر</value></data>
+  <data name="Revenue and job cards by month" xml:space="preserve"><value>الإيرادات وأوامر الشغل حسب الشهر</value></data>
+  <data name="Activity chart. Use the left and right arrow keys to move between months." xml:space="preserve"><value>مخطط النشاط. استخدم مفتاحي السهم الأيمن والأيسر للتنقل بين الأشهر.</value></data>
+  <data name="Your activity will show up here" xml:space="preserve"><value>سيظهر نشاطك هنا</value></data>
+  <data name="Open a few job cards and this chart fills in with your revenue and workload by month." xml:space="preserve"><value>افتح بعض أوامر الشغل وسيمتلئ هذا المخطط بإيراداتك وحجم عملك شهريًا.</value></data>
+  <data name="All caught up" xml:space="preserve"><value>كل شيء على ما يرام</value></data>
+  <data name="Recent service history" xml:space="preserve"><value>أحدث سجل صيانة</value></data>
+  <data name="All job cards" xml:space="preserve"><value>كل أوامر الشغل</value></data>
+  <data name="No service history yet" xml:space="preserve"><value>لا يوجد سجل صيانة بعد</value></data>
+  <data name="Every job card you open appears here, newest first." xml:space="preserve"><value>كل أمر شغل تفتحه يظهر هنا، الأحدث أولًا.</value></data>
+  <data name="Quick actions" xml:space="preserve"><value>إجراءات سريعة</value></data>
+  <data name="3 quick steps" xml:space="preserve"><value>3 خطوات سريعة</value></data>
+  <data name="Add your first customer" xml:space="preserve"><value>أضف أول عميل</value></data>
+  <data name="Add their vehicle" xml:space="preserve"><value>أضف مركبته</value></data>
+  <data name="{0} customers" xml:space="preserve"><value>{0} عميل</value></data>
+  <data name="{0} vehicles" xml:space="preserve"><value>{0} مركبة</value></data>
+  <data name="{0} job cards" xml:space="preserve"><value>{0} أمر شغل</value></data>
+  <data name="{0} reminders" xml:space="preserve"><value>{0} تذكير</value></data>
+  <data name="{0} days" xml:space="preserve"><value>{0} يومًا</value></data>
+  <data name="{0} overdue" xml:space="preserve"><value>{0} متأخر</value></data>
+  <data name="No customers yet." xml:space="preserve"><value>لا يوجد عملاء بعد.</value></data>
+  <data name="Add your first customer to get started." xml:space="preserve"><value>أضف أول عميل للبدء.</value></data>
+  <data name="No vehicles yet." xml:space="preserve"><value>لا توجد مركبات بعد.</value></data>
+  <data name="No job cards yet." xml:space="preserve"><value>لا توجد أوامر شغل بعد.</value></data>
+  <data name="No reminders yet." xml:space="preserve"><value>لا توجد تذكيرات بعد.</value></data>
+  <data name="No visits yet." xml:space="preserve"><value>لا توجد زيارات بعد.</value></data>
+  <data name="Add a vehicle from a customer's page, or use the button above." xml:space="preserve"><value>أضف مركبة من صفحة العميل أو استخدم الزر أعلاه.</value></data>
+  <data name="Add one from here or from a vehicle's page." xml:space="preserve"><value>أضف تذكيرًا من هنا أو من صفحة المركبة.</value></data>
+  <data name="Open one from a vehicle's page, or use the button above." xml:space="preserve"><value>افتح أمر شغل من صفحة المركبة أو استخدم الزر أعلاه.</value></data>
+  <data name="Try a different name, phone number or plate." xml:space="preserve"><value>جرّب اسمًا أو رقم هاتف أو لوحة مختلفة.</value></data>
+  <data name="Try a different plate, make, model or owner." xml:space="preserve"><value>جرّب لوحة أو ماركة أو موديل أو مالكًا مختلفًا.</value></data>
+  <data name="Try a different plate, owner or job number, or another status." xml:space="preserve"><value>جرّب لوحة أو مالكًا أو رقم أمر شغل مختلفًا، أو حالة أخرى.</value></data>
+  <data name="Show" xml:space="preserve"><value>عرض</value></data>
+  <data name="Showing {0}–{1} of {2}" xml:space="preserve"><value>عرض {0}–{1} من {2}</value></data>
+  <data name="Pagination" xml:space="preserve"><value>التنقل بين الصفحات</value></data>
+  <data name="Previous page" xml:space="preserve"><value>الصفحة السابقة</value></data>
+  <data name="Next page" xml:space="preserve"><value>الصفحة التالية</value></data>
+  <data name="Contact details" xml:space="preserve"><value>بيانات التواصل</value></data>
+  <data name="Owner and plate" xml:space="preserve"><value>المالك واللوحة</value></data>
+  <data name="Vehicle details" xml:space="preserve"><value>بيانات المركبة</value></data>
+  <data name="What needs doing" xml:space="preserve"><value>ما المطلوب</value></data>
+  <data name="When it is due" xml:space="preserve"><value>موعد الاستحقاق</value></data>
+  <data name="Remove this line from the job card?" xml:space="preserve"><value>حذف هذا البند من أمر الشغل؟</value></data>
+  <data name="Mark this job card as paid? A paid job card can no longer be changed." xml:space="preserve"><value>تحديد أمر الشغل كمدفوع؟ لا يمكن تعديل أمر شغل تم دفعه.</value></data>
+  <data name="Remove the shop logo?" xml:space="preserve"><value>حذف شعار الورشة؟</value></data>
+  <data name="Accent colour" xml:space="preserve"><value>لون التمييز</value></data>
+  <data name="Pick the colour used for buttons, highlights and the car on your vehicle pages." xml:space="preserve"><value>اختر اللون المستخدم في الأزرار والتمييز والسيارة في صفحات المركبات.</value></data>
+  <data name="Accent colour updated." xml:space="preserve"><value>تم تحديث اللون.</value></data>
+  <data name="Choose one of the colours." xml:space="preserve"><value>اختر أحد الألوان.</value></data>
+
+  <!-- Vehicle page -->
+  <data name="Last service" xml:space="preserve"><value>آخر صيانة</value></data>
+  <data name="Visits" xml:space="preserve"><value>الزيارات</value></data>
+  <data name="Since last service" xml:space="preserve"><value>منذ آخر صيانة</value></data>
+  <data name="Time since service" xml:space="preserve"><value>الوقت منذ الصيانة</value></data>
+  <data name="No service recorded yet" xml:space="preserve"><value>لم تُسجَّل صيانة بعد</value></data>
+  <data name="Of {0} km" xml:space="preserve"><value>من {0} كم</value></data>
+  <data name="Of {0} days" xml:space="preserve"><value>من {0} يومًا</value></data>
+  <data name="All on track" xml:space="preserve"><value>كل شيء في موعده</value></data>
+  <data name="Job cards for this vehicle" xml:space="preserve"><value>أوامر الشغل لهذه المركبة</value></data>
+  <data name="Open a job card to start this vehicle's history." xml:space="preserve"><value>افتح أمر شغل لبدء سجل هذه المركبة.</value></data>
+
+  <!-- Login and register panel -->
+  <data name="Customers, vehicles and service history" xml:space="preserve"><value>العملاء والمركبات وسجل الصيانة</value></data>
+  <data name="Job cards with totals worked out for you" xml:space="preserve"><value>أوامر شغل بإجمالي محسوب تلقائيًا</value></data>
+  <data name="Reminders to your customers on WhatsApp" xml:space="preserve"><value>تذكيرات لعملائك عبر واتساب</value></data>
+
   <!-- Shop settings and logo -->
   <data name="Shop settings" xml:space="preserve"><value>إعدادات الورشة</value></data>
   <data name="Shop logo" xml:space="preserve"><value>شعار الورشة</value></data>
