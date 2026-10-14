@@ -26,6 +26,7 @@ public class LocalizedValidationAttributeAdapterProvider : IValidationAttributeA
                 RequiredAttribute => "The {0} field is required.",
                 EmailAddressAttribute => "The {0} field is not a valid e-mail address.",
                 StringLengthAttribute => "The field {0} must be a string with a maximum length of {1}.",
+                RangeAttribute => "The field {0} must be between {1} and {2}.",
                 _ => null,
             };
         }

@@ -1,0 +1,57 @@
+@page "{id:int}"
+@model DetailsModel
+@{
+    var vehicle = Model.Vehicle;
+    ViewData["Title"] = vehicle.Plate;
+}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <a asp-page="Index" class="text-secondary">&larr; @L["Vehicles"]</a>
+</nav>
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-4">
+    <div>
+        <h1 class="h2 fw-bold mb-1"><span class="plate plate-lg" dir="auto">@vehicle.Plate</span></h1>
+        <p class="text-secondary mb-0">@vehicle.Make @vehicle.Model &middot; @vehicle.Year</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-page="Edit" asp-route-id="@vehicle.Id">@L["Edit"]</a>
+</div>
+
+<div class="card">
+    <div class="card-body p-4">
+        <dl class="row mb-0">
+            <dt class="col-sm-4 text-secondary fw-normal">@L["Owner"]</dt>
+            <dd class="col-sm-8">
+                <a asp-page="/Customers/Details" asp-route-id="@vehicle.CustomerId">@vehicle.Customer?.Name</a>
+                @if (vehicle.Customer is not null)
+                {
+                    <span class="ltr text-secondary ms-2">@vehicle.Customer.Phone</span>
+                }
+            </dd>
+
+            <dt class="col-sm-4 text-secondary fw-normal">@L["Make"]</dt>
+            <dd class="col-sm-8">@vehicle.Make</dd>
+
+            <dt class="col-sm-4 text-secondary fw-normal">@L["Model"]</dt>
+            <dd class="col-sm-8">@vehicle.Model</dd>
+
+            <dt class="col-sm-4 text-secondary fw-normal">@L["Year"]</dt>
+            <dd class="col-sm-8">@vehicle.Year</dd>
+
+            <dt class="col-sm-4 text-secondary fw-normal">@L["Mileage (km)"]</dt>
+            <dd class="col-sm-8">@vehicle.Mileage.ToString("N0")</dd>
+
+            <dt class="col-sm-4 text-secondary fw-normal">@L["VIN"]</dt>
+            <dd class="col-sm-8 mb-0">
+                @if (string.IsNullOrEmpty(vehicle.Vin))
+                {
+                    <span class="text-secondary">&mdash;</span>
+                }
+                else
+                {
+                    <span class="ltr">@vehicle.Vin</span>
+                }
+            </dd>
+        </dl>
+    </div>
+</div>

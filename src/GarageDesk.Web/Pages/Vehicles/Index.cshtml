@@ -1,0 +1,72 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = L["Vehicles"].Value;
+    var searching = !string.IsNullOrWhiteSpace(Model.Q);
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <h1 class="h2 fw-bold mb-0">@L["Vehicles"]</h1>
+    <a class="btn btn-primary" asp-page="Create">@L["Add vehicle"]</a>
+</div>
+
+<form method="get" class="mb-4" role="search">
+    <div class="input-group">
+        <input type="search" name="q" value="@Model.Q" class="form-control"
+               placeholder="@L["Search by plate, make, model or owner"]" aria-label="@L["Search by plate, make, model or owner"]" />
+        <button type="submit" class="btn btn-outline-secondary">@L["Search"]</button>
+        @if (searching)
+        {
+            <a class="btn btn-outline-secondary" asp-page="Index">@L["Clear"]</a>
+        }
+    </div>
+</form>
+
+@if (Model.Vehicles.Count == 0)
+{
+    <div class="card"><div class="card-body p-4 text-center text-secondary">
+        @if (searching)
+        {
+            <p class="mb-0">@L["No vehicles match your search."]</p>
+        }
+        else
+        {
+            <p>@L["No vehicles yet. Add a vehicle from a customer's page, or use the button above."]</p>
+        }
+    </div></div>
+}
+else
+{
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">@L["Plate number"]</th>
+                        <th scope="col">@L["Vehicle"]</th>
+                        <th scope="col">@L["Year"]</th>
+                        <th scope="col">@L["Mileage (km)"]</th>
+                        <th scope="col">@L["Owner"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var vehicle in Model.Vehicles)
+                {
+                    <tr>
+                        <td><a class="plate" dir="auto" asp-page="Details" asp-route-id="@vehicle.Id">@vehicle.Plate</a></td>
+                        <td>@vehicle.Make @vehicle.Model</td>
+                        <td>@vehicle.Year</td>
+                        <td>@vehicle.Mileage.ToString("N0")</td>
+                        <td><a asp-page="/Customers/Details" asp-route-id="@vehicle.CustomerId">@vehicle.Customer?.Name</a></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @if (Model.HasMore)
+    {
+        <p class="text-secondary small mt-3">@L["Showing the first {0} vehicles. Use the search to narrow the list.", IndexModel.PageSize]</p>
+    }
+}

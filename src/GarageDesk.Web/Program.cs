@@ -43,10 +43,24 @@ builder.Services.AddWebEncoders(options =>
 builder.Services.AddSingleton<IValidationAttributeAdapterProvider, LocalizedValidationAttributeAdapterProvider>();
 builder.Services.AddOptions<MvcOptions>()
     .Configure<IStringLocalizerFactory>((mvc, localizerFactory) =>
-        mvc.ModelMetadataDetailsProviders.Add(
-            new LocalizedDisplayNameProvider(localizerFactory.Create(typeof(SharedResource)))));
+    {
+        var localizer = localizerFactory.Create(typeof(SharedResource));
+        mvc.ModelMetadataDetailsProviders.Add(new LocalizedDisplayNameProvider(localizer));
+
+        // The messages for text that can't be read as a number, etc.
+        var messages = mvc.ModelBindingMessageProvider;
+        messages.SetValueMustBeANumberAccessor(field => localizer["The field {0} must be a number.", field].Value);
+        messages.SetAttemptedValueIsInvalidAccessor((value, field) => localizer["The value '{0}' is not valid for {1}.", value, field].Value);
+        messages.SetValueIsInvalidAccessor(value => localizer["The value '{0}' is invalid.", value].Value);
+    });
 
 builder.Services.AddRazorPages()
+    .AddRazorPagesOptions(options =>
+    {
+        // Everything under these folders needs a signed-in user (and, via RequireShopPageFilter, a shop).
+        options.Conventions.AuthorizeFolder("/Customers");
+        options.Conventions.AuthorizeFolder("/Vehicles");
+    })
     .AddMvcOptions(options => options.Filters.Add<RequireShopPageFilter>())
     .AddDataAnnotationsLocalization(options =>
         options.DataAnnotationLocalizerProvider = (_, localizerFactory) => localizerFactory.Create(typeof(SharedResource)));

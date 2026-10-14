@@ -52,6 +52,10 @@ public class GarageDeskWebFactory : WebApplicationFactory<Program>
         });
     }
 
+    /// <summary>A DbContext on the same in-memory database, acting as the given shop. For seeding test data directly.</summary>
+    public ApplicationDbContext CreateContextFor(int shopId) =>
+        new(new DbContextOptionsBuilder<ApplicationDbContext>().UseSqlite(_connection).Options, new FakeCurrentShop(shopId));
+
     /// <summary>A client that is signed in as the given user (and, optionally, has that shop in its claims).</summary>
     public HttpClient CreateClientFor(string userId, int? shopId = null)
     {

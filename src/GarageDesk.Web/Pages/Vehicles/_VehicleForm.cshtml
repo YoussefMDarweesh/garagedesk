@@ -1,0 +1,65 @@
+@* The fields shared by the Add and Edit vehicle pages. *@
+@model VehicleFormPageModel
+
+<partial name="_FormErrors" />
+
+<div class="mb-3">
+    <label asp-for="Input.CustomerId" class="form-label"></label>
+    <select asp-for="Input.CustomerId" asp-items="Model.Owners" class="form-select">
+        <option value="0">@L["Choose the owner."]</option>
+    </select>
+    <span asp-validation-for="Input.CustomerId"></span>
+</div>
+
+<div class="form-floating mb-3">
+    <input asp-for="Input.Plate" class="form-control" placeholder="@L["Plate number"]" autocomplete="off" dir="auto" />
+    <label asp-for="Input.Plate"></label>
+    <span asp-validation-for="Input.Plate"></span>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-sm-6">
+        <div class="form-floating">
+            <input asp-for="Input.Make" class="form-control" placeholder="@L["Make"]" list="vehicle-makes" autocomplete="off" />
+            <label asp-for="Input.Make"></label>
+        </div>
+        <span asp-validation-for="Input.Make"></span>
+    </div>
+    <div class="col-sm-6">
+        <div class="form-floating">
+            <input asp-for="Input.Model" class="form-control" placeholder="@L["Model"]" autocomplete="off" />
+            <label asp-for="Input.Model"></label>
+        </div>
+        <span asp-validation-for="Input.Model"></span>
+    </div>
+</div>
+
+<datalist id="vehicle-makes">
+    @foreach (var make in new[] { "Chevrolet", "Chery", "Fiat", "Honda", "Hyundai", "Kia", "MG", "Mercedes-Benz", "Mitsubishi", "Nissan", "Opel", "Peugeot", "Renault", "Skoda", "Suzuki", "Toyota", "Volkswagen", "BMW" })
+    {
+        <option value="@make"></option>
+    }
+</datalist>
+
+<div class="row g-3 mb-3">
+    <div class="col-sm-6">
+        <div class="form-floating">
+            <input asp-for="Input.Year" class="form-control" placeholder="@L["Year"]" type="number" inputmode="numeric" />
+            <label asp-for="Input.Year"></label>
+        </div>
+        <span asp-validation-for="Input.Year"></span>
+    </div>
+    <div class="col-sm-6">
+        <div class="form-floating">
+            <input asp-for="Input.Mileage" class="form-control" placeholder="@L["Mileage (km)"]" type="number" inputmode="numeric" />
+            <label asp-for="Input.Mileage"></label>
+        </div>
+        <span asp-validation-for="Input.Mileage"></span>
+    </div>
+</div>
+
+<div class="form-floating mb-4">
+    <input asp-for="Input.Vin" class="form-control" placeholder="@L["VIN (optional)"]" autocomplete="off" />
+    <label asp-for="Input.Vin"></label>
+    <span asp-validation-for="Input.Vin"></span>
+</div>
