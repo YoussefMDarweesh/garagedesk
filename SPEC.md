@@ -38,6 +38,8 @@ Each shop is a separate tenant. One shop must never see another shop's data.
 - Reminder: vehicle, type (e.g. oil change), due date and/or due mileage, done flag.
 - Dashboard lists reminders due in the next 14 days or overdue.
 - "Send on WhatsApp" button opens `https://wa.me/<phone>?text=<message>` with a pre-filled, editable message. No paid API.
+- "Due" rules: a reminder is **overdue** once its date has passed or the vehicle's mileage is past the due mileage; it is **due soon** within 14 days or within 500 km of the due mileage. With both a date and a mileage, whichever comes first counts. The WhatsApp message follows the shop's current language.
+- When a job card is marked Done, the page offers to create the next oil change reminder (suggested: 6 months and +10,000 km, both editable).
 - **Done when:** an overdue oil-change reminder appears on the dashboard and the button opens WhatsApp with the customer's number and message.
 
 ### M6 — Invoice

@@ -22,7 +22,7 @@ I run an automotive software business and manage a fleet of cars, so I've been o
 - [x] M1 — Shop accounts & multi-tenancy
 - [x] M2 — Customers & vehicles
 - [x] M3 — Job cards
-- [ ] M4 — Service history
+- [x] M4 — Service history
 - [ ] M5 — Reminders + WhatsApp
 - [ ] M6 — Printable invoice
 - [ ] M7 — Demo data & deployment
