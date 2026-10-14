@@ -1,4 +1,5 @@
 @page "{id:int}"
+@using GarageDesk.Web.Models
 @model DetailsModel
 @{
     var vehicle = Model.Vehicle;
@@ -58,3 +59,79 @@
         </dl>
     </div>
 </div>
+
+<section class="mt-5" aria-labelledby="history-heading">
+    <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-3">
+        <h2 id="history-heading" class="h4 fw-bold mb-0">@L["Service history"]</h2>
+        @if (Model.History.Count > 0)
+        {
+            <p class="text-secondary mb-0">
+                @L["Visits: {0}", Model.History.Count] &middot;
+                @L["All visits total"]: <partial name="_Money" model="Model.HistoryTotal" />
+            </p>
+        }
+    </div>
+
+    @if (Model.History.Count == 0)
+    {
+        <div class="card"><div class="card-body p-4 text-center text-secondary">
+            <p class="mb-3">@L["No visits yet. Open a job card to start this vehicle's history."]</p>
+            <a class="btn btn-primary btn-sm" asp-page="/Jobs/Create" asp-route-vehicleId="@vehicle.Id">@L["Open job card"]</a>
+        </div></div>
+    }
+    else
+    {
+        <div class="card">
+            <ul class="list-group list-group-flush">
+            @foreach (var visit in Model.History)
+            {
+                <li class="list-group-item p-3 p-md-4">
+                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+                        <div>
+                            <span class="fw-semibold"><span class="ltr">@visit.DateIn.ToString("yyyy-MM-dd")</span></span>
+                            <span class="text-secondary"> &middot; <span class="ltr">@visit.MileageAtVisit.ToString("N0")</span> @L["km"]</span>
+                            <partial name="_StatusBadge" model="visit.Status" />
+                        </div>
+                        <div class="text-end">
+                            <a class="me-2" asp-page="/Jobs/Details" asp-route-id="@visit.Id"><span class="ltr">#@visit.Id</span></a>
+                            <span class="fw-bold"><partial name="_Money" model="visit.Total" /></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-2">
+                        <div class="small text-secondary">@L["What was done"]</div>
+                        @if (visit.Lines.Count == 0)
+                        {
+                            <div class="text-secondary">&mdash;</div>
+                        }
+                        else
+                        {
+                            <ul class="mb-0 ps-3">
+                            @foreach (var line in visit.Lines)
+                            {
+                                <li>
+                                    @line.Description
+                                    @if (line.Quantity != 1)
+                                    {
+                                        <span class="text-secondary">&times; <span class="ltr">@line.Quantity.ToString("0.##")</span></span>
+                                    }
+                                    @if (line.Type == JobLineType.Labor)
+                                    {
+                                        <span class="text-secondary small">(@L["Labor"])</span>
+                                    }
+                                </li>
+                            }
+                            </ul>
+                        }
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(visit.Notes))
+                    {
+                        <p class="small text-secondary mb-0 mt-2" style="white-space: pre-line">@visit.Notes</p>
+                    }
+                </li>
+            }
+            </ul>
+        </div>
+    }
+</section>

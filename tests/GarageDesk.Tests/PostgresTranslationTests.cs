@@ -58,6 +58,22 @@ public class PostgresTranslationTests
     }
 
     [Fact]
+    public void The_vehicle_service_history_query_translates_to_postgresql()
+    {
+        using var db = NewPostgresContext();
+
+        var sql = db.JobCards.AsNoTracking()
+            .Where(j => j.VehicleId == 7)
+            .Include(j => j.Lines)
+            .OrderByDescending(j => j.DateIn).ThenByDescending(j => j.Id)
+            .ToQueryString();
+
+        Assert.Contains("\"JobCards\"", sql);
+        Assert.Contains("\"VehicleId\"", sql);
+        Assert.Contains("DESC", sql);
+    }
+
+    [Fact]
     public void The_open_job_count_translates_to_postgresql()
     {
         using var db = NewPostgresContext();

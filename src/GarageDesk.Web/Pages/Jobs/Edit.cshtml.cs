@@ -64,6 +64,10 @@ public class EditModel(ApplicationDbContext db, IStringLocalizer<SharedResource>
         job.DateIn = Input.DateIn;
         job.MileageAtVisit = Input.MileageAtVisit;
         job.Notes = string.IsNullOrWhiteSpace(Input.Notes) ? null : Input.Notes.Trim();
+
+        // Correcting a reading upwards updates the vehicle too; a lower one never winds the vehicle back.
+        job.Vehicle?.RaiseMileageTo(job.MileageAtVisit);
+
         await db.SaveChangesAsync();
 
         return RedirectToPage("Details", new { id });

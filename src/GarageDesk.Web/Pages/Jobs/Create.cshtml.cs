@@ -48,8 +48,9 @@ public class CreateModel(ApplicationDbContext db, IStringLocalizer<SharedResourc
     public async Task<IActionResult> OnPostAsync()
     {
         // A forged VehicleId pointing at another shop's vehicle is not found here: the filter hides it.
+        // (Tracked on purpose: the visit's mileage reading may raise the vehicle's current mileage below.)
         var vehicle = Input.VehicleId > 0
-            ? await db.Vehicles.AsNoTracking().Include(v => v.Customer).FirstOrDefaultAsync(v => v.Id == Input.VehicleId)
+            ? await db.Vehicles.Include(v => v.Customer).FirstOrDefaultAsync(v => v.Id == Input.VehicleId)
             : null;
 
         if (vehicle is null)
@@ -81,6 +82,10 @@ public class CreateModel(ApplicationDbContext db, IStringLocalizer<SharedResourc
             Status = JobStatus.Booked,
         };
         db.JobCards.Add(job); // ShopId is filled in by the DbContext
+
+        // The odometer reading at this visit becomes the vehicle's current mileage if it is higher.
+        vehicle.RaiseMileageTo(job.MileageAtVisit);
+
         await db.SaveChangesAsync();
 
         return RedirectToPage("Details", new { id = job.Id });
