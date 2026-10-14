@@ -48,7 +48,7 @@
                 <dt>@L["Date"]</dt>
                 <dd><span class="ltr">@job.DateIn.ToString("yyyy-MM-dd")</span></dd>
             </dl>
-            <span class="inv-status @(Model.IsPaid ? "is-paid" : "is-unpaid")">@(Model.IsPaid ? L["Paid"] : L["Unpaid"])</span>
+            <span class="inv-status @(job.PaymentState == PaymentState.Paid ? "is-paid" : "is-unpaid")">@(job.PaymentState switch { PaymentState.Paid => L["Paid"], PaymentState.Partial => L["Partly paid"], _ => L["Unpaid"] })</span>
         </div>
     </header>
 
@@ -109,6 +109,10 @@
             <dd><partial name="_Money" model="job.LaborTotal" /></dd>
             <dt class="inv-grand">@L["Total"]</dt>
             <dd class="inv-grand" data-invoice-total><partial name="_Money" model="job.Total" /></dd>
+            <dt>@L["Received"]</dt>
+            <dd><partial name="_Money" model="job.PaidTotal" /></dd>
+            <dt class="inv-grand">@L["Balance due"]</dt>
+            <dd class="inv-grand" data-invoice-balance><partial name="_Money" model="job.Balance" /></dd>
         </dl>
     </section>
 

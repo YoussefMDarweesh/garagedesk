@@ -1,3 +1,4 @@
+using GarageDesk.Web.Services;
 using GarageDesk.Web.Data;
 using GarageDesk.Web.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,8 @@ namespace GarageDesk.Web.Pages.Customers;
 public class DetailsModel(ApplicationDbContext db) : PageModel
 {
     public Customer Customer { get; private set; } = null!;
+
+    public decimal Owed { get; private set; }
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
@@ -23,6 +26,7 @@ public class DetailsModel(ApplicationDbContext db) : PageModel
         }
 
         Customer = customer;
+        Owed = (await OutstandingBalances.LoadAsync(db, id)).Sum(b => b.Owed);
         return Page();
     }
 }

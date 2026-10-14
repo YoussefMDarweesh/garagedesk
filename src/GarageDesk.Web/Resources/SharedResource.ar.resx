@@ -352,6 +352,40 @@
   <data name="Thank you for your business." xml:space="preserve"><value>شكرًا لتعاملكم معنا.</value></data>
   <data name="Draft" xml:space="preserve"><value>مسودة</value></data>
 
+  <!-- Payments and balances -->
+  <data name="Payments" xml:space="preserve"><value>الدفعات</value></data>
+  <data name="Paid in full" xml:space="preserve"><value>مدفوع بالكامل</value></data>
+  <data name="Partly paid" xml:space="preserve"><value>مدفوع جزئيًا</value></data>
+  <data name="Received" xml:space="preserve"><value>المستلم</value></data>
+  <data name="Balance due" xml:space="preserve"><value>المتبقي</value></data>
+  <data name="No payments yet." xml:space="preserve"><value>لا توجد دفعات بعد.</value></data>
+  <data name="Cash" xml:space="preserve"><value>نقدًا</value></data>
+  <data name="Card" xml:space="preserve"><value>بطاقة</value></data>
+  <data name="Bank transfer" xml:space="preserve"><value>تحويل بنكي</value></data>
+  <data name="Wallet" xml:space="preserve"><value>محفظة إلكترونية</value></data>
+  <data name="Void this payment?" xml:space="preserve"><value>إلغاء هذه الدفعة؟</value></data>
+  <data name="Void payment" xml:space="preserve"><value>إلغاء الدفعة</value></data>
+  <data name="Add payment" xml:space="preserve"><value>إضافة دفعة</value></data>
+  <data name="Amount" xml:space="preserve"><value>المبلغ</value></data>
+  <data name="Payment method" xml:space="preserve"><value>طريقة الدفع</value></data>
+  <data name="Note" xml:space="preserve"><value>ملاحظة</value></data>
+  <data name="Payment recorded." xml:space="preserve"><value>تم تسجيل الدفعة.</value></data>
+  <data name="Payment voided." xml:space="preserve"><value>تم إلغاء الدفعة.</value></data>
+  <data name="The amount must be greater than zero." xml:space="preserve"><value>يجب أن يكون المبلغ أكبر من صفر.</value></data>
+  <data name="The payment is more than the balance due." xml:space="preserve"><value>الدفعة أكبر من المبلغ المتبقي.</value></data>
+  <data name="Only the latest payment can be voided." xml:space="preserve"><value>يمكن إلغاء آخر دفعة فقط.</value></data>
+  <data name="Payments already received are more than the new total. Void the latest payment first." xml:space="preserve"><value>الدفعات المستلمة أكبر من الإجمالي الجديد. ألغِ آخر دفعة أولًا.</value></data>
+  <data name="Marked as paid" xml:space="preserve"><value>تم التحديد كمدفوع</value></data>
+  <data name="Who owes me" xml:space="preserve"><value>المستحقات</value></data>
+  <data name="Outstanding" xml:space="preserve"><value>المستحق</value></data>
+  <data name="Nobody owes you anything right now." xml:space="preserve"><value>لا أحد مدين لك حاليًا.</value></data>
+  <data name="Oldest unpaid" xml:space="preserve"><value>أقدم فاتورة غير مسددة</value></data>
+  <data name="Send a reminder" xml:space="preserve"><value>إرسال تذكير</value></data>
+  <data name="Hello {0}, this is {1}: your balance for {2} is {3} EGP. Please pay when convenient. Thank you!" xml:space="preserve"><value>مرحبًا {0}، معك {1}: المتبقي عليك لـ {2} هو {3} جنيه. برجاء السداد في أقرب وقت. شكرًا لك!</value></data>
+  <data name="Total owed" xml:space="preserve"><value>إجمالي المستحق</value></data>
+  <data name="Balance" xml:space="preserve"><value>الرصيد</value></data>
+  <data name="Unpaid job cards" xml:space="preserve"><value>أوامر شغل غير مسددة</value></data>
+
   <!-- Shop settings and logo -->
   <data name="Shop settings" xml:space="preserve"><value>إعدادات الورشة</value></data>
   <data name="Shop logo" xml:space="preserve"><value>شعار الورشة</value></data>

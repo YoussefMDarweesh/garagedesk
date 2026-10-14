@@ -16,6 +16,10 @@
             <partial name="_Avatar" model="customer.Name" view-data='new ViewDataDictionary(ViewData) { ["Size"] = "avatar-lg" }' />
             <div>
                 <h1 class="h3 fw-bold mb-1">@customer.Name</h1>
+                @if (Model.Owed > 0)
+                {
+                    <a class="chip chip-warn" asp-page="/Receivables/Index" data-customer-owed>@L["Balance due"]: <span class="ltr">@MoneyFormat.Amount(Model.Owed)</span> @L["EGP"]</a>
+                }
                 <p class="mb-0 text-secondary"><partial name="_Icon" model='"phone"' /> <span class="ltr num">@customer.Phone</span></p>
             </div>
         </div>

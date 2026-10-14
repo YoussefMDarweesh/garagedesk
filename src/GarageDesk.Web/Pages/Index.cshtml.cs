@@ -60,6 +60,10 @@ public class IndexModel(ApplicationDbContext db) : PageModel
     public string? ReminderShopName => User.FindFirst(CurrentShop.NameClaimType)?.Value;
 
     /// <summary>The revenue change against last month, as a whole percentage, or null if there is no basis for one.</summary>
+    public decimal OutstandingTotal { get; private set; }
+
+    public int OutstandingCustomers { get; private set; }
+
     public int? RevenueChangePercent =>
         RevenueLastMonth > 0 ? (int)Math.Round((RevenueThisMonth - RevenueLastMonth) / RevenueLastMonth * 100) : null;
 
@@ -80,6 +84,10 @@ public class IndexModel(ApplicationDbContext db) : PageModel
         InProgressCount = await db.JobCards.CountAsync(j => j.Status == JobStatus.InProgress);
         DoneCount = await db.JobCards.CountAsync(j => j.Status == JobStatus.Done);
         OpenJobCount = BookedCount + InProgressCount + DoneCount;
+
+        var owed = await OutstandingBalances.LoadAsync(db);
+        OutstandingTotal = owed.Sum(b => b.Owed);
+        OutstandingCustomers = owed.Count;
 
         await LoadActivityAsync();
         await LoadRemindersAsync();

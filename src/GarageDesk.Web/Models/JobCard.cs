@@ -38,6 +38,8 @@ public class JobCard : IShopOwned
 
     public List<JobLine> Lines { get; set; } = [];
 
+    public List<Payment> Payments { get; set; } = [];
+
     /// <summary>Sum of the parts lines.</summary>
     public decimal PartsTotal => Lines.Where(l => l.Type == JobLineType.Part).Sum(l => l.LineTotal);
 
@@ -46,6 +48,15 @@ public class JobCard : IShopOwned
 
     /// <summary>What the customer pays: every line, worked out automatically.</summary>
     public decimal Total => Lines.Sum(l => l.LineTotal);
+
+    /// <summary>Money received so far.</summary>
+    public decimal PaidTotal => Payments.Sum(p => p.Amount);
+
+    /// <summary>What the customer still owes: the total minus the payments. Computed, never stored.</summary>
+    public decimal Balance => IsLocked ? 0 : Math.Round(Total - PaidTotal, 2, MidpointRounding.AwayFromZero);
+
+    public PaymentState PaymentState =>
+        IsLocked || (Total > 0 && Balance <= 0) ? PaymentState.Paid : PaidTotal > 0 ? PaymentState.Partial : PaymentState.Unpaid;
 
     /// <summary>A paid job card is final: its lines and details can no longer be changed.</summary>
     public bool IsLocked => Status == JobStatus.Paid;

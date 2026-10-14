@@ -74,3 +74,16 @@ public static class InvoiceBackfill
         WHERE "InvoiceNumber" IS NOT NULL GROUP BY "ShopId"
         """;
 }
+
+/// <summary>Existing Paid job cards were paid in full before payments existed: give each one a matching cash payment.</summary>
+public static class PaymentBackfill
+{
+    public const string PaidJobsSql = """
+        INSERT INTO "Payments" ("ShopId", "JobCardId", "Amount", "Method", "PaidOn", "Note")
+        SELECT j."ShopId", j."Id", SUM(ROUND(l."Quantity" * l."UnitPrice", 2)), 'Cash', j."DateIn", 'Recorded before payments existed'
+        FROM "JobCards" AS j JOIN "JobLines" AS l ON l."JobCardId" = j."Id"
+        WHERE j."Status" = 'Paid'
+        GROUP BY j."ShopId", j."Id", j."DateIn"
+        HAVING SUM(ROUND(l."Quantity" * l."UnitPrice", 2)) > 0
+        """;
+}

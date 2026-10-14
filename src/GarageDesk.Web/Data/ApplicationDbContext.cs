@@ -40,6 +40,8 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
 
     public DbSet<Reminder> Reminders => Set<Reminder>();
 
+    public DbSet<Payment> Payments => Set<Payment>();
+
     public DbSet<NumberSequence> NumberSequences => Set<NumberSequence>();
 
     // Read by the query filters below. EF evaluates it per context instance, i.e. per request.
@@ -102,7 +104,8 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             // The totals are worked out from the lines, never stored.
             job.HasIndex(j => new { j.ShopId, j.InvoiceNumber }).IsUnique();
             job.Ignore(j => j.InvoiceLabel);
-            job.Ignore(j => j.PartsTotal).Ignore(j => j.LaborTotal).Ignore(j => j.Total).Ignore(j => j.IsLocked);
+            job.Ignore(j => j.PartsTotal).Ignore(j => j.LaborTotal).Ignore(j => j.Total).Ignore(j => j.IsLocked)
+                .Ignore(j => j.PaidTotal).Ignore(j => j.Balance).Ignore(j => j.PaymentState);
         });
 
         builder.Entity<JobLine>(line =>
@@ -122,6 +125,16 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             reminder.HasIndex(r => new { r.ShopId, r.IsDone, r.DueDate });
             reminder.HasOne(r => r.Vehicle).WithMany().HasForeignKey(r => r.VehicleId).OnDelete(DeleteBehavior.Restrict);
             reminder.HasOne<Shop>().WithMany().HasForeignKey(r => r.ShopId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<Payment>(payment =>
+        {
+            payment.Property(p => p.Amount).HasPrecision(12, 2);
+            payment.Property(p => p.Method).HasConversion<string>().HasMaxLength(20);
+            payment.Property(p => p.Note).HasMaxLength(200);
+            payment.HasIndex(p => new { p.ShopId, p.JobCardId });
+            payment.HasOne(p => p.JobCard).WithMany(j => j.Payments).HasForeignKey(p => p.JobCardId).OnDelete(DeleteBehavior.Cascade);
+            payment.HasOne<Shop>().WithMany().HasForeignKey(p => p.ShopId).OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<NumberSequence>(sequence =>

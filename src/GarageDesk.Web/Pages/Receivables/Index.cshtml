@@ -1,0 +1,53 @@
+@page
+@model GarageDesk.Web.Pages.Receivables.IndexModel
+@using GarageDesk.Web.Services
+@{
+    ViewData["Title"] = L["Who owes me"].Value;
+}
+
+<div class="page-head">
+    <div>
+        <p class="eyebrow mb-1">@L["Outstanding"]</p>
+        <h1>@L["Who owes me"]</h1>
+        <p class="page-sub"><span class="fw-bold" data-total-owed><partial name="_Money" model="Model.TotalOwed" /></span></p>
+    </div>
+</div>
+
+@if (Model.Balances.Count == 0)
+{
+    <section class="panel panel-pad"><p class="mb-0 text-secondary">@L["Nobody owes you anything right now."]</p></section>
+}
+else
+{
+    <div class="data-table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th scope="col">@L["Customers"]</th>
+                    <th scope="col">@L["Phone"]</th>
+                    <th scope="col">@L["Oldest unpaid"]</th>
+                    <th scope="col" class="cell-end">@L["Balance due"]</th>
+                    <th scope="col"><span class="visually-hidden">@L["Send a reminder"]</span></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var b in Model.Balances)
+            {
+                var link = Model.WhatsAppFor(b);
+                <tr>
+                    <td><a class="identity-name" asp-page="/Customers/Details" asp-route-id="@b.Customer.Id">@b.Customer.Name</a></td>
+                    <td><span class="ltr">@b.Customer.Phone</span></td>
+                    <td><span class="ltr num">@b.Oldest.ToString("yyyy-MM-dd")</span></td>
+                    <td class="cell-end fw-bold"><partial name="_Money" model="b.Owed" /></td>
+                    <td class="cell-end">
+                        @if (link is not null)
+                        {
+                            <a class="btn btn-sm btn-primary" href="@link" target="_blank" rel="noopener"><partial name="_Icon" model='"whatsapp"' />@L["Send a reminder"]</a>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

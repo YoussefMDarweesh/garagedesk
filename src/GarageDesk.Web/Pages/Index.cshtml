@@ -107,7 +107,7 @@ else
     }
 
     <div class="row g-3 g-lg-4 mb-4">
-        <div class="col-6 col-xl-3">
+        <div class="col-6 col-xl">
             <a class="stat-card" asp-page="/Jobs/Index" asp-route-status="Paid">
                 <div class="stat-top"><span class="stat-label">@L["Revenue this month"]</span><span class="icon-tile"><partial name="_Icon" model='"coins"' /></span></div>
                 <p class="stat-value"><span class="ltr">@MoneyFormat.Amount(Model.RevenueThisMonth)</span> <small class="fs-6 text-secondary">@L["EGP"]</small></p>
@@ -124,25 +124,32 @@ else
                 </p>
             </a>
         </div>
-        <div class="col-6 col-xl-3">
+        <div class="col-6 col-xl">
             <a class="stat-card" asp-page="/Jobs/Index">
                 <div class="stat-top"><span class="stat-label">@L["Open job cards"]</span><span class="icon-tile"><partial name="_Icon" model='"clipboard"' /></span></div>
                 <p class="stat-value">@Model.OpenJobCount</p>
                 <p class="stat-sub">@L["{0} booked · {1} in progress · {2} done", Model.BookedCount, Model.InProgressCount, Model.DoneCount]</p>
             </a>
         </div>
-        <div class="col-6 col-xl-3">
+        <div class="col-6 col-xl">
             <a class="stat-card" asp-page="/Customers/Index">
                 <div class="stat-top"><span class="stat-label">@L["Customers"]</span><span class="icon-tile"><partial name="_Icon" model='"users"' /></span></div>
                 <p class="stat-value">@Model.CustomerCount</p>
                 <p class="stat-sub">@L["Registered in your shop"]</p>
             </a>
         </div>
-        <div class="col-6 col-xl-3">
+        <div class="col-6 col-xl">
             <a class="stat-card" asp-page="/Vehicles/Index">
                 <div class="stat-top"><span class="stat-label">@L["Vehicles"]</span><span class="icon-tile"><partial name="_Icon" model='"car"' /></span></div>
                 <p class="stat-value">@Model.VehicleCount</p>
                 <p class="stat-sub">@L["Across {0} customers", Model.CustomerCount]</p>
+            </a>
+        </div>
+        <div class="col-12 col-xl">
+            <a class="stat-card" asp-page="/Receivables/Index">
+                <div class="stat-top"><span class="stat-label">@L["Outstanding"]</span><span class="icon-tile"><partial name="_Icon" model='"alert"' /></span></div>
+                <p class="stat-value" data-outstanding><span class="ltr">@MoneyFormat.Amount(Model.OutstandingTotal)</span> <small class="fs-6 text-secondary">@L["EGP"]</small></p>
+                <p class="stat-sub">@L["Unpaid job cards"]: <span class="ltr num">@Model.OutstandingCustomers</span></p>
             </a>
         </div>
     </div>

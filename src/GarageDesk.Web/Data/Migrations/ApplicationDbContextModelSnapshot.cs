@@ -237,6 +237,45 @@ namespace GarageDesk.Web.Data.Migrations
                     b.ToTable("NumberSequences");
                 });
 
+            modelBuilder.Entity("GarageDesk.Web.Models.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<int>("JobCardId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Method")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateOnly>("PaidOn")
+                        .HasColumnType("date");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobCardId");
+
+                    b.HasIndex("ShopId", "JobCardId");
+
+                    b.ToTable("Payments");
+                });
+
             modelBuilder.Entity("GarageDesk.Web.Models.Reminder", b =>
                 {
                     b.Property<int>("Id")
@@ -588,6 +627,23 @@ namespace GarageDesk.Web.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("GarageDesk.Web.Models.Payment", b =>
+                {
+                    b.HasOne("GarageDesk.Web.Models.JobCard", "JobCard")
+                        .WithMany("Payments")
+                        .HasForeignKey("JobCardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GarageDesk.Web.Models.Shop", null)
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("JobCard");
+                });
+
             modelBuilder.Entity("GarageDesk.Web.Models.Reminder", b =>
                 {
                     b.HasOne("GarageDesk.Web.Models.Shop", null)
@@ -690,6 +746,8 @@ namespace GarageDesk.Web.Data.Migrations
             modelBuilder.Entity("GarageDesk.Web.Models.JobCard", b =>
                 {
                     b.Navigation("Lines");
+
+                    b.Navigation("Payments");
                 });
 #pragma warning restore 612, 618
         }
