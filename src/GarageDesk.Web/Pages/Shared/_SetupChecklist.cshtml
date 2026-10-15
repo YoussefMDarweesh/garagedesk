@@ -1,0 +1,59 @@
+@* The "Getting started" checklist on the dashboard. It is worked out from the shop's real data on every request
+   (see SetupProgress), so it survives a refresh and ticks itself. It disappears once a customer, a car and a job card exist. *@
+@model GarageDesk.Web.Services.SetupChecklistModel
+@{
+    var items = Model.Progress.Items(Model.IsOwner);
+    var (done, total) = Model.Progress.Count(Model.IsOwner);
+
+    string Label(string key) => key switch
+    {
+        "brand" => L["Add your logo or pick a colour"].Value,
+        "vat" => L["Set your VAT percent, if you charge VAT"].Value,
+        "customer" => L["Add your first customer"].Value,
+        "vehicle" => L["Add their vehicle"].Value,
+        _ => L["Open your first job card"].Value,
+    };
+
+    (string Page, int? Step) Target(string key) => key switch
+    {
+        "brand" => ("/Onboarding", 1),
+        "vat" => ("/ShopSettings", null),
+        "customer" => Model.IsOwner ? ("/Onboarding", 2) : ("/Customers/Create", null),
+        "vehicle" => Model.IsOwner ? ("/Onboarding", 2) : ("/Vehicles/Create", null),
+        _ => Model.IsOwner ? ("/Onboarding", 3) : ("/Jobs/Create", null),
+    };
+}
+<section class="panel panel-pad mb-4" aria-labelledby="getting-started" data-setup-checklist>
+    <div class="panel-head">
+        <h2 id="getting-started" class="panel-title">@L["Getting started"]</h2>
+        <span class="chip chip-accent"><span class="ltr num">@done / @total</span></span>
+    </div>
+    <div class="meter mb-3" role="progressbar" aria-valuemin="0" aria-valuemax="@total" aria-valuenow="@done" aria-label="@L["Getting started"]">
+        <span style="width: @(total == 0 ? 0 : done * 100 / total)%"></span>
+    </div>
+    <ol class="list-unstyled d-grid gap-3 mb-3">
+        @foreach (var item in items)
+        {
+            var (targetPage, step) = Target(item.Key);
+            <li class="d-flex align-items-center gap-3" data-setup-item="@item.Key" data-done="@(item.Done ? "true" : "false")">
+                <span class="tl-dot @(item.Done ? "ok" : "")"><partial name="_Icon" model='item.Done ? "check" : "plus"' /></span>
+                @if (item.Done)
+                {
+                    <span class="text-secondary text-decoration-line-through">@Label(item.Key)</span>
+                }
+                else
+                {
+                    <a class="fw-bold" asp-page="@targetPage" asp-route-step="@step">@Label(item.Key)</a>
+                    @if (item.Optional)
+                    {
+                        <span class="chip">@L["Optional"]</span>
+                    }
+                }
+            </li>
+        }
+    </ol>
+    @if (Model.IsOwner)
+    {
+        <a class="btn btn-outline-secondary btn-sm" asp-page="/Onboarding">@L["Open the setup guide"]</a>
+    }
+</section>

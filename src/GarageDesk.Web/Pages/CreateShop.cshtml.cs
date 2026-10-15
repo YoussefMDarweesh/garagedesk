@@ -70,6 +70,8 @@ public class CreateShopModel(
 
         // Re-issue the login cookie so it now carries the shop_id claim.
         await signInManager.RefreshSignInAsync(user);
-        return RedirectToPage("/Index");
+
+        // A brand-new shop starts in the setup wizard (logo and colour, first customer and car, first job card).
+        return RedirectToPage("/Onboarding");
     }
 }

@@ -2977,4 +2977,37 @@ html[lang="ar"] .inv-table th {
 
 .figure-negative {
   color: var(--bad);
+/* ---- growth-onboarding: setup wizard ---- */
+.wizard-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 0 0 var(--s-5);
+  padding: 0;
+  list-style: none;
+}
+
+.wizard-steps li a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text-2);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.wizard-steps li.current a {
+  color: var(--text);
+  font-weight: 800;
+}
+
+.wizard-steps .tl-dot .num {
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 575.98px) {
+  .wizard-step-label {
+    font-size: 0.9rem;
+  }
 }

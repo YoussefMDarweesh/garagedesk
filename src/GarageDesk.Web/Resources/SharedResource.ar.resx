@@ -752,4 +752,28 @@
   <data name="To" xml:space="preserve"><value>إلى</value></data>
   <data name="Up to 366 days at a time. The file is UTF-8 with Arabic column titles when the app is in Arabic. Text that starts with = + - or @ gets a leading quote so Excel cannot run it as a formula." xml:space="preserve"><value>حتى 366 يومًا في المرة الواحدة. الملف بترميز UTF-8 وبعناوين أعمدة عربية عندما يكون التطبيق بالعربية. النص الذي يبدأ بـ = + - أو @ يُضاف قبله علامة اقتباس حتى لا يُنفّذه إكسل كمعادلة.</value></data>
   <!-- end v1-4-stock-profit -->
+  <!-- growth-onboarding: setup wizard -->
+  <data name="Three short steps. You can skip any of them and come back later." xml:space="preserve"><value>ثلاث خطوات قصيرة. يمكنك تخطي أي منها والعودة إليها لاحقًا.</value></data>
+  <data name="Setup steps" xml:space="preserve"><value>خطوات الإعداد</value></data>
+  <data name="Make it yours" xml:space="preserve"><value>خصّص ورشتك</value></data>
+  <data name="First customer and car" xml:space="preserve"><value>أول عميل وسيارة</value></data>
+  <data name="First job card" xml:space="preserve"><value>أول أمر شغل</value></data>
+  <data name="Optional" xml:space="preserve"><value>اختياري</value></data>
+  <data name="Your logo and colour appear in the menu, on invoices and on the page your customers see." xml:space="preserve"><value>يظهر شعارك ولونك في القائمة وعلى الفواتير وفي الصفحة التي يراها عملاؤك.</value></data>
+  <data name="Save and continue" xml:space="preserve"><value>حفظ ومتابعة</value></data>
+  <data name="Skip for now" xml:space="preserve"><value>تخطَّ الآن</value></data>
+  <data name="Back" xml:space="preserve"><value>رجوع</value></data>
+  <data name="Add one customer and their car. You can add more, or import a whole list from a file, afterwards." xml:space="preserve"><value>أضف عميلًا واحدًا وسيارته. يمكنك إضافة المزيد أو استيراد قائمة كاملة من ملف لاحقًا.</value></data>
+  <data name="A vehicle with this plate number already exists in your shop." xml:space="preserve"><value>توجد سيارة بنفس رقم اللوحة في ورشتك بالفعل.</value></data>
+  <data name="A job card is one visit of one car. Open it now and add parts and labor on the next page." xml:space="preserve"><value>أمر الشغل هو زيارة واحدة لسيارة واحدة. افتحه الآن وأضف القطع والمصنعية في الصفحة التالية.</value></data>
+  <data name="What does the car need?" xml:space="preserve"><value>ماذا تحتاج السيارة؟</value></data>
+  <data name="Open the job card" xml:space="preserve"><value>افتح أمر الشغل</value></data>
+  <data name="The notes are too long (2000 characters at most)." xml:space="preserve"><value>الملاحظات طويلة جدًا (2000 حرف كحد أقصى).</value></data>
+  <data name="Your shop is ready" xml:space="preserve"><value>ورشتك جاهزة</value></data>
+  <data name="Everything is in place. Here is what most shops do next." xml:space="preserve"><value>كل شيء في مكانه. هذا ما تفعله معظم الورش بعد ذلك.</value></data>
+  <data name="Go to the dashboard" xml:space="preserve"><value>اذهب إلى لوحة التحكم</value></data>
+  <data name="Invite your team" xml:space="preserve"><value>ادعُ فريقك</value></data>
+  <data name="Add your logo or pick a colour" xml:space="preserve"><value>أضف شعارك أو اختر لونًا</value></data>
+  <data name="Set your VAT percent, if you charge VAT" xml:space="preserve"><value>اضبط نسبة الضريبة إن كنت تحصّلها</value></data>
+  <data name="Open the setup guide" xml:space="preserve"><value>افتح دليل الإعداد</value></data>
 </root>

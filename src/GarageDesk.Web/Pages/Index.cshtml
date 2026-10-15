@@ -58,8 +58,6 @@
 else
 {
     @* ------------------------------------------------ the dashboard ------------------------------------------------ *@
-    var firstSteps = Model.CustomerCount == 0 || Model.VehicleCount == 0 || Model.JobCount == 0;
-
     <div class="page-head">
         <div>
             <p class="eyebrow mb-1">@L["Your shop"]</p>
@@ -73,38 +71,10 @@ else
         </div>
     </div>
 
-    @if (firstSteps)
+    @* Derived from the shop's real data on every request (see SetupProgress), so it survives a refresh. *@
+    @if (!Model.Setup.CoreDone)
     {
-        <section class="panel panel-pad mb-4" aria-labelledby="getting-started">
-            <div class="panel-head">
-                <h2 id="getting-started" class="panel-title">@L["Getting started"]</h2>
-                <span class="chip chip-accent">@L["3 quick steps"]</span>
-            </div>
-            <ol class="list-unstyled d-grid gap-3 mb-0">
-                @{
-                    var steps = new (bool Done, string Text, string Page)[]
-                    {
-                        (Model.CustomerCount > 0, L["Add your first customer"].Value, "/Customers/Create"),
-                        (Model.VehicleCount > 0, L["Add their vehicle"].Value, "/Vehicles/Create"),
-                        (Model.JobCount > 0, L["Open your first job card"].Value, "/Jobs/Create"),
-                    };
-                }
-                @foreach (var step in steps)
-                {
-                    <li class="d-flex align-items-center gap-3">
-                        <span class="tl-dot @(step.Done ? "ok" : "")"><partial name="_Icon" model='step.Done ? "check" : "plus"' /></span>
-                        @if (step.Done)
-                        {
-                            <span class="text-secondary text-decoration-line-through">@step.Text</span>
-                        }
-                        else
-                        {
-                            <a class="fw-bold" asp-page="@step.Page">@step.Text</a>
-                        }
-                    </li>
-                }
-            </ol>
-        </section>
+        <partial name="_SetupChecklist" model="new SetupChecklistModel(Model.Setup, Model.CanSeeReports)" />
     }
 
     <div class="row g-3 g-lg-4 mb-4">

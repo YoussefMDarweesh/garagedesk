@@ -1,0 +1,210 @@
+@page
+@using GarageDesk.Web.Services
+@model OnboardingModel
+@{
+    ViewData["Title"] = L["Set up your shop"].Value;
+    var shopName = User.FindFirst(CurrentShop.NameClaimType)?.Value;
+    var logoVersion = User.FindFirst(CurrentShop.LogoClaimType)?.Value;
+
+    // The step labels, in order. A step is "done" when its real data exists; the current one is highlighted.
+    var steps = new (int Number, string Label, bool Done)[]
+    {
+        (1, L["Make it yours"].Value, Model.Progress.HasBranding || Model.Progress.HasVat),
+        (2, L["First customer and car"].Value, Model.Progress.HasCustomer && Model.Progress.HasVehicle),
+        (3, L["First job card"].Value, Model.Progress.HasJob),
+    };
+}
+
+<div class="narrow" style="max-width: 46rem">
+    <div class="page-head">
+        <div>
+            <p class="eyebrow mb-1">@shopName</p>
+            <h1>@L["Set up your shop"]</h1>
+            <p class="page-sub">@L["Three short steps. You can skip any of them and come back later."]</p>
+        </div>
+    </div>
+
+    <ol class="wizard-steps" aria-label="@L["Setup steps"]">
+        @foreach (var step in steps)
+        {
+            <li class="@(step.Number == Model.Step ? "current" : "") @(step.Done ? "done" : "")" aria-current="@(step.Number == Model.Step ? "step" : null)">
+                <a asp-page="Onboarding" asp-route-step="@step.Number">
+                    <span class="tl-dot @(step.Done ? "ok" : step.Number == Model.Step ? "accent" : "")">
+                        @if (step.Done) { <partial name="_Icon" model='"check"' /> } else { <span class="num">@step.Number</span> }
+                    </span>
+                    <span class="wizard-step-label">@step.Label</span>
+                </a>
+            </li>
+        }
+    </ol>
+
+    @if (Model.Step == 1)
+    {
+        <section class="panel panel-pad" aria-labelledby="step-heading">
+            <div class="panel-head mb-1">
+                <h2 id="step-heading" class="panel-title">@L["Make it yours"]</h2>
+                <span class="chip">@L["Optional"]</span>
+            </div>
+            <p class="text-secondary">@L["Your logo and colour appear in the menu, on invoices and on the page your customers see."]</p>
+
+            <partial name="_FormErrors" />
+
+            <form method="post" asp-page-handler="Brand" enctype="multipart/form-data" novalidate>
+                <div class="form-section">
+                    <p class="form-section-title">@L["Shop logo"]</p>
+                    @if (Model.HasLogo)
+                    {
+                        <img src="@Url.Content("~" + ShopLogoEndpoint.Path)?v=@logoVersion" alt="@shopName" class="shop-logo shop-logo-lg mb-3" />
+                    }
+                    <label class="form-label small text-secondary" for="upload">@L["Logo image"]</label>
+                    <input id="upload" name="upload" type="file" class="form-control" accept="image/png,image/jpeg,image/webp" />
+                    <p class="form-text mb-0">@L["PNG, JPEG or WebP, up to 512 KB. It appears in the navigation bar."]</p>
+                </div>
+
+                <div class="form-section">
+                    <p class="form-section-title">@L["Accent colour"]</p>
+                    <div class="accent-swatches" role="radiogroup" aria-label="@L["Accent colour"]">
+                        @foreach (var preset in Accents.Presets)
+                        {
+                            <label class="accent-swatch" title="@L[preset]" style="--swatch: @Accents.Swatch(preset)">
+                                <input type="radio" name="accent" value="@preset" checked="@(preset == Model.Accent)" />
+                                <span><partial name="_Icon" model='"check"' /></span>
+                                <span class="visually-hidden">@L[preset]</span>
+                            </label>
+                        }
+                    </div>
+                </div>
+
+                <div class="form-section mb-4">
+                    <p class="form-section-title">@L["VAT"]</p>
+                    <label for="vatPercent" class="form-label small text-secondary">@L["VAT percent"]</label>
+                    <input id="vatPercent" name="vatPercent" type="number" step="0.01" min="0" max="100" inputmode="decimal"
+                           class="form-control" style="max-width: 12rem"
+                           value="@Model.VatPercent?.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" />
+                    <p class="form-text mb-0">@L["Leave empty if your shop does not charge VAT. It is added to job cards when they are issued (Done or Paid)."]</p>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-primary">@L["Save and continue"]</button>
+                    <a class="btn btn-outline-secondary" asp-page="Onboarding" asp-route-step="2">@L["Skip for now"]</a>
+                </div>
+            </form>
+        </section>
+    }
+    else if (Model.Step == 2)
+    {
+        <section class="panel panel-pad" aria-labelledby="step-heading">
+            <div class="panel-head mb-1"><h2 id="step-heading" class="panel-title">@L["First customer and car"]</h2></div>
+            <p class="text-secondary">@L["Add one customer and their car. You can add more, or import a whole list from a file, afterwards."]</p>
+
+            <partial name="_FormErrors" />
+
+            <form method="post" asp-page-handler="Customer" novalidate>
+                <div class="form-section">
+                    <p class="form-section-title">@L["Contact details"]</p>
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Name" class="form-control" placeholder="@L["Name"]" autocomplete="off" />
+                        <label asp-for="Input.Name"></label>
+                        <span asp-validation-for="Input.Name"></span>
+                    </div>
+                    <div class="form-floating mb-1">
+                        <input asp-for="Input.Phone" class="form-control ltr-input" placeholder="@L["Phone"]" inputmode="tel" autocomplete="off" />
+                        <label asp-for="Input.Phone"></label>
+                        <span asp-validation-for="Input.Phone"></span>
+                    </div>
+                    <p class="form-text mb-0">@L["Egyptian mobile or landline, e.g. 0101 234 5678. It is saved in +20 format."]</p>
+                </div>
+
+                <div class="form-section mb-4">
+                    <p class="form-section-title">@L["Vehicle details"]</p>
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Plate" class="form-control" placeholder="@L["Plate number"]" autocomplete="off" dir="auto" />
+                        <label asp-for="Input.Plate"></label>
+                        <span asp-validation-for="Input.Plate"></span>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                <input asp-for="Input.Make" class="form-control" placeholder="@L["Make"]" autocomplete="off" />
+                                <label asp-for="Input.Make"></label>
+                            </div>
+                            <span asp-validation-for="Input.Make"></span>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                <input asp-for="Input.Model" class="form-control" placeholder="@L["Model"]" autocomplete="off" />
+                                <label asp-for="Input.Model"></label>
+                            </div>
+                            <span asp-validation-for="Input.Model"></span>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                <input asp-for="Input.Year" class="form-control" placeholder="@L["Year"]" type="number" inputmode="numeric" />
+                                <label asp-for="Input.Year"></label>
+                            </div>
+                            <span asp-validation-for="Input.Year"></span>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                <input asp-for="Input.Mileage" class="form-control" placeholder="@L["Mileage (km)"]" type="number" inputmode="numeric" />
+                                <label asp-for="Input.Mileage"></label>
+                            </div>
+                            <span asp-validation-for="Input.Mileage"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-primary">@L["Save and continue"]</button>
+                    <a class="btn btn-outline-secondary" asp-page="Onboarding" asp-route-step="1">@L["Back"]</a>
+                </div>
+            </form>
+        </section>
+    }
+    else if (Model.Step == 3)
+    {
+        <section class="panel panel-pad" aria-labelledby="step-heading">
+            <div class="panel-head mb-1"><h2 id="step-heading" class="panel-title">@L["First job card"]</h2></div>
+            <p class="text-secondary">@L["A job card is one visit of one car. Open it now and add parts and labor on the next page."]</p>
+
+            <partial name="_FormErrors" />
+
+            <form method="post" asp-page-handler="Job" novalidate>
+                <div class="form-section mb-4">
+                    <label class="form-label fw-semibold" for="vehicleId">@L["Vehicle"]</label>
+                    <select id="vehicleId" name="vehicleId" class="form-select mb-3">
+                        @foreach (var option in Model.VehicleOptions)
+                        {
+                            <option value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                    <label class="form-label fw-semibold" for="notes">@L["What does the car need?"]</label>
+                    <textarea id="notes" name="notes" class="form-control" rows="3" maxlength="2000"></textarea>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-primary">@L["Open the job card"]</button>
+                    <a class="btn btn-outline-secondary" asp-page="Onboarding" asp-route-step="2">@L["Back"]</a>
+                    <a class="btn btn-link" asp-page="/Index">@L["Skip for now"]</a>
+                </div>
+            </form>
+        </section>
+    }
+    else
+    {
+        <section class="panel panel-pad text-center" aria-labelledby="step-heading">
+            <div class="empty">
+                <span class="icon-tile"><partial name="_Icon" model='"check-circle"' /></span>
+                <h2 id="step-heading">@L["Your shop is ready"]</h2>
+                <p>@L["Everything is in place. Here is what most shops do next."]</p>
+            </div>
+            <div class="quick-actions mt-3">
+                <a class="quick-action" asp-page="/Index"><span class="icon-tile"><partial name="_Icon" model='"grid"' /></span>@L["Go to the dashboard"]</a>
+                <a class="quick-action" asp-page="/Staff/Index"><span class="icon-tile"><partial name="_Icon" model='"user"' /></span>@L["Invite your team"]</a>
+                <a class="quick-action" asp-page="/Reminders/Create"><span class="icon-tile"><partial name="_Icon" model='"bell"' /></span>@L["Add reminder"]</a>
+            </div>
+        </section>
+    }
+</div>

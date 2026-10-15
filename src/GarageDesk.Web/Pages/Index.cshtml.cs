@@ -67,6 +67,9 @@ public class IndexModel(ApplicationDbContext db, ICurrentStaff currentStaff) : P
 
     public int OutstandingCustomers { get; private set; }
 
+    /// <summary>How far the shop is with its first steps (the dashboard's "Getting started" checklist).</summary>
+    public SetupProgress Setup { get; private set; } = new(false, false, false, false, false, false);
+
     public int? RevenueChangePercent =>
         RevenueLastMonth > 0 ? (int)Math.Round((RevenueThisMonth - RevenueLastMonth) / RevenueLastMonth * 100) : null;
 
@@ -114,6 +117,8 @@ public class IndexModel(ApplicationDbContext db, ICurrentStaff currentStaff) : P
         InProgressCount = await db.JobCards.CountAsync(j => j.Status == JobStatus.InProgress);
         DoneCount = await db.JobCards.CountAsync(j => j.Status == JobStatus.Done);
         OpenJobCount = BookedCount + InProgressCount + DoneCount;
+
+        Setup = await SetupProgress.LoadAsync(db);
 
         var owed = await OutstandingBalances.LoadAsync(db);
         OutstandingTotal = owed.Sum(b => b.Owed);
