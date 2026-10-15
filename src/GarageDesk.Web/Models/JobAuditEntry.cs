@@ -7,6 +7,12 @@ public enum JobAuditKind
     PaymentAdded = 2,
     PaymentVoided = 3,
     Assigned = 4,
+
+    /// <summary>A catalog part was put on the job card (stock taken). Detail = "name|quantity".</summary>
+    PartUsed = 5,
+
+    /// <summary>A catalog part line was taken off the job card (stock given back). Detail = "name|quantity".</summary>
+    PartReturned = 6,
 }
 
 /// <summary>

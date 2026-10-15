@@ -107,6 +107,83 @@ namespace GarageDesk.Web.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("GarageDesk.Web.Models.CashClose", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("CardReceived")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<decimal>("CashExpenses")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<decimal>("CashReceived")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<DateTime>("ClosedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ClosedByName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ClosedByUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<decimal>("CountedCash")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<decimal>("Difference")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<decimal>("ExpectedCash")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<decimal>("ExpensesTotal")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<decimal>("OpeningCash")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("TransferReceived")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<decimal>("WalletReceived")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShopId", "Date");
+
+                    b.ToTable("CashCloses");
+                });
+
             modelBuilder.Entity("GarageDesk.Web.Models.Customer", b =>
                 {
                     b.Property<int>("Id")
@@ -214,6 +291,9 @@ namespace GarageDesk.Web.Data.Migrations
                     b.Property<int>("EstimateId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("PartId")
+                        .HasColumnType("integer");
+
                     b.Property<decimal>("Quantity")
                         .HasPrecision(10, 2)
                         .HasColumnType("numeric(10,2)");
@@ -234,9 +314,87 @@ namespace GarageDesk.Web.Data.Migrations
 
                     b.HasIndex("EstimateId");
 
+                    b.HasIndex("PartId");
+
                     b.HasIndex("ShopId");
 
                     b.ToTable("EstimateLines");
+                });
+
+            modelBuilder.Entity("GarageDesk.Web.Models.Expense", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedByName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("CreatedByUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("PaidFromCash")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ShopId", "Date");
+
+                    b.ToTable("Expenses");
+                });
+
+            modelBuilder.Entity("GarageDesk.Web.Models.ExpenseCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShopId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("ExpenseCategories");
                 });
 
             modelBuilder.Entity("GarageDesk.Web.Models.JobAuditEntry", b =>
@@ -366,12 +524,19 @@ namespace GarageDesk.Web.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AddedByUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
                     b.Property<int>("JobCardId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("PartId")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Quantity")
@@ -386,6 +551,10 @@ namespace GarageDesk.Web.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
+                    b.Property<decimal?>("UnitCost")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(12, 2)
                         .HasColumnType("numeric(12,2)");
@@ -393,6 +562,8 @@ namespace GarageDesk.Web.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("JobCardId");
+
+                    b.HasIndex("PartId");
 
                     b.HasIndex("ShopId");
 
@@ -424,6 +595,67 @@ namespace GarageDesk.Web.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("NumberSequences");
+                });
+
+            modelBuilder.Entity("GarageDesk.Web.Models.Part", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("CostPrice")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal?>("LowStockThreshold")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<decimal>("QuantityOnHand")
+                        .IsConcurrencyToken()
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<decimal>("SellPrice")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Sku")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<string>("Supplier")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShopId", "Name");
+
+                    b.HasIndex("ShopId", "Sku");
+
+                    b.ToTable("Parts");
                 });
 
             modelBuilder.Entity("GarageDesk.Web.Models.Payment", b =>
@@ -577,6 +809,9 @@ namespace GarageDesk.Web.Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<bool>("AllowNegativeStock")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -693,6 +928,68 @@ namespace GarageDesk.Web.Data.Migrations
                     b.HasIndex("ShopId", "UsedAtUtc", "RevokedAtUtc");
 
                     b.ToTable("StaffInvites");
+                });
+
+            modelBuilder.Entity("GarageDesk.Web.Models.StockMovement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("JobCardId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("PartId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("QuantityAfter")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<decimal>("QuantityChange")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("UnitCost")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobCardId");
+
+                    b.HasIndex("PartId");
+
+                    b.HasIndex("ShopId", "PartId", "AtUtc");
+
+                    b.ToTable("StockMovements");
                 });
 
             modelBuilder.Entity("GarageDesk.Web.Models.Vehicle", b =>
@@ -894,6 +1191,15 @@ namespace GarageDesk.Web.Data.Migrations
                     b.Navigation("Shop");
                 });
 
+            modelBuilder.Entity("GarageDesk.Web.Models.CashClose", b =>
+                {
+                    b.HasOne("GarageDesk.Web.Models.Shop", null)
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("GarageDesk.Web.Models.Customer", b =>
                 {
                     b.HasOne("GarageDesk.Web.Models.Shop", null)
@@ -928,6 +1234,11 @@ namespace GarageDesk.Web.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("GarageDesk.Web.Models.Part", null)
+                        .WithMany()
+                        .HasForeignKey("PartId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("GarageDesk.Web.Models.Shop", null)
                         .WithMany()
                         .HasForeignKey("ShopId")
@@ -935,6 +1246,32 @@ namespace GarageDesk.Web.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Estimate");
+                });
+
+            modelBuilder.Entity("GarageDesk.Web.Models.Expense", b =>
+                {
+                    b.HasOne("GarageDesk.Web.Models.ExpenseCategory", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GarageDesk.Web.Models.Shop", null)
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("GarageDesk.Web.Models.ExpenseCategory", b =>
+                {
+                    b.HasOne("GarageDesk.Web.Models.Shop", null)
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("GarageDesk.Web.Models.JobAuditEntry", b =>
@@ -986,6 +1323,11 @@ namespace GarageDesk.Web.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("GarageDesk.Web.Models.Part", null)
+                        .WithMany()
+                        .HasForeignKey("PartId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("GarageDesk.Web.Models.Shop", null)
                         .WithMany()
                         .HasForeignKey("ShopId")
@@ -996,6 +1338,15 @@ namespace GarageDesk.Web.Data.Migrations
                 });
 
             modelBuilder.Entity("GarageDesk.Web.Models.NumberSequence", b =>
+                {
+                    b.HasOne("GarageDesk.Web.Models.Shop", null)
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("GarageDesk.Web.Models.Part", b =>
                 {
                     b.HasOne("GarageDesk.Web.Models.Shop", null)
                         .WithMany()
@@ -1063,6 +1414,30 @@ namespace GarageDesk.Web.Data.Migrations
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("GarageDesk.Web.Models.StockMovement", b =>
+                {
+                    b.HasOne("GarageDesk.Web.Models.JobCard", "JobCard")
+                        .WithMany()
+                        .HasForeignKey("JobCardId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("GarageDesk.Web.Models.Part", "Part")
+                        .WithMany()
+                        .HasForeignKey("PartId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GarageDesk.Web.Models.Shop", null)
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("JobCard");
+
+                    b.Navigation("Part");
                 });
 
             modelBuilder.Entity("GarageDesk.Web.Models.Vehicle", b =>

@@ -22,6 +22,9 @@ public class Shop
     /// <summary>VAT percent added to job cards, or null when the shop does not charge VAT.</summary>
     public decimal? VatPercent { get; set; }
 
+    /// <summary>When false (the default) a part cannot be used on a job card if the shelf does not hold enough of it.</summary>
+    public bool AllowNegativeStock { get; set; }
+
     /// <summary>The shop's own WhatsApp message (English) with placeholders such as {name} and {link}; null means the built-in wording.</summary>
     [StringLength(500)]
     public string? ShareMessageEn { get; set; }
