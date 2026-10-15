@@ -848,4 +848,33 @@
   <data name="Install GarageDesk on this device" xml:space="preserve"><value>ثبّت GarageDesk على هذا الجهاز</value></data>
   <data name="Install" xml:space="preserve"><value>تثبيت</value></data>
   <data name="To install: tap Share, then Add to Home Screen." xml:space="preserve"><value>للتثبيت: اضغط مشاركة ثم إضافة إلى الشاشة الرئيسية.</value></data>
+  <!-- growth-onboarding: public landing page -->
+  <data name="Workshop manager for small car service shops" xml:space="preserve"><value>برنامج إدارة لورش خدمة السيارات الصغيرة</value></data>
+  <data name="Job cards, invoices, reminders and WhatsApp links for small car service shops. Arabic and English, on your phone." xml:space="preserve"><value>أوامر شغل وفواتير وتذكيرات وروابط واتساب لورش خدمة السيارات الصغيرة. بالعربية والإنجليزية وعلى هاتفك.</value></data>
+  <data name="Hi, I would like to know more about GarageDesk." xml:space="preserve"><value>مرحبًا، أود معرفة المزيد عن GarageDesk.</value></data>
+  <data name="Talk to us on WhatsApp" xml:space="preserve"><value>تحدث معنا على واتساب</value></data>
+  <data name="Invoices &amp; estimates" xml:space="preserve"><value>الفواتير وعروض الأسعار</value></data>
+  <data name="Clean A4 invoices and estimates in EGP, with discounts and VAT, ready to print or save as PDF." xml:space="preserve"><value>فواتير وعروض أسعار A4 نظيفة بالجنيه المصري مع الخصومات والضريبة، جاهزة للطباعة أو الحفظ بصيغة PDF.</value></data>
+  <data name="WhatsApp links" xml:space="preserve"><value>روابط واتساب</value></data>
+  <data name="Send customers a private link to their invoice, estimate or car status. No app and no login for them." xml:space="preserve"><value>أرسل للعميل رابطًا خاصًا لفاتورته أو عرض السعر أو حالة سيارته. بلا تطبيق وبلا تسجيل دخول.</value></data>
+  <data name="Payments &amp; balances" xml:space="preserve"><value>الدفعات والأرصدة</value></data>
+  <data name="Record part payments and see who owes you at a glance." xml:space="preserve"><value>سجّل الدفعات الجزئية واعرف من عليه مبالغ بنظرة واحدة.</value></data>
+  <data name="Your team" xml:space="preserve"><value>فريقك</value></data>
+  <data name="Cashiers and technicians get their own logins and see only what they need." xml:space="preserve"><value>للكاشير والفنيين حساباتهم الخاصة ولا يرى كل منهم إلا ما يحتاجه.</value></data>
+  <data name="Made for your phone" xml:space="preserve"><value>مصمم لهاتفك</value></data>
+  <data name="Arabic or English, light or dark. Add it to your home screen and it opens like an app." xml:space="preserve"><value>عربي أو إنجليزي، فاتح أو داكن. أضفه إلى شاشتك الرئيسية ويفتح كأنه تطبيق.</value></data>
+  <data name="See it at work" xml:space="preserve"><value>شاهده أثناء العمل</value></data>
+  <data name="Real screens from a demo shop." xml:space="preserve"><value>شاشات حقيقية من ورشة تجريبية.</value></data>
+  <data name="The dashboard on a phone, in Arabic and dark mode" xml:space="preserve"><value>لوحة التحكم على الهاتف، بالعربية والوضع الداكن</value></data>
+  <data name="The dashboard: today's numbers and who is due" xml:space="preserve"><value>لوحة التحكم: أرقام اليوم ومن حان موعده</value></data>
+  <data name="A job card: parts, labor and a clear total" xml:space="preserve"><value>أمر شغل: القطع والمصنعية وإجمالي واضح</value></data>
+  <data name="An invoice, ready to print or save as PDF" xml:space="preserve"><value>فاتورة جاهزة للطباعة أو الحفظ بصيغة PDF</value></data>
+  <data name="Up and running in an afternoon" xml:space="preserve"><value>جاهز للعمل في بضع ساعات</value></data>
+  <data name="Register, add your name and logo, and you are in." xml:space="preserve"><value>سجّل وأضف اسم ورشتك وشعارك وتبدأ العمل.</value></data>
+  <data name="Add your customers and cars" xml:space="preserve"><value>أضف عملاءك وسياراتهم</value></data>
+  <data name="Type the first ones in, or import your whole list from an Excel file." xml:space="preserve"><value>اكتب أول العملاء أو استورد قائمتك كاملة من ملف إكسل.</value></data>
+  <data name="Run the day from your phone" xml:space="preserve"><value>أدِر يومك من هاتفك</value></data>
+  <data name="Job cards, invoices and WhatsApp updates in a few taps." xml:space="preserve"><value>أوامر شغل وفواتير وتحديثات واتساب بضغطات قليلة.</value></data>
+  <data name="Ready to try it?" xml:space="preserve"><value>جاهز للتجربة؟</value></data>
+  <data name="Create your shop in a minute. Your data stays yours." xml:space="preserve"><value>أنشئ ورشتك في دقيقة. بياناتك تبقى ملكك.</value></data>
 </root>
