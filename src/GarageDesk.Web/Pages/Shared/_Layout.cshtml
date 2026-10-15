@@ -1,8 +1,10 @@
 @using System.Globalization
 @using GarageDesk.Web.Data
+@using GarageDesk.Web.Models
 @using GarageDesk.Web.Services
 @using Microsoft.EntityFrameworkCore
 @inject ApplicationDbContext Db
+@inject ICurrentStaff CurrentStaff
 @{
     var lang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
     if (!Cultures.Supported.Contains(lang)) { lang = Cultures.Default; }
@@ -26,22 +28,40 @@
     ShellModel? shell = null;
     if (chrome == "shell")
     {
-        // One small count for the bell. It goes through the DbContext's tenant filter like every other query.
-        var dueCount = await Db.Reminders.DueOrOverdue(ShopClock.Today()).CountAsync();
-        var items = new List<NavItem>
+        // The role comes from the database (see ICurrentStaff), so the menu always matches what the server allows.
+        var staff = await CurrentStaff.GetAsync();
+        var role = staff?.Role ?? ShopRole.Technician; // unknown or deactivated: show the least
+        var items = new List<NavItem>();
+        var dueCount = 0;
+        if (role == ShopRole.Technician)
         {
-            new("/Index", "/Index", L["Dashboard"].Value, "grid"),
-            new("/Customers/Index", "/Customers", L["Customers"].Value, "users"),
-            new("/Vehicles/Index", "/Vehicles", L["Vehicles"].Value, "car"),
-            new("/Jobs/Index", "/Jobs", L["Job cards"].Value, "clipboard"),
-            new("/Estimates/Index", "/Estimates", L["Estimates"].Value, "file-text"),
-            new("/Reminders/Index", "/Reminders", L["Reminders"].Value, "bell", dueCount),
-            new("/Receivables/Index", "/Receivables", L["Who owes me"].Value, "coins"),
-            new("/ShopSettings", "/ShopSettings", L["Shop settings"].Value, "sliders"),
-        };
+            // A technician's whole world: the jobs assigned to them. No money, no customers list, no reminders.
+            items.Add(new("/Work/Index", "/Work", L["My jobs"].Value, "clipboard"));
+        }
+        else
+        {
+            // One small count for the bell. It goes through the DbContext's tenant filter like every other query.
+            dueCount = await Db.Reminders.DueOrOverdue(ShopClock.Today()).CountAsync();
+            items.Add(new("/Index", "/Index", L["Dashboard"].Value, "grid"));
+            items.Add(new("/Customers/Index", "/Customers", L["Customers"].Value, "users"));
+            items.Add(new("/Vehicles/Index", "/Vehicles", L["Vehicles"].Value, "car"));
+            items.Add(new("/Jobs/Index", "/Jobs", L["Job cards"].Value, "clipboard"));
+            items.Add(new("/Estimates/Index", "/Estimates", L["Estimates"].Value, "file-text"));
+            items.Add(new("/Reminders/Index", "/Reminders", L["Reminders"].Value, "bell", dueCount));
+            items.Add(new("/Receivables/Index", "/Receivables", L["Who owes me"].Value, "coins"));
+            // v1.4: the parts catalog (cashiers may look; cost and stock value are owner-only inside) and, for owners, Money.
+            items.Add(new("/Parts/Index", "/Parts", L["Parts"].Value, "package", 0, OwnerOnly: true));
+            if (role == ShopRole.Owner)
+            {
+                items.Add(new("/Money/Profit", "/Money", L["Money"].Value, "bar-chart", 0, OwnerOnly: true));
+                items.Add(new("/Reports/Commissions", "/Reports", L["Commissions"].Value, "trending-up", 0, OwnerOnly: true));
+                items.Add(new("/Staff/Index", "/Staff", L["My team"].Value, "users", 0, OwnerOnly: true));
+                items.Add(new("/ShopSettings", "/ShopSettings", L["Shop settings"].Value, "sliders", 0, OwnerOnly: true));
+            }
+        }
         var section = items.FirstOrDefault(i => currentPage.StartsWith(i.Prefix, StringComparison.Ordinal))?.Label
                       ?? ViewData["Title"]?.ToString() ?? "GarageDesk";
-        shell = new ShellModel(currentPage, section, items, dueCount, shopName, logoVersion, User.Identity?.Name, currentUrl);
+        shell = new ShellModel(currentPage, section, items, dueCount, shopName, logoVersion, User.Identity?.Name, currentUrl, role);
     }
 }
 <!DOCTYPE html>
@@ -49,7 +69,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="GarageDesk: a simple workshop manager for small car service shops." />
+    <meta name="description" content="@(ViewData["Description"] ?? "GarageDesk: a simple workshop manager for small car service shops.")" />
     <meta name="color-scheme" content="light dark" />
     <title>@ViewData["Title"] · GarageDesk</title>
     <script type="importmap"></script>
@@ -66,6 +86,14 @@
         })();
     </script>
     <link rel="icon" href="~/favicon.ico" sizes="any" />
+    @* growth-onboarding: installable app (docs/PWA.md). The service worker caches static files only, never pages. *@
+    <link rel="icon" type="image/svg+xml" href="~/icons/icon.svg" />
+    <link rel="apple-touch-icon" href="~/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="~/manifest.webmanifest" />
+    <meta name="theme-color" content="#0b1324" />
+    <meta name="gd-sw" content="@Url.Content("~/sw.js")" data-scope="@Url.Content("~/")"
+          data-install-title="@L["Install GarageDesk on this device"]" data-install-action="@L["Install"]"
+          data-install-dismiss="@L["Not now"]" data-install-ios="@L["To install: tap Share, then Add to Home Screen."]" />
     <link rel="stylesheet" href="@bootstrapCss" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>

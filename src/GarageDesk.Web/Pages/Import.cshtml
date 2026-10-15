@@ -1,0 +1,180 @@
+@page
+@using GarageDesk.Web.Services
+@model ImportModel
+@{
+    ViewData["Title"] = L["Import customers and cars"].Value;
+    var plan = Model.Plan;
+}
+
+<div class="narrow" style="max-width: 62rem">
+    <div class="page-head">
+        <div>
+            <h1>@L["Import customers and cars"]</h1>
+            <p class="page-sub">@L["Bring your existing list from Excel or Google Sheets: one row per car, with its owner."]</p>
+        </div>
+        <div class="page-actions">
+            <a class="btn btn-outline-secondary" asp-page="/Customers/Index">@L["Customers"]</a>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.StatusMessage))
+    {
+        <div class="toast-source" data-toast="success" role="status">@Model.StatusMessage</div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.FileError))
+    {
+        <div class="validation-summary-errors mb-4" role="alert" data-import-error>@Model.FileError</div>
+    }
+
+    @if (plan is null)
+    {
+        <section class="panel panel-pad mb-4" aria-labelledby="how-heading">
+            <div class="panel-head mb-1"><h2 id="how-heading" class="panel-title">@L["1. Get the template"]</h2></div>
+            <p class="text-secondary">@L["Download the empty file, fill it in with Excel or Google Sheets and save it as CSV UTF-8. Headers in English or Arabic are both understood."]</p>
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <a class="btn btn-outline-secondary" asp-page-handler="Template" asp-route-lang="en"><partial name="_Icon" model='"file-text"' />@L["Template with English headers"]</a>
+                <a class="btn btn-outline-secondary" asp-page-handler="Template" asp-route-lang="ar"><partial name="_Icon" model='"file-text"' />@L["Template with Arabic headers"]</a>
+            </div>
+
+            <div class="data-table-wrap">
+                <table class="data-table">
+                    <caption class="visually-hidden">@L["What the columns mean"]</caption>
+                    <thead>
+                        <tr>
+                            <th>@L["Customer name"]</th>
+                            <th>@L["Phone"]</th>
+                            <th>@L["Notes"]</th>
+                            <th>@L["Plate number"]</th>
+                            <th>@L["Make"]</th>
+                            <th>@L["Model"]</th>
+                            <th>@L["Year"]</th>
+                            <th>@L["Mileage (km)"]</th>
+                            <th>@L["VIN (optional)"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>@L["Required"]</td><td>@L["Required"]</td><td>@L["Optional"]</td><td>@L["Needed for a car"]</td>
+                            <td>@L["Needed for a car"]</td><td>@L["Needed for a car"]</td><td>@L["Needed for a car"]</td><td>@L["Optional"]</td><td>@L["Optional"]</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <ul class="small text-secondary mt-3 mb-0">
+                <li>@L["A customer with several cars: repeat the name and phone on each row. The phone number is what identifies a customer."]</li>
+                <li>@L["Leave the car columns empty to add a customer with no car."]</li>
+                <li>@L["Customers and cars that are already in your shop are skipped, so uploading the same file twice adds nothing."]</li>
+                <li>@L["Up to 2000 rows and 512 KB. Commas or semicolons both work."]</li>
+            </ul>
+        </section>
+
+        <section class="panel panel-pad" aria-labelledby="upload-heading">
+            <div class="panel-head mb-1"><h2 id="upload-heading" class="panel-title">@L["2. Upload and check"]</h2></div>
+            <p class="text-secondary">@L["Nothing is saved yet. You will see what each row would do first."]</p>
+            <form method="post" asp-page-handler="Preview" enctype="multipart/form-data">
+                <label class="form-label fw-semibold" for="file">@L["CSV file"]</label>
+                <input id="file" name="file" type="file" class="form-control" accept=".csv,text/csv" required />
+                <button type="submit" class="btn btn-primary mt-3">@L["Check the file"]</button>
+            </form>
+        </section>
+    }
+    else
+    {
+        <section class="panel panel-pad mb-4" aria-labelledby="preview-heading" data-import-preview>
+            <div class="panel-head">
+                <h2 id="preview-heading" class="panel-title">@L["Check before importing"]</h2>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-6 col-md-3"><div class="stat-card"><span class="stat-label">@L["Customers to add"]</span><p class="stat-value" data-count="customers">@plan.CustomersToAdd</p></div></div>
+                <div class="col-6 col-md-3"><div class="stat-card"><span class="stat-label">@L["Cars to add"]</span><p class="stat-value" data-count="cars">@plan.CarsToAdd</p></div></div>
+                <div class="col-6 col-md-3"><div class="stat-card"><span class="stat-label">@L["Skipped (already there)"]</span><p class="stat-value" data-count="skipped">@plan.Skipped</p></div></div>
+                <div class="col-6 col-md-3"><div class="stat-card"><span class="stat-label">@L["Rows with errors"]</span><p class="stat-value" data-count="errors">@plan.Errors</p></div></div>
+            </div>
+
+            @if (plan.IgnoredColumns.Count > 0)
+            {
+                <p class="small text-secondary">@L["These columns are not used and were ignored:"] <span dir="auto">@string.Join(", ", plan.IgnoredColumns)</span></p>
+            }
+
+            @if (plan.Errors > 0)
+            {
+                <p class="small">@L["Rows with errors are not imported. Fix them in your file and upload it again, or import the good rows now and add the rest by hand."]</p>
+            }
+
+            <form method="post" enctype="application/x-www-form-urlencoded">
+                <input type="hidden" name="payload" value="@Model.Payload" />
+                <div class="d-flex flex-wrap gap-2">
+                    @if (plan.CanCommit)
+                    {
+                        <button type="submit" asp-page-handler="Commit" class="btn btn-primary" data-import-commit>
+                            @L["Import {0} customers and {1} cars", plan.CustomersToAdd, plan.CarsToAdd]
+                        </button>
+                    }
+                    @if (plan.Errors + plan.Skipped > 0)
+                    {
+                        <button type="submit" asp-page-handler="Report" class="btn btn-outline-secondary">@L["Download the rows that were not imported"]</button>
+                    }
+                    <a class="btn btn-outline-secondary" asp-page="Import">@L["Start over"]</a>
+                </div>
+            </form>
+        </section>
+
+        <section class="panel mb-4" aria-label="@L["Rows"]">
+            <div class="data-table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>@L["Row"]</th>
+                            <th>@L["Customer name"]</th>
+                            <th>@L["Phone"]</th>
+                            <th>@L["Plate number"]</th>
+                            <th>@L["Car"]</th>
+                            <th>@L["Result"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in plan.Rows.Take(CsvImportLimits.PreviewRows))
+                        {
+                            var isError = row.Action == ImportAction.Error;
+                            <tr data-row="@row.Row" data-action="@row.Action">
+                                <td><span class="ltr num">@row.Row</span></td>
+                                @* Cells are echoed as plain text (Razor encodes them) and cut short; a row that starts like a formula is an error row. *@
+                                <td dir="auto">@Truncate(row.Cell(ImportColumn.Name))</td>
+                                <td><span class="ltr">@Truncate(row.Cell(ImportColumn.Phone))</span></td>
+                                <td dir="auto">@Truncate(row.Cell(ImportColumn.Plate))</td>
+                                <td dir="auto">@Truncate((row.Cell(ImportColumn.Make) + " " + row.Cell(ImportColumn.Model) + " " + row.Cell(ImportColumn.Year)).Trim())</td>
+                                <td>
+                                    <span class="chip @(isError ? "chip-bad" : row.WillImport ? "chip-ok" : "")">@Model.ActionText(row.Action)</span>
+                                    @if (isError)
+                                    {
+                                        <ul class="small mb-0 mt-1 ps-3">
+                                            @foreach (var issue in row.Issues)
+                                            {
+                                                <li>@Model.IssueText(issue)</li>
+                                            }
+                                        </ul>
+                                    }
+                                    else if (row.ExistingCustomerName is not null)
+                                    {
+                                        <p class="small text-secondary mb-0 mt-1">@L["Existing customer"]: <span dir="auto">@Truncate(row.ExistingCustomerName)</span></p>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (plan.Rows.Count > CsvImportLimits.PreviewRows)
+            {
+                <p class="small text-secondary p-3 mb-0">@L["Showing the first {0} rows of {1}. The totals above and the import cover every row.", CsvImportLimits.PreviewRows, plan.Rows.Count]</p>
+            }
+        </section>
+    }
+</div>
+
+@functions {
+    private static string Truncate(string value) => value.Length > 60 ? value[..60] + "…" : value;
+}

@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+using GarageDesk.Web.Services;
 using GarageDesk.Web.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -5,6 +7,7 @@ using Microsoft.Extensions.Localization;
 
 namespace GarageDesk.Web.Pages.Customers;
 
+[Authorize(Policy = Policies.Staff)]
 public class EditModel(ApplicationDbContext db, IStringLocalizer<SharedResource> localizer)
     : CustomerFormPageModel(db, localizer)
 {

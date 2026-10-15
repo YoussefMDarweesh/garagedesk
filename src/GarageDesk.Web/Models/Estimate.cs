@@ -75,5 +75,8 @@ public class EstimateLine : IShopOwned
 
     public decimal UnitPrice { get; set; }
 
+    /// <summary>The catalog part this quoted line refers to. Quoting never touches stock; converting to a job card does.</summary>
+    public int? PartId { get; set; }
+
     public decimal LineTotal => Math.Round(Quantity * UnitPrice, 2, MidpointRounding.AwayFromZero);
 }

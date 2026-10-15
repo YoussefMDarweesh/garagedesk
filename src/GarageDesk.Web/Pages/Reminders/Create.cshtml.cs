@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+using GarageDesk.Web.Services;
 using GarageDesk.Web.Data;
 using GarageDesk.Web.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +8,7 @@ using Microsoft.Extensions.Localization;
 
 namespace GarageDesk.Web.Pages.Reminders;
 
+[Authorize(Policy = Policies.Staff)]
 public class CreateModel(ApplicationDbContext db, IStringLocalizer<SharedResource> localizer)
     : ReminderFormPageModel(db, localizer)
 {

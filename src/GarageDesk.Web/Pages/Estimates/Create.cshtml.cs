@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using System.ComponentModel.DataAnnotations;
 using GarageDesk.Web.Data;
 using GarageDesk.Web.Models;
@@ -31,6 +32,7 @@ public class EstimateInput
     public string? Notes { get; set; }
 }
 
+[Authorize(Policy = Policies.Staff)]
 public class CreateModel(ApplicationDbContext db, IStringLocalizer<SharedResource> localizer) : PageModel
 {
     public const int ValidDays = 14;

@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using System.Globalization;
 using System.Text.Json;
 using GarageDesk.Web.Data;
 using GarageDesk.Web.Models;
 using GarageDesk.Web.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +13,8 @@ namespace GarageDesk.Web.Pages;
 /// <summary>One month on the activity chart.</summary>
 public sealed record MonthPoint(string Key, decimal Revenue, int Jobs);
 
-public class IndexModel(ApplicationDbContext db) : PageModel
+[AllowAnonymous]
+public class IndexModel(ApplicationDbContext db, ICurrentStaff currentStaff) : PageModel
 {
     public const int ChartMonths = 12;
 
@@ -64,16 +67,46 @@ public class IndexModel(ApplicationDbContext db) : PageModel
 
     public int OutstandingCustomers { get; private set; }
 
+    /// <summary>How far the shop is with its first steps (the dashboard's "Getting started" checklist).</summary>
+    public SetupProgress Setup { get; private set; } = new(false, false, false, false, false, false);
+
     public int? RevenueChangePercent =>
         RevenueLastMonth > 0 ? (int)Math.Round((RevenueThisMonth - RevenueLastMonth) / RevenueLastMonth * 100) : null;
 
-    public async Task OnGetAsync()
+    /// <summary>Revenue and the activity chart are reports: owners only.</summary>
+    public bool CanSeeReports { get; private set; }
+
+    /// <summary>v1.4, owner only: payments received minus expenses paid this month (cash basis).</summary>
+    public decimal ProfitThisMonth { get; private set; }
+
+    public decimal ReceivedThisMonth { get; private set; }
+
+    public decimal ExpensesThisMonth { get; private set; }
+
+    /// <summary>v1.4: the stock card. Everyone who sees the dashboard sees what is running low; the value at cost is the owner's.</summary>
+    public StockSummary Stock { get; private set; } = new(0, 0, [], null);
+
+    public async Task<IActionResult> OnGetAsync()
     {
         if (User.Identity?.IsAuthenticated != true)
         {
-            return;
+            return Page();
         }
 
+        var staff = await currentStaff.GetAsync();
+        if (staff is null || !staff.IsActive)
+        {
+            return Forbid();
+        }
+
+        // This page is anonymous (the landing page), so the dashboard guards itself: a technician's home is "My jobs".
+        // A user with no shop yet is sent to CreateShop by RequireShopPageFilter before they get here.
+        if (staff.IsTechnician)
+        {
+            return RedirectToPage("/Work/Index");
+        }
+
+        CanSeeReports = staff.IsOwner;
         Today = ShopClock.Today();
         ShopName = await db.Shops.Select(s => s.Name).FirstOrDefaultAsync();
 
@@ -85,12 +118,24 @@ public class IndexModel(ApplicationDbContext db) : PageModel
         DoneCount = await db.JobCards.CountAsync(j => j.Status == JobStatus.Done);
         OpenJobCount = BookedCount + InProgressCount + DoneCount;
 
+        Setup = await SetupProgress.LoadAsync(db);
+
         var owed = await OutstandingBalances.LoadAsync(db);
         OutstandingTotal = owed.Sum(b => b.Owed);
         OutstandingCustomers = owed.Count;
 
-        await LoadActivityAsync();
+        if (CanSeeReports)
+        {
+            await LoadActivityAsync();
+
+            var monthStart = new DateOnly(Today.Year, Today.Month, 1);
+            var (received, spent) = await ProfitReport.CashAsync(db, monthStart, monthStart.AddMonths(1));
+            ReceivedThisMonth = received.Total;
+            ExpensesThisMonth = spent;
+            ProfitThisMonth = received.Total - spent;
+        }
         await LoadRemindersAsync();
+        Stock = await StockSummary.LoadAsync(db, includeCost: CanSeeReports);
 
         RecentJobs = await db.JobCards.AsNoTracking()
             .Include(j => j.Vehicle).ThenInclude(v => v!.Customer)
@@ -98,6 +143,7 @@ public class IndexModel(ApplicationDbContext db) : PageModel
             .OrderByDescending(j => j.DateIn).ThenByDescending(j => j.Id)
             .Take(6)
             .ToListAsync();
+        return Page();
     }
 
     private async Task LoadActivityAsync()

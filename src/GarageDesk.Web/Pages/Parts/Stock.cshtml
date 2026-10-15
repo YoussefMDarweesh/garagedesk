@@ -1,0 +1,133 @@
+@page "{id:int}"
+@model GarageDesk.Web.Pages.Parts.StockModel
+@using GarageDesk.Web.Models
+@using GarageDesk.Web.Services
+@{
+    var part = Model.Part;
+    ViewData["Title"] = $"{L["Stock"]}: {part.Name}";
+}
+
+<nav class="mb-3">
+    <a asp-page="Index" class="text-secondary text-decoration-none"><partial name="_Icon" model='"chevron-left"' /> @L["Parts"]</a>
+</nav>
+
+<div class="page-head">
+    <div>
+        <h1 class="h2 fw-bold mb-1">@part.Name @if (!part.IsActive) { <span class="chip">@L["Archived"]</span> }</h1>
+        <p class="page-sub">
+            @L["In stock"]: <span class="ltr num fw-bold" data-quantity>@part.QuantityOnHand.ToString("0.##")</span> @part.Unit
+            @if (part.IsLow) { <span class="chip chip-warn">@L["Running low"]</span> }
+        </p>
+    </div>
+    <div class="page-actions">
+        <a class="btn btn-outline-secondary" asp-page="Edit" asp-route-id="@part.Id"><partial name="_Icon" model='"edit"' />@L["Edit"]</a>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.StatusMessage))
+{
+    <div class="toast-source" data-toast="success" role="status">@Model.StatusMessage</div>
+}
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="toast-source" data-toast="danger" role="alert">@Model.ErrorMessage</div>
+}
+
+<div class="row g-3 g-lg-4">
+    <div class="col-lg-4">
+        <section class="panel panel-pad mb-3 mb-lg-4" aria-labelledby="receive-heading">
+            <div class="panel-head"><h2 id="receive-heading" class="panel-title">@L["Receive stock"]</h2></div>
+            <form method="post" asp-page-handler="Purchase" asp-route-id="@part.Id" novalidate>
+                <div class="mb-2">
+                    <label asp-for="Purchase.Quantity" class="form-label small text-secondary"></label>
+                    <input asp-for="Purchase.Quantity" type="number" step="0.01" min="0.01" class="form-control" inputmode="decimal" />
+                </div>
+                <div class="mb-2">
+                    <label asp-for="Purchase.UnitCost" class="form-label small text-secondary"></label>
+                    <input asp-for="Purchase.UnitCost" type="number" step="0.01" min="0" class="form-control" inputmode="decimal" />
+                    <div class="form-text">@L["This becomes the part's cost price for job cards added from now on."]</div>
+                </div>
+                <div class="mb-2">
+                    <label asp-for="Purchase.Note" class="form-label small text-secondary"></label>
+                    <input asp-for="Purchase.Note" class="form-control" autocomplete="off" />
+                </div>
+                <div class="form-check mb-3">
+                    <input asp-for="Purchase.RecordExpense" class="form-check-input" />
+                    <label asp-for="Purchase.RecordExpense" class="form-check-label small"></label>
+                </div>
+                <button type="submit" class="btn btn-primary w-100"><partial name="_Icon" model='"plus"' />@L["Receive stock"]</button>
+            </form>
+        </section>
+
+        <section class="panel panel-pad" aria-labelledby="adjust-heading">
+            <div class="panel-head"><h2 id="adjust-heading" class="panel-title">@L["Correct the count"]</h2></div>
+            <p class="text-secondary small">@L["After counting the shelf, or for a loss. Use a minus to take stock away."]</p>
+            <form method="post" asp-page-handler="Adjust" asp-route-id="@part.Id" novalidate>
+                <div class="mb-2">
+                    <label asp-for="Adjust.Change" class="form-label small text-secondary"></label>
+                    <input asp-for="Adjust.Change" type="number" step="0.01" class="form-control" inputmode="decimal" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Adjust.Reason" class="form-label small text-secondary"></label>
+                    <input asp-for="Adjust.Reason" class="form-control" autocomplete="off" />
+                </div>
+                <button type="submit" class="btn btn-outline-secondary w-100">@L["Save correction"]</button>
+            </form>
+        </section>
+    </div>
+
+    <div class="col-lg-8">
+        <section class="panel panel-pad" aria-labelledby="ledger-heading">
+            <div class="panel-head"><h2 id="ledger-heading" class="panel-title">@L["Stock movements"]</h2></div>
+            @if (Model.Movements.Count == 0)
+            {
+                <p class="text-secondary mb-0">@L["Nothing has moved yet."]</p>
+            }
+            else
+            {
+                <div class="data-table-wrap">
+                    <table class="data-table" data-movements>
+                        <thead>
+                            <tr>
+                                <th scope="col">@L["Date"]</th>
+                                <th scope="col">@L["What happened"]</th>
+                                <th scope="col" class="cell-end">@L["Change"]</th>
+                                <th scope="col" class="cell-end">@L["Quantity after"]</th>
+                                <th scope="col">@L["By"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var m in Model.Movements)
+                        {
+                            <tr>
+                                <td><span class="ltr num">@ShopClock.ToShopTime(m.AtUtc).ToString("yyyy-MM-dd HH:mm")</span></td>
+                                <td>
+                                    @(m.Kind switch
+                                    {
+                                        StockMovementKind.Opening => L["Opening stock"],
+                                        StockMovementKind.Purchase => L["Received from supplier"],
+                                        StockMovementKind.JobUse => L["Used on a job card"],
+                                        StockMovementKind.JobReturn => L["Put back from a job card"],
+                                        _ => L["Correction"],
+                                    })
+                                    @if (m.JobCardId is int jobId)
+                                    {
+                                        <a asp-page="/Jobs/Details" asp-route-id="@jobId" class="ltr num">#@jobId</a>
+                                    }
+                                    @if (m.Kind is StockMovementKind.Adjustment or StockMovementKind.Purchase && !string.IsNullOrWhiteSpace(m.Note))
+                                    {
+                                        <div class="small text-secondary">@m.Note</div>
+                                    }
+                                </td>
+                                <td class="cell-end num"><span class="ltr">@(m.QuantityChange > 0 ? "+" : "")@m.QuantityChange.ToString("0.##")</span></td>
+                                <td class="cell-end num"><span class="ltr">@m.QuantityAfter.ToString("0.##")</span></td>
+                                <td>@m.UserName</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+    </div>
+</div>

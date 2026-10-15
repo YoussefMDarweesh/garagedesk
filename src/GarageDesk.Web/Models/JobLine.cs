@@ -30,6 +30,18 @@ public class JobLine : IShopOwned
     /// <summary>Price of one unit, in EGP.</summary>
     public decimal UnitPrice { get; set; }
 
+    /// <summary>The catalog part this line uses (stock was taken for it), or null for free text and labor.</summary>
+    public int? PartId { get; set; }
+
+    /// <summary>
+    /// What one unit of the part cost the shop when the line was added (a snapshot, so a later price change never
+    /// rewrites old profit). Owner only. Null for free text and labor.
+    /// </summary>
+    public decimal? UnitCost { get; set; }
+
+    /// <summary>Who added the line, so a technician can take back their own catalog part. Not shown anywhere.</summary>
+    public string? AddedByUserId { get; set; }
+
     /// <summary>Quantity times unit price, rounded to the piastre (half away from zero, as on a printed invoice).</summary>
     public decimal LineTotal => Math.Round(Quantity * UnitPrice, 2, MidpointRounding.AwayFromZero);
 }

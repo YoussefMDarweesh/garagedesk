@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using GarageDesk.Web.Data;
 using GarageDesk.Web.Models;
 using GarageDesk.Web.Services;
@@ -8,8 +9,20 @@ using Microsoft.Extensions.Localization;
 
 namespace GarageDesk.Web.Pages.Jobs;
 
-public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResource> localizer) : PageModel
+[Authorize(Policy = Policies.Staff)]
+public class DetailsModel(ApplicationDbContext db, ICurrentStaff currentStaff, IStringLocalizer<SharedResource> localizer, ShareLinkService shares) : PageModel
 {
+    /// <summary>The job card's history, newest first. Loaded for owners only.</summary>
+    public List<JobAuditEntry> History { get; private set; } = [];
+
+    public bool CanSeeHistory { get; private set; }
+
+    /// <summary>Part costs and the job's profit: owners only.</summary>
+    public bool CanSeeProfit { get; private set; }
+
+    /// <summary>The active catalog parts, for the picker.</summary>
+    public List<PartOption> Parts { get; private set; } = [];
+
     public JobCard Job { get; private set; } = null!;
 
     [BindProperty]
@@ -27,6 +40,13 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
     /// <summary>Set right after a job is marked Done: the page then offers to create the next oil change reminder.</summary>
     [TempData]
     public bool OfferReminder { get; set; }
+
+    /// <summary>Set right after a job is marked Done: the page then shows a toast offering to tell the customer on WhatsApp.</summary>
+    [TempData]
+    public bool OfferShare { get; set; }
+
+    /// <summary>The live share links of this job card (status and invoice).</summary>
+    public ShareLinksPanel Links { get; private set; } = new(0, []);
 
     public JobStatus? NextStatus => JobStatusFlow.Next(Job.Status);
 
@@ -48,21 +68,30 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
             return Fail(id, "A paid job card can no longer be changed.");
         }
 
+        // Without JavaScript the description can be left empty when a catalog part is chosen: the part's name is used.
+        if (NewLine.PartId is int pickedId && string.IsNullOrWhiteSpace(NewLine.Description))
+        {
+            var pickedName = await db.Parts.Where(p => p.Id == pickedId).Select(p => p.Name).FirstOrDefaultAsync();
+            if (pickedName is not null)
+            {
+                NewLine.Description = pickedName;
+                ModelState.Remove($"{nameof(NewLine)}.{nameof(NewLine.Description)}");
+            }
+        }
+
         if (!ModelState.IsValid)
         {
             await LoadAsync(id);
             return Page();
         }
 
-        db.JobLines.Add(new JobLine
+        // A catalog part takes stock, copies its cost onto the line and (when no price was typed) its sell price.
+        var added = await JobLines.AddAsync(db, await currentStaff.GetAsync(), job, NewLine.Type, NewLine.Description,
+            NewLine.Quantity, NewLine.UnitPrice, NewLine.PartId);
+        if (!added.Ok)
         {
-            JobCardId = job.Id,
-            Type = NewLine.Type,
-            Description = NewLine.Description.Trim(),
-            Quantity = NewLine.Quantity,
-            UnitPrice = NewLine.UnitPrice,
-        });
-        await db.SaveChangesAsync();
+            return Fail(id, added);
+        }
 
         return RedirectToPage(new { id });
     }
@@ -86,14 +115,12 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
             return NotFound();
         }
 
-        // The total must never drop below what the customer has already paid.
-        if (job.PaidTotal > JobTotals.Total(job.Subtotal - line.LineTotal, job.DiscountAmount, job.DiscountPercent, job.VatPercent))
+        // Takes the line off (refused if the total would fall below what was paid) and gives its stock back.
+        var removed = await JobLines.RemoveAsync(db, await currentStaff.GetAsync(), job, line);
+        if (!removed.Ok)
         {
-            return Fail(id, "Payments already received are more than the new total. Void the latest payment first.");
+            return Fail(id, removed);
         }
-
-        db.JobLines.Remove(line);
-        await db.SaveChangesAsync();
 
         return RedirectToPage(new { id });
     }
@@ -129,6 +156,7 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
         }
 
         var balanceBefore = job.Balance;
+        var actor = await currentStaff.GetAsync();
         db.Payments.Add(new Payment
         {
             JobCardId = job.Id,
@@ -137,11 +165,14 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
             PaidOn = ShopClock.Today(),
             Note = string.IsNullOrWhiteSpace(NewPayment.Note) ? null : NewPayment.Note.Trim(),
         });
+        JobAudit.Add(db, actor, job, JobAuditKind.PaymentAdded, JobAudit.PaymentDetail(amount, NewPayment.Method));
 
         // Once a finished job is fully paid it becomes Paid, and Paid is final.
         if (job.Status == JobStatus.Done && amount == balanceBefore)
         {
+            JobAudit.Add(db, actor, job, JobAuditKind.StatusChanged, JobAudit.StatusDetail(job.Status, JobStatus.Paid));
             job.Status = JobStatus.Paid;
+            job.StatusChangedAtUtc = DateTime.UtcNow;
         }
 
         await db.SaveChangesAsync();
@@ -170,8 +201,62 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
         }
 
         db.Payments.Remove(latest);
+        JobAudit.Add(db, await currentStaff.GetAsync(), job, JobAuditKind.PaymentVoided, JobAudit.PaymentDetail(latest.Amount, latest.Method));
         await db.SaveChangesAsync();
         StatusMessage = localizer["Payment voided."];
+        return RedirectToPage(new { id });
+    }
+
+    /// <summary>
+    /// "Send on WhatsApp": creates the share link (or reuses the live one) and opens wa.me with the message.
+    /// Nothing is sent by the server; the owner presses send in WhatsApp.
+    /// </summary>
+    public async Task<IActionResult> OnPostShareAsync(int id, ShareLinkKind kind)
+    {
+        if (kind is not (ShareLinkKind.Status or ShareLinkKind.Invoice))
+        {
+            return BadRequest();
+        }
+
+        var share = await shares.PrepareWhatsAppAsync(kind, id);
+        if (share is null)
+        {
+            return NotFound();
+        }
+
+        if (share.WhatsAppUrl is null)
+        {
+            return Fail(id, "This customer has no phone number WhatsApp can use. Get the link and send it yourself.");
+        }
+
+        return Redirect(share.WhatsAppUrl);
+    }
+
+    /// <summary>Creates the link (or finds the live one) without sending anything, so it can be copied below.</summary>
+    public async Task<IActionResult> OnPostCreateLinkAsync(int id, ShareLinkKind kind)
+    {
+        if (kind is not (ShareLinkKind.Status or ShareLinkKind.Invoice))
+        {
+            return BadRequest();
+        }
+
+        if (await shares.GetOrCreateAsync(kind, id) is null)
+        {
+            return NotFound();
+        }
+
+        StatusMessage = localizer["The link is ready. Copy it below."];
+        return RedirectToPage(new { id });
+    }
+
+    public async Task<IActionResult> OnPostRevokeLinkAsync(int id, int linkId)
+    {
+        if (!await shares.RevokeAsync(linkId, id, ShareLinkKind.Status, ShareLinkKind.Invoice))
+        {
+            return NotFound();
+        }
+
+        StatusMessage = localizer["The link was revoked. It no longer works."];
         return RedirectToPage(new { id });
     }
 
@@ -189,37 +274,12 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
             return Fail(id, "That status change is not allowed.");
         }
 
-        // VAT is fixed when the job card is issued, so later changes of the shop setting never alter an invoice.
-        if (job.InvoiceNumber is null && to is JobStatus.Done or JobStatus.Paid)
-        {
-            job.VatPercent = await db.Shops.Select(s => s.VatPercent).FirstOrDefaultAsync();
-        }
-
-        // Marking a job paid by hand records the rest of the balance as a cash payment, so balance and status agree.
-        if (to == JobStatus.Paid && job.Balance > 0)
-        {
-            db.Payments.Add(new Payment { JobCardId = job.Id, Amount = job.Balance, Method = PaymentMethod.Cash, PaidOn = ShopClock.Today(), Note = "Marked as paid" });
-        }
-
-        // A job that is done and already fully paid (deposits) is simply paid.
-        job.Status = to == JobStatus.Done && job.Total > 0 && job.Balance <= 0 ? JobStatus.Paid : to;
-        to = job.Status;
-
-        // The invoice number is given once, the first time the job card is issued (Done or Paid), and never changes.
-        if (job.InvoiceNumber is null && to is JobStatus.Done or JobStatus.Paid)
-        {
-            await using var tx = await db.Database.BeginTransactionAsync();
-            job.InvoiceNumber = await DocumentNumbers.NextAsync(db, job.ShopId, DocumentNumbers.Invoice);
-            await db.SaveChangesAsync();
-            await tx.CommitAsync();
-        }
-        else
-        {
-            await db.SaveChangesAsync();
-        }
+        var requested = to;
+        to = await JobWorkflow.ChangeStatusAsync(db, job, to, await currentStaff.GetAsync());
 
         StatusMessage = localizer["Status updated."];
         OfferReminder = to == JobStatus.Done;
+        OfferShare = requested == JobStatus.Done;
         return RedirectToPage(new { id });
     }
 
@@ -231,6 +291,7 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
             .Include(j => j.Vehicle).ThenInclude(v => v!.Customer)
             .Include(j => j.Lines)
             .Include(j => j.Payments)
+            .Include(j => j.AssignedTo)
             .FirstOrDefaultAsync(j => j.Id == id);
 
         if (job is null)
@@ -241,12 +302,38 @@ public class DetailsModel(ApplicationDbContext db, IStringLocalizer<SharedResour
         job.Lines = job.Lines.OrderBy(l => l.Id).ToList();
         job.Payments = job.Payments.OrderBy(p => p.Id).ToList();
         Job = job;
+        Links = new ShareLinksPanel(job.Id, await shares.ListLiveAsync(job.Id, ShareLinkKind.Status, ShareLinkKind.Invoice));
+
+        // The catalog for the "add a line" picker (sell prices only: cost is for owners and is read below).
+        if (!job.IsLocked)
+        {
+            Parts = await PartPicker.LoadAsync(db);
+        }
+
+        // The history, the part costs and the profit are for owners only; for anyone else they are not even read.
+        CanSeeHistory = (await currentStaff.GetAsync())?.IsOwner == true;
+        CanSeeProfit = CanSeeHistory;
+        if (CanSeeHistory)
+        {
+            History = await db.JobAuditEntries.AsNoTracking()
+                .Where(a => a.JobCardId == id)
+                .OrderByDescending(a => a.AtUtc).ThenByDescending(a => a.Id)
+                .Take(200)
+                .ToListAsync();
+        }
+
         return true;
     }
 
     private IActionResult Fail(int id, string englishMessage)
     {
         ErrorMessage = localizer[englishMessage];
+        return RedirectToPage(new { id });
+    }
+
+    private IActionResult Fail(int id, LineOutcome outcome)
+    {
+        ErrorMessage = localizer[outcome.Error!, outcome.Args ?? []];
         return RedirectToPage(new { id });
     }
 }

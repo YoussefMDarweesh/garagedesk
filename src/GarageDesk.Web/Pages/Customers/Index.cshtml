@@ -1,7 +1,9 @@
 @page
 @model IndexModel
+@inject GarageDesk.Web.Services.ICurrentStaff CurrentStaff
 @{
     ViewData["Title"] = L["Customers"].Value;
+    var isOwner = (await CurrentStaff.GetAsync())?.IsOwner == true; // bulk import is for owners
     var searching = !string.IsNullOrWhiteSpace(Model.Q);
 }
 
@@ -11,6 +13,10 @@
         <p class="page-sub mt-0">@L["{0} customers", Model.Total]</p>
     </div>
     <div class="page-actions">
+        @if (isOwner)
+        {
+            <a class="btn btn-outline-secondary" asp-page="/Import">@L["Import customers and cars"]</a>
+        }
         <a class="btn btn-primary" asp-page="Create"><partial name="_Icon" model='"plus"' />@L["Add customer"]</a>
     </div>
 </div>

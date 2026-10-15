@@ -445,4 +445,436 @@
   <data name="We couldn't complete your request. Please try again, and if it keeps happening let us know." xml:space="preserve"><value>تعذّر إكمال طلبك. يُرجى المحاولة مرة أخرى، وإن تكرّر الأمر فأخبرنا.</value></data>
   <data name="Request ID" xml:space="preserve"><value>معرّف الطلب</value></data>
   <data name="Back to home" xml:space="preserve"><value>العودة إلى الرئيسية</value></data>
+
+  <!-- v1-2-share-links: public share pages and WhatsApp messages -->
+  <data name="Your car" xml:space="preserve"><value>سيارتك</value></data>
+  <data name="Ready" xml:space="preserve"><value>جاهزة</value></data>
+  <data name="Last updated" xml:space="preserve"><value>آخر تحديث</value></data>
+  <data name="Call the shop" xml:space="preserve"><value>اتصل بالورشة</value></data>
+  <data name="Hi {name}, here is your invoice from {shop} for your car {plate}: {link}" xml:space="preserve"><value>مرحبًا {name}، هذه فاتورتك من {shop} لسيارتك {plate}: {link}</value></data>
+  <data name="Hi {name}, here is your estimate from {shop} for your car {plate}: {link}" xml:space="preserve"><value>مرحبًا {name}، هذا عرض السعر من {shop} لسيارتك {plate}: {link}</value></data>
+  <data name="Hi {name}, your car {plate} is ready. Details: {link}" xml:space="preserve"><value>مرحبًا {name}، سيارتك {plate} جاهزة. التفاصيل: {link}</value></data>
+  <data name="Hi {name}, you can follow the status of your car {plate} here: {link}" xml:space="preserve"><value>مرحبًا {name}، تابع حالة سيارتك {plate} من هنا: {link}</value></data>
+  <data name="The car is ready." xml:space="preserve"><value>السيارة جاهزة.</value></data>
+  <data name="Tell the customer on WhatsApp" xml:space="preserve"><value>أخبر العميل عبر واتساب</value></data>
+  <data name="Share with the customer" xml:space="preserve"><value>مشاركة مع العميل</value></data>
+  <data name="Send a private link on WhatsApp. The customer opens it without logging in and sees only this car." xml:space="preserve"><value>أرسل رابطًا خاصًا عبر واتساب. يفتحه العميل دون تسجيل دخول ولا يرى إلا هذه السيارة.</value></data>
+  <data name="Send a private link on WhatsApp. The customer opens it without logging in and sees only this estimate." xml:space="preserve"><value>أرسل رابطًا خاصًا عبر واتساب. يفتحه العميل دون تسجيل دخول ولا يرى إلا عرض السعر هذا.</value></data>
+  <data name="Send status on WhatsApp" xml:space="preserve"><value>إرسال الحالة عبر واتساب</value></data>
+  <data name="Send invoice on WhatsApp" xml:space="preserve"><value>إرسال الفاتورة عبر واتساب</value></data>
+  <data name="Get status link" xml:space="preserve"><value>الحصول على رابط الحالة</value></data>
+  <data name="Get invoice link" xml:space="preserve"><value>الحصول على رابط الفاتورة</value></data>
+  <data name="Get estimate link" xml:space="preserve"><value>الحصول على رابط عرض السعر</value></data>
+  <data name="This customer has no phone number WhatsApp can use. Get the link and send it yourself." xml:space="preserve"><value>ليس لدى هذا العميل رقم هاتف يمكن استخدامه في واتساب. احصل على الرابط وأرسله بنفسك.</value></data>
+  <data name="The link is ready. Copy it below." xml:space="preserve"><value>الرابط جاهز. انسخه من الأسفل.</value></data>
+  <data name="The link was revoked. It no longer works." xml:space="preserve"><value>تم إلغاء الرابط. لم يعد يعمل.</value></data>
+  <data name="No share links yet." xml:space="preserve"><value>لا توجد روابط مشاركة بعد.</value></data>
+  <data name="Invoice link" xml:space="preserve"><value>رابط الفاتورة</value></data>
+  <data name="Estimate link" xml:space="preserve"><value>رابط عرض السعر</value></data>
+  <data name="Status link" xml:space="preserve"><value>رابط الحالة</value></data>
+  <data name="Revoke this link? The customer will no longer be able to open it." xml:space="preserve"><value>إلغاء هذا الرابط؟ لن يتمكن العميل من فتحه بعد الآن.</value></data>
+  <data name="Revoke" xml:space="preserve"><value>إلغاء الرابط</value></data>
+  <data name="Link" xml:space="preserve"><value>الرابط</value></data>
+  <data name="Copy" xml:space="preserve"><value>نسخ</value></data>
+  <data name="Link copied." xml:space="preserve"><value>تم نسخ الرابط.</value></data>
+  <data name="This link cannot be shown again. Revoke it and send a new one." xml:space="preserve"><value>لا يمكن عرض هذا الرابط مرة أخرى. ألغِه وأرسل رابطًا جديدًا.</value></data>
+  <data name="Views" xml:space="preserve"><value>المشاهدات</value></data>
+  <data name="Last viewed" xml:space="preserve"><value>آخر مشاهدة</value></data>
+  <data name="Expires" xml:space="preserve"><value>ينتهي</value></data>
+  <data name="WhatsApp message" xml:space="preserve"><value>رسالة واتساب</value></data>
+  <data name="WhatsApp message saved." xml:space="preserve"><value>تم حفظ رسالة واتساب.</value></data>
+  <data name="The text that opens in WhatsApp when you send a link to a customer. Leave a box empty to use the built-in wording." xml:space="preserve"><value>النص الذي يظهر في واتساب عند إرسال رابط إلى عميل. اترك الحقل فارغًا لاستخدام الصيغة الجاهزة.</value></data>
+  <data name="You can use" xml:space="preserve"><value>يمكنك استخدام</value></data>
+  <data name="{name} is the customer, {plate} the car, {shop} your shop and {link} the private link." xml:space="preserve"><value>{name} اسم العميل، و{plate} السيارة، و{shop} ورشتك، و{link} الرابط الخاص.</value></data>
+  <data name="Message in English" xml:space="preserve"><value>الرسالة بالإنجليزية</value></data>
+  <data name="Message in Arabic" xml:space="preserve"><value>الرسالة بالعربية</value></data>
+  <data name="The message must include {link} and be at most 500 characters." xml:space="preserve"><value>يجب أن تتضمن الرسالة {link} ولا تزيد عن 500 حرف.</value></data>
+
+  <!-- v1-3-team: roles, staff, technicians, commissions, history. New keys of this branch are appended below. -->
+  <data name="Access denied" xml:space="preserve"><value>غير مسموح</value></data>
+  <data name="Your role does not allow you to open this page. Ask the shop owner if you need access." xml:space="preserve"><value>دورك لا يسمح لك بفتح هذه الصفحة. اطلب من صاحب الورشة إن كنت بحاجة إلى الوصول.</value></data>
+  <data name="My team" xml:space="preserve"><value>فريقي</value></data>
+  <data name="Owner only" xml:space="preserve"><value>لصاحب الورشة فقط</value></data>
+  <data name="Who can sign in to your shop, and what each person may do." xml:space="preserve"><value>من يمكنه تسجيل الدخول إلى ورشتك، وما الذي يُسمح لكل شخص بفعله.</value></data>
+  <data name="Team members" xml:space="preserve"><value>أعضاء الفريق</value></data>
+  <data name="Role" xml:space="preserve"><value>الدور</value></data>
+  <data name="Cashier" xml:space="preserve"><value>أمين الصندوق</value></data>
+  <data name="Technician" xml:space="preserve"><value>فني</value></data>
+  <data name="Actions" xml:space="preserve"><value>إجراءات</value></data>
+  <data name="You" xml:space="preserve"><value>أنت</value></data>
+  <data name="Active" xml:space="preserve"><value>نشط</value></data>
+  <data name="Deactivated" xml:space="preserve"><value>معطّل</value></data>
+  <data name="Activate" xml:space="preserve"><value>تفعيل</value></data>
+  <data name="Deactivate" xml:space="preserve"><value>تعطيل</value></data>
+  <data name="Deactivate this person? They are signed out and cannot sign in until you activate them again." xml:space="preserve"><value>تعطيل هذا الشخص؟ سيتم تسجيل خروجه ولن يستطيع الدخول حتى تعيد تفعيله.</value></data>
+  <data name="Team updated." xml:space="preserve"><value>تم تحديث الفريق.</value></data>
+  <data name="Invite someone" xml:space="preserve"><value>دعوة شخص</value></data>
+  <data name="They choose their own email and password. You never see or set their password." xml:space="preserve"><value>يختار بريده الإلكتروني وكلمة مروره بنفسه. أنت لا ترى كلمة مروره ولا تحددها.</value></data>
+  <data name="Optional. Only used to open WhatsApp with the invitation ready to send." xml:space="preserve"><value>اختياري. يُستخدم فقط لفتح واتساب والدعوة جاهزة للإرسال.</value></data>
+  <data name="Choose a role." xml:space="preserve"><value>اختر دورًا.</value></data>
+  <data name="Enter a valid Egyptian phone number." xml:space="preserve"><value>أدخل رقم هاتف مصريًا صحيحًا.</value></data>
+  <data name="Create invitation link" xml:space="preserve"><value>إنشاء رابط الدعوة</value></data>
+  <data name="Invitation ready" xml:space="preserve"><value>الدعوة جاهزة</value></data>
+  <data name="Send this link to the new {0}. It works once and expires in 7 days. It is shown only now: if you lose it, create a new invitation." xml:space="preserve"><value>أرسل هذا الرابط إلى {0} الجديد. يعمل مرة واحدة وينتهي بعد 7 أيام. يظهر الآن فقط: إن فقدته فأنشئ دعوة جديدة.</value></data>
+  <data name="Invitation link" xml:space="preserve"><value>رابط الدعوة</value></data>
+  <data name="Hello {0}, you are invited to join {1} on GarageDesk as {2}. Open this link to create your login: {3}" xml:space="preserve"><value>مرحبًا {0}، تمت دعوتك للانضمام إلى {1} على GarageDesk بصفة {2}. افتح هذا الرابط لإنشاء حسابك: {3}</value></data>
+  <data name="Pending invitations" xml:space="preserve"><value>دعوات قيد الانتظار</value></data>
+  <data name="No invitations waiting." xml:space="preserve"><value>لا توجد دعوات قيد الانتظار.</value></data>
+  <data name="Someone" xml:space="preserve"><value>شخص ما</value></data>
+  <data name="Expires" xml:space="preserve"><value>ينتهي</value></data>
+  <data name="Cancel this invitation?" xml:space="preserve"><value>إلغاء هذه الدعوة؟</value></data>
+  <data name="Invitation cancelled." xml:space="preserve"><value>تم إلغاء الدعوة.</value></data>
+  <data name="Join the team" xml:space="preserve"><value>الانضمام إلى الفريق</value></data>
+  <data name="You are invited as {0}. Choose your email and password to create your login." xml:space="preserve"><value>تمت دعوتك بصفة {0}. اختر بريدك الإلكتروني وكلمة مرورك لإنشاء حسابك.</value></data>
+  <data name="Create my login" xml:space="preserve"><value>إنشاء حسابي</value></data>
+  <data name="This invitation link does not work" xml:space="preserve"><value>رابط الدعوة هذا لا يعمل</value></data>
+  <data name="It may have expired, been used already or been cancelled. Ask the shop owner for a new one." xml:space="preserve"><value>ربما انتهت صلاحيته أو استُخدم من قبل أو أُلغي. اطلب من صاحب الورشة رابطًا جديدًا.</value></data>
+  <data name="My jobs" xml:space="preserve"><value>مهامي</value></data>
+  <data name="Assigned to you" xml:space="preserve"><value>مُسندة إليك</value></data>
+  <data name="Show" xml:space="preserve"><value>عرض</value></data>
+  <data name="Open" xml:space="preserve"><value>المفتوحة</value></data>
+  <data name="Nothing assigned to you right now." xml:space="preserve"><value>لا توجد مهام مُسندة إليك الآن.</value></data>
+  <data name="When the shop gives you a job card it shows up here." xml:space="preserve"><value>عندما تُسند إليك الورشة أمر شغل سيظهر هنا.</value></data>
+  <data name="Vehicle history" xml:space="preserve"><value>سجل السيارة</value></data>
+  <data name="Nothing noted yet. Add the parts and labor you use below." xml:space="preserve"><value>لا توجد ملاحظات بعد. أضف القطع والأعمال التي تستخدمها أدناه.</value></data>
+  <data name="Add a note" xml:space="preserve"><value>إضافة ملاحظة</value></data>
+  <data name="Add" xml:space="preserve"><value>إضافة</value></data>
+  <data name="This job card is closed and can no longer be changed." xml:space="preserve"><value>أمر الشغل هذا مغلق ولا يمكن تغييره.</value></data>
+  <data name="Assigned to" xml:space="preserve"><value>مُسند إلى</value></data>
+  <data name="Not assigned" xml:space="preserve"><value>غير مُسند</value></data>
+  <data name="Everyone" xml:space="preserve"><value>الجميع</value></data>
+  <data name="Choose someone from your team." xml:space="preserve"><value>اختر شخصًا من فريقك.</value></data>
+  <data name="Commissions" xml:space="preserve"><value>العمولات</value></data>
+  <data name="Commission %" xml:space="preserve"><value>نسبة العمولة %</value></data>
+  <data name="Commission due" xml:space="preserve"><value>العمولة المستحقة</value></data>
+  <data name="Commission saved." xml:space="preserve"><value>تم حفظ العمولة.</value></data>
+  <data name="Enter a commission between 0 and 100." xml:space="preserve"><value>أدخل عمولة بين 0 و100.</value></data>
+  <data name="Paid jobs" xml:space="preserve"><value>أوامر شغل مدفوعة</value></data>
+  <data name="Labor total" xml:space="preserve"><value>إجمالي المصنعية</value></data>
+  <data name="Previous month" xml:space="preserve"><value>الشهر السابق</value></data>
+  <data name="Next month" xml:space="preserve"><value>الشهر التالي</value></data>
+  <data name="How commission is worked out" xml:space="preserve"><value>كيف تُحسب العمولة</value></data>
+  <data name="For each paid job card assigned to a person, with a visit date in this month, the labor lines are added up (before discount and VAT). The commission is that labor total times the person's commission percent. Parts are never included. The percent used is the person's current one, set on the My team page." xml:space="preserve"><value>لكل أمر شغل مدفوع مُسند إلى شخص وتاريخ زيارته في هذا الشهر، تُجمع بنود المصنعية (قبل الخصم والضريبة). العمولة هي إجمالي المصنعية مضروبًا في نسبة عمولة الشخص. القطع لا تدخل أبدًا. النسبة المستخدمة هي النسبة الحالية للشخص كما هي مضبوطة في صفحة فريقي.</value></data>
+  <data name="No commissions this month." xml:space="preserve"><value>لا توجد عمولات هذا الشهر.</value></data>
+  <data name="Commission shows here once a paid job card is assigned to someone with a commission percent." xml:space="preserve"><value>تظهر العمولة هنا عندما يُسند أمر شغل مدفوع إلى شخص لديه نسبة عمولة.</value></data>
+  <data name="{0} paid job cards this month have no technician, so they earn no commission." xml:space="preserve"><value>{0} من أوامر الشغل المدفوعة هذا الشهر بلا فني، لذلك لا تُحتسب عليها عمولة.</value></data>
+  <data name="History" xml:space="preserve"><value>السجل</value></data>
+  <data name="No history yet." xml:space="preserve"><value>لا يوجد سجل بعد.</value></data>
+  <data name="Job card created" xml:space="preserve"><value>تم إنشاء أمر الشغل</value></data>
+  <data name="Job card created from estimate {0}" xml:space="preserve"><value>تم إنشاء أمر الشغل من عرض السعر {0}</value></data>
+  <data name="Status changed from {0} to {1}" xml:space="preserve"><value>تغيّرت الحالة من {0} إلى {1}</value></data>
+  <data name="Payment of {0} EGP received ({1})" xml:space="preserve"><value>تم استلام دفعة {0} جنيه ({1})</value></data>
+  <data name="Payment of {0} EGP voided" xml:space="preserve"><value>تم إلغاء دفعة {0} جنيه</value></data>
+  <data name="Assigned to {0}" xml:space="preserve"><value>أُسند إلى {0}</value></data>
+  <data name="Unassigned" xml:space="preserve"><value>أُلغي الإسناد</value></data>
+  <data name="You cannot deactivate your own account." xml:space="preserve"><value>لا يمكنك تعطيل حسابك بنفسك.</value></data>
+  <data name="A shop needs at least one active owner." xml:space="preserve"><value>لا بد أن يبقى للورشة مالك نشط واحد على الأقل.</value></data>
+  <data name="That change could not be saved." xml:space="preserve"><value>تعذّر حفظ هذا التغيير.</value></data>
+  <data name="You are already signed in" xml:space="preserve"><value>أنت مسجّل الدخول بالفعل</value></data>
+  <data name="Log out first, then open the invitation link again." xml:space="preserve"><value>سجّل الخروج أولًا ثم افتح رابط الدعوة مرة أخرى.</value></data>
+  <!-- v1-4-stock-profit: parts catalog, stock, expenses, profit, cash close, export -->
+  <data name="From stock" xml:space="preserve"><value>من المخزون</value></data>
+  <data name="Cost" xml:space="preserve"><value>التكلفة</value></data>
+  <data name="Not from the catalog (free text)" xml:space="preserve"><value>ليست من الكتالوج (نص حر)</value></data>
+  <data name="Choosing a part takes it from stock and fills in its price." xml:space="preserve"><value>اختيار قطعة يخصمها من المخزون ويملأ سعرها.</value></data>
+  <data name="Choosing a part takes it from stock." xml:space="preserve"><value>اختيار قطعة يخصمها من المخزون.</value></data>
+  <data name="Quoting a catalog part does not touch stock. It is taken from stock when the estimate becomes a job card." xml:space="preserve"><value>إدراج قطعة من الكتالوج في عرض السعر لا يمس المخزون. تُخصم من المخزون عندما يتحول العرض إلى أمر شغل.</value></data>
+  <data name="Catalog part" xml:space="preserve"><value>قطعة من الكتالوج</value></data>
+  <data name="Profit on this job" xml:space="preserve"><value>الربح في هذا الأمر</value></data>
+  <data name="Revenue (before VAT)" xml:space="preserve"><value>الإيراد (قبل الضريبة)</value></data>
+  <data name="Part cost" xml:space="preserve"><value>تكلفة القطع</value></data>
+  <data name="Profit" xml:space="preserve"><value>الربح</value></data>
+  <data name="Profit = subtotal minus discount, minus the cost of the parts taken from stock. Labor has no cost. VAT is not income." xml:space="preserve"><value>الربح = الإجمالي الفرعي ناقص الخصم، ناقص تكلفة القطع المأخوذة من المخزون. المصنعية بلا تكلفة. ضريبة القيمة المضافة ليست دخلًا.</value></data>
+  <data name="{0} part lines are free text, so their cost is not known." xml:space="preserve"><value>{0} من بنود القطع نص حر، لذلك تكلفتها غير معروفة.</value></data>
+  <data name="{0} x {1} taken from stock" xml:space="preserve"><value>تم أخذ {0} × {1} من المخزون</value></data>
+  <data name="{0} x {1} put back in stock" xml:space="preserve"><value>تمت إعادة {0} × {1} إلى المخزون</value></data>
+  <data name="That part is not in your catalog." xml:space="preserve"><value>هذه القطعة غير موجودة في الكتالوج الخاص بك.</value></data>
+  <data name="Not enough in stock: {0} left of {1}." xml:space="preserve"><value>لا يوجد مخزون كافٍ: المتبقي {0} من {1}.</value></data>
+  <data name="The stock changed while you were saving. Please try again." xml:space="preserve"><value>تغيّر المخزون أثناء الحفظ. حاول مرة أخرى.</value></data>
+  <data name="Not enough stock of {0} to start this job ({1} left, {2} needed). Receive stock first, or allow negative stock on the Parts page." xml:space="preserve"><value>لا يوجد مخزون كافٍ من {0} لبدء هذا الأمر (المتبقي {1}، المطلوب {2}). استلم مخزونًا أولًا أو اسمح بالمخزون السالب في صفحة القطع.</value></data>
+  <data name="That would take the stock below zero. Allow negative stock on the Parts page if you really need that." xml:space="preserve"><value>هذا سيجعل المخزون أقل من صفر. اسمح بالمخزون السالب في صفحة القطع إن كنت تحتاج ذلك فعلًا.</value></data>
+  <data name="SKU (optional)" xml:space="preserve"><value>رمز الصنف (اختياري)</value></data>
+  <data name="SKU" xml:space="preserve"><value>رمز الصنف</value></data>
+  <data name="Unit" xml:space="preserve"><value>الوحدة</value></data>
+  <data name="Cost price (EGP)" xml:space="preserve"><value>سعر التكلفة (جنيه)</value></data>
+  <data name="Sell price (EGP)" xml:space="preserve"><value>سعر البيع (جنيه)</value></data>
+  <data name="Quantity on hand" xml:space="preserve"><value>الكمية المتاحة</value></data>
+  <data name="Low-stock alert at" xml:space="preserve"><value>تنبيه عند نقص المخزون إلى</value></data>
+  <data name="Supplier (optional)" xml:space="preserve"><value>المورّد (اختياري)</value></data>
+  <data name="You already have a part with this name." xml:space="preserve"><value>لديك قطعة بهذا الاسم بالفعل.</value></data>
+  <data name="You already have a part with this SKU." xml:space="preserve"><value>لديك قطعة بهذا الرمز بالفعل.</value></data>
+  <data name="Part saved." xml:space="preserve"><value>تم حفظ القطعة.</value></data>
+  <data name="Part archived. It can no longer be picked on new lines." xml:space="preserve"><value>تمت أرشفة القطعة. لم يعد ممكنًا اختيارها في بنود جديدة.</value></data>
+  <data name="Part restored." xml:space="preserve"><value>تمت استعادة القطعة.</value></data>
+  <data name="Prices" xml:space="preserve"><value>الأسعار</value></data>
+  <data name="What you pay your supplier. Only the owner sees it." xml:space="preserve"><value>ما تدفعه للمورّد. يراه المالك فقط.</value></data>
+  <data name="What the customer is charged. It is filled in when the part is picked on a job card." xml:space="preserve"><value>ما يُحاسَب به العميل. يُملأ عند اختيار القطعة في أمر الشغل.</value></data>
+  <data name="Stock" xml:space="preserve"><value>المخزون</value></data>
+  <data name="Leave empty for no alert." xml:space="preserve"><value>اتركه فارغًا لإلغاء التنبيه.</value></data>
+  <data name="Add part" xml:space="preserve"><value>إضافة قطعة</value></data>
+  <data name="Edit part" xml:space="preserve"><value>تعديل قطعة</value></data>
+  <data name="In stock" xml:space="preserve"><value>في المخزون</value></data>
+  <data name="Receive or adjust stock" xml:space="preserve"><value>استلام المخزون أو تصحيحه</value></data>
+  <data name="Archive this part? It can no longer be picked on new lines, and old job cards keep it." xml:space="preserve"><value>أرشفة هذه القطعة؟ لن يمكن اختيارها في بنود جديدة، وتحتفظ بها أوامر الشغل القديمة.</value></data>
+  <data name="Archive part" xml:space="preserve"><value>أرشفة القطعة</value></data>
+  <data name="Restore part" xml:space="preserve"><value>استعادة القطعة</value></data>
+  <data name="{0} parts" xml:space="preserve"><value>{0} قطعة</value></data>
+  <data name="Running low" xml:space="preserve"><value>مخزون منخفض</value></data>
+  <data name="Parts at or below their alert level" xml:space="preserve"><value>قطع وصلت إلى حد التنبيه أو أقل</value></data>
+  <data name="Stock value (at cost)" xml:space="preserve"><value>قيمة المخزون (بالتكلفة)</value></data>
+  <data name="Quantity on hand times cost price, over all active parts." xml:space="preserve"><value>الكمية المتاحة × سعر التكلفة، لجميع القطع النشطة.</value></data>
+  <data name="Search by name or SKU" xml:space="preserve"><value>ابحث بالاسم أو رمز الصنف</value></data>
+  <data name="Archived" xml:space="preserve"><value>مؤرشفة</value></data>
+  <data name="No parts match." xml:space="preserve"><value>لا توجد قطع مطابقة.</value></data>
+  <data name="No parts yet." xml:space="preserve"><value>لا توجد قطع بعد.</value></data>
+  <data name="Add the parts you stock so job cards can take them from the shelf." xml:space="preserve"><value>أضف القطع التي تحتفظ بها في المخزون ليتمكن أمر الشغل من أخذها من الرف.</value></data>
+  <data name="Negative stock" xml:space="preserve"><value>المخزون السالب</value></data>
+  <data name="Off: a part cannot be put on a job card if the shelf does not hold enough of it. On: it can, and the quantity goes below zero until you receive stock." xml:space="preserve"><value>متوقف: لا يمكن إضافة قطعة إلى أمر الشغل إن لم يكفِ ما على الرف. مفعّل: يمكن ذلك، وتنزل الكمية تحت الصفر حتى تستلم مخزونًا.</value></data>
+  <data name="Do not allow negative stock" xml:space="preserve"><value>عدم السماح بالمخزون السالب</value></data>
+  <data name="Allow negative stock" xml:space="preserve"><value>السماح بالمخزون السالب</value></data>
+  <data name="Negative stock is now allowed." xml:space="preserve"><value>أصبح المخزون السالب مسموحًا.</value></data>
+  <data name="Negative stock is no longer allowed." xml:space="preserve"><value>لم يعد المخزون السالب مسموحًا.</value></data>
+  <data name="Quantity received" xml:space="preserve"><value>الكمية المستلمة</value></data>
+  <data name="Cost per unit (EGP)" xml:space="preserve"><value>التكلفة للوحدة (جنيه)</value></data>
+  <data name="Also record it as an expense (Parts purchase)" xml:space="preserve"><value>سجّلها أيضًا كمصروف (شراء قطع)</value></data>
+  <data name="Change (use a minus to take stock away)" xml:space="preserve"><value>التغيير (استخدم علامة ناقص لخصم المخزون)</value></data>
+  <data name="Reason" xml:space="preserve"><value>السبب</value></data>
+  <data name="Receive stock" xml:space="preserve"><value>استلام مخزون</value></data>
+  <data name="This becomes the part's cost price for job cards added from now on." xml:space="preserve"><value>يصبح هذا سعر تكلفة القطعة لأوامر الشغل التي تُضاف من الآن.</value></data>
+  <data name="Correct the count" xml:space="preserve"><value>تصحيح الجرد</value></data>
+  <data name="After counting the shelf, or for a loss. Use a minus to take stock away." xml:space="preserve"><value>بعد جرد الرف، أو عند وجود فاقد. استخدم علامة ناقص لخصم المخزون.</value></data>
+  <data name="Save correction" xml:space="preserve"><value>حفظ التصحيح</value></data>
+  <data name="Stock movements" xml:space="preserve"><value>حركات المخزون</value></data>
+  <data name="Nothing has moved yet." xml:space="preserve"><value>لم تحدث أي حركة بعد.</value></data>
+  <data name="What happened" xml:space="preserve"><value>ما حدث</value></data>
+  <data name="Change" xml:space="preserve"><value>التغيير</value></data>
+  <data name="Quantity after" xml:space="preserve"><value>الكمية بعد الحركة</value></data>
+  <data name="By" xml:space="preserve"><value>بواسطة</value></data>
+  <data name="Opening stock" xml:space="preserve"><value>رصيد افتتاحي</value></data>
+  <data name="Received from supplier" xml:space="preserve"><value>استلام من المورّد</value></data>
+  <data name="Used on a job card" xml:space="preserve"><value>استُخدمت في أمر شغل</value></data>
+  <data name="Put back from a job card" xml:space="preserve"><value>أُعيدت من أمر شغل</value></data>
+  <data name="Correction" xml:space="preserve"><value>تصحيح</value></data>
+  <data name="Enter a quantity above zero and a cost of zero or more." xml:space="preserve"><value>أدخل كمية أكبر من صفر وتكلفة صفرًا أو أكثر.</value></data>
+  <data name="Enter the change and a reason." xml:space="preserve"><value>أدخل التغيير والسبب.</value></data>
+  <data name="Stock received." xml:space="preserve"><value>تم استلام المخزون.</value></data>
+  <data name="Stock corrected." xml:space="preserve"><value>تم تصحيح المخزون.</value></data>
+  <data name="Money" xml:space="preserve"><value>المال</value></data>
+  <data name="Rent" xml:space="preserve"><value>الإيجار</value></data>
+  <data name="Salaries" xml:space="preserve"><value>المرتبات</value></data>
+  <data name="Parts purchase" xml:space="preserve"><value>شراء قطع</value></data>
+  <data name="Utilities" xml:space="preserve"><value>المرافق</value></data>
+  <data name="Other" xml:space="preserve"><value>أخرى</value></data>
+  <data name="Category" xml:space="preserve"><value>التصنيف</value></data>
+  <data name="Amount (EGP)" xml:space="preserve"><value>المبلغ (جنيه)</value></data>
+  <data name="Paid in cash from the drawer" xml:space="preserve"><value>مدفوع نقدًا من الدرج</value></data>
+  <data name="Choose a category." xml:space="preserve"><value>اختر تصنيفًا.</value></data>
+  <data name="Expense saved." xml:space="preserve"><value>تم حفظ المصروف.</value></data>
+  <data name="Expense removed." xml:space="preserve"><value>تم حذف المصروف.</value></data>
+  <data name="Expenses" xml:space="preserve"><value>المصروفات</value></data>
+  <data name="Add an expense" xml:space="preserve"><value>إضافة مصروف</value></data>
+  <data name="Cash taken out of the drawer lowers the cash you should have at the end of the day." xml:space="preserve"><value>النقد المأخوذ من الدرج يقلل النقد المتوقع في نهاية اليوم.</value></data>
+  <data name="Add expense" xml:space="preserve"><value>إضافة المصروف</value></data>
+  <data name="Edit categories" xml:space="preserve"><value>تعديل التصنيفات</value></data>
+  <data name="By category" xml:space="preserve"><value>حسب التصنيف</value></data>
+  <data name="No expenses this month." xml:space="preserve"><value>لا توجد مصروفات هذا الشهر.</value></data>
+  <data name="This month" xml:space="preserve"><value>هذا الشهر</value></data>
+  <data name="Not from the drawer" xml:space="preserve"><value>ليس من الدرج</value></data>
+  <data name="Remove this expense?" xml:space="preserve"><value>حذف هذا المصروف؟</value></data>
+  <data name="Enter a name of up to 60 characters." xml:space="preserve"><value>أدخل اسمًا لا يزيد عن 60 حرفًا.</value></data>
+  <data name="You already have a category with this name." xml:space="preserve"><value>لديك تصنيف بهذا الاسم بالفعل.</value></data>
+  <data name="Category added." xml:space="preserve"><value>تمت إضافة التصنيف.</value></data>
+  <data name="Category renamed." xml:space="preserve"><value>تمت إعادة تسمية التصنيف.</value></data>
+  <data name="Category restored." xml:space="preserve"><value>تمت استعادة التصنيف.</value></data>
+  <data name="Category archived." xml:space="preserve"><value>تمت أرشفة التصنيف.</value></data>
+  <data name="Expense categories" xml:space="preserve"><value>تصنيفات المصروفات</value></data>
+  <data name="Rename" xml:space="preserve"><value>إعادة تسمية</value></data>
+  <data name="Archive" xml:space="preserve"><value>أرشفة</value></data>
+  <data name="Restore" xml:space="preserve"><value>استعادة</value></data>
+  <data name="Add a category" xml:space="preserve"><value>إضافة تصنيف</value></data>
+  <data name="Cash close" xml:space="preserve"><value>إقفال الخزينة</value></data>
+  <data name="Export" xml:space="preserve"><value>تصدير</value></data>
+  <data name="Cash basis" xml:space="preserve"><value>على أساس النقد</value></data>
+  <data name="Payments received this month, minus expenses paid this month." xml:space="preserve"><value>المدفوعات المستلمة هذا الشهر ناقص المصروفات المدفوعة هذا الشهر.</value></data>
+  <data name="Payments received this month" xml:space="preserve"><value>المدفوعات المستلمة هذا الشهر</value></data>
+  <data name="Expenses paid this month" xml:space="preserve"><value>المصروفات المدفوعة هذا الشهر</value></data>
+  <data name="Received minus expenses" xml:space="preserve"><value>المستلم ناقص المصروفات</value></data>
+  <data name="How profit is worked out" xml:space="preserve"><value>كيف يُحسب الربح</value></data>
+  <data name="Monthly profit is on a cash basis: the payments received in the month (by the day they were received) minus the expenses paid in the month (by their date). It does not matter when the car came in." xml:space="preserve"><value>ربح الشهر على أساس النقد: المدفوعات المستلمة في الشهر (حسب يوم استلامها) ناقص المصروفات المدفوعة في الشهر (حسب تاريخها). لا يهم متى دخلت السيارة.</value></data>
+  <data name="Payments include VAT where you charge it, because that is the money that came in." xml:space="preserve"><value>تشمل المدفوعات ضريبة القيمة المضافة حيث تحصّلها، لأنها الأموال التي دخلت فعلًا.</value></data>
+  <data name="Profit per job card is its revenue (subtotal minus discount, before VAT) minus the cost of the catalog parts used. Labor has no cost. Parts typed as free text have no known cost." xml:space="preserve"><value>ربح أمر الشغل هو إيراده (الإجمالي الفرعي ناقص الخصم، قبل الضريبة) ناقص تكلفة قطع الكتالوج المستخدمة. المصنعية بلا تكلفة. القطع المكتوبة كنص حر ليست لها تكلفة معروفة.</value></data>
+  <data name="Received by method" xml:space="preserve"><value>المستلم حسب طريقة الدفع</value></data>
+  <data name="Expenses by category" xml:space="preserve"><value>المصروفات حسب التصنيف</value></data>
+  <data name="Profit per paid job card" xml:space="preserve"><value>الربح لكل أمر شغل مدفوع</value></data>
+  <data name="Paid job cards with a visit date in this month." xml:space="preserve"><value>أوامر الشغل المدفوعة التي تاريخ زيارتها في هذا الشهر.</value></data>
+  <data name="No paid job cards in this month." xml:space="preserve"><value>لا توجد أوامر شغل مدفوعة في هذا الشهر.</value></data>
+  <data name="Some part lines are free text, so their cost is not known." xml:space="preserve"><value>بعض بنود القطع نص حر، لذلك تكلفتها غير معروفة.</value></data>
+  <data name="Profit this month" xml:space="preserve"><value>ربح هذا الشهر</value></data>
+  <data name="Cash basis: received minus expenses" xml:space="preserve"><value>على أساس النقد: المستلم ناقص المصروفات</value></data>
+  <data name="Cash already in the drawer at the start of the day" xml:space="preserve"><value>النقد الموجود في الدرج في بداية اليوم</value></data>
+  <data name="Cash you counted now" xml:space="preserve"><value>النقد الذي عددته الآن</value></data>
+  <data name="The day was closed." xml:space="preserve"><value>تم إقفال اليوم.</value></data>
+  <data name="The drawer is exact." xml:space="preserve"><value>الدرج مطابق تمامًا.</value></data>
+  <data name="The drawer has more than expected." xml:space="preserve"><value>في الدرج أكثر من المتوقع.</value></data>
+  <data name="The drawer is short." xml:space="preserve"><value>في الدرج عجز.</value></data>
+  <data name="The day's figures" xml:space="preserve"><value>أرقام اليوم</value></data>
+  <data name="Cash received" xml:space="preserve"><value>نقد مستلم</value></data>
+  <data name="Card received" xml:space="preserve"><value>مستلم بالبطاقة</value></data>
+  <data name="Bank transfer received" xml:space="preserve"><value>مستلم بالتحويل البنكي</value></data>
+  <data name="Wallet received" xml:space="preserve"><value>مستلم بالمحفظة</value></data>
+  <data name="Total received" xml:space="preserve"><value>إجمالي المستلم</value></data>
+  <data name="Expenses paid" xml:space="preserve"><value>المصروفات المدفوعة</value></data>
+  <data name="of which from the drawer" xml:space="preserve"><value>منها من الدرج</value></data>
+  <data name="Expected cash in the drawer = cash already there at the start + cash received - expenses paid from the drawer. Card, transfer and wallet payments are not in the drawer." xml:space="preserve"><value>النقد المتوقع في الدرج = النقد الموجود في البداية + النقد المستلم - المصروفات المدفوعة من الدرج. مدفوعات البطاقة والتحويل والمحفظة ليست في الدرج.</value></data>
+  <data name="Count the drawer" xml:space="preserve"><value>عدّ الدرج</value></data>
+  <data name="Save this close? It cannot be changed afterwards. A correction is a new close." xml:space="preserve"><value>حفظ هذا الإقفال؟ لا يمكن تغييره بعد ذلك. والتصحيح يكون بإقفال جديد.</value></data>
+  <data name="Expected cash in the drawer" xml:space="preserve"><value>النقد المتوقع في الدرج</value></data>
+  <data name="Save the close" xml:space="preserve"><value>حفظ الإقفال</value></data>
+  <data name="Closes for this day" xml:space="preserve"><value>إقفالات هذا اليوم</value></data>
+  <data name="This day has not been closed yet." xml:space="preserve"><value>لم يُقفل هذا اليوم بعد.</value></data>
+  <data name="Saved" xml:space="preserve"><value>وقت الحفظ</value></data>
+  <data name="Expected" xml:space="preserve"><value>المتوقع</value></data>
+  <data name="Counted" xml:space="preserve"><value>المعدود</value></data>
+  <data name="Difference" xml:space="preserve"><value>الفرق</value></data>
+  <data name="Current" xml:space="preserve"><value>الحالي</value></data>
+  <data name="Payments or expenses changed since" xml:space="preserve"><value>تغيّرت المدفوعات أو المصروفات بعد الإقفال</value></data>
+  <data name="Recent closes" xml:space="preserve"><value>آخر الإقفالات</value></data>
+  <data name="Choose a start and an end date, at most 366 days apart." xml:space="preserve"><value>اختر تاريخ بداية وتاريخ نهاية، بفارق 366 يومًا على الأكثر.</value></data>
+  <data name="Invoice number" xml:space="preserve"><value>رقم الفاتورة</value></data>
+  <data name="Customer" xml:space="preserve"><value>العميل</value></data>
+  <data name="Entered by" xml:space="preserve"><value>أدخله</value></data>
+  <data name="Yes" xml:space="preserve"><value>نعم</value></data>
+  <data name="No" xml:space="preserve"><value>لا</value></data>
+  <data name="Visit date" xml:space="preserve"><value>تاريخ الزيارة</value></data>
+  <data name="Download your records as a CSV file that opens in Excel." xml:space="preserve"><value>نزّل سجلاتك كملف CSV يُفتح في إكسل.</value></data>
+  <data name="Date range" xml:space="preserve"><value>الفترة</value></data>
+  <data name="From" xml:space="preserve"><value>من</value></data>
+  <data name="To" xml:space="preserve"><value>إلى</value></data>
+  <data name="Up to 366 days at a time. The file is UTF-8 with Arabic column titles when the app is in Arabic. Text that starts with = + - or @ gets a leading quote so Excel cannot run it as a formula." xml:space="preserve"><value>حتى 366 يومًا في المرة الواحدة. الملف بترميز UTF-8 وبعناوين أعمدة عربية عندما يكون التطبيق بالعربية. النص الذي يبدأ بـ = + - أو @ يُضاف قبله علامة اقتباس حتى لا يُنفّذه إكسل كمعادلة.</value></data>
+  <!-- end v1-4-stock-profit -->
+  <!-- growth-onboarding: setup wizard -->
+  <data name="Three short steps. You can skip any of them and come back later." xml:space="preserve"><value>ثلاث خطوات قصيرة. يمكنك تخطي أي منها والعودة إليها لاحقًا.</value></data>
+  <data name="Setup steps" xml:space="preserve"><value>خطوات الإعداد</value></data>
+  <data name="Make it yours" xml:space="preserve"><value>خصّص ورشتك</value></data>
+  <data name="First customer and car" xml:space="preserve"><value>أول عميل وسيارة</value></data>
+  <data name="First job card" xml:space="preserve"><value>أول أمر شغل</value></data>
+  <data name="Optional" xml:space="preserve"><value>اختياري</value></data>
+  <data name="Your logo and colour appear in the menu, on invoices and on the page your customers see." xml:space="preserve"><value>يظهر شعارك ولونك في القائمة وعلى الفواتير وفي الصفحة التي يراها عملاؤك.</value></data>
+  <data name="Save and continue" xml:space="preserve"><value>حفظ ومتابعة</value></data>
+  <data name="Skip for now" xml:space="preserve"><value>تخطَّ الآن</value></data>
+  <data name="Back" xml:space="preserve"><value>رجوع</value></data>
+  <data name="Add one customer and their car. You can add more, or import a whole list from a file, afterwards." xml:space="preserve"><value>أضف عميلًا واحدًا وسيارته. يمكنك إضافة المزيد أو استيراد قائمة كاملة من ملف لاحقًا.</value></data>
+  <data name="A vehicle with this plate number already exists in your shop." xml:space="preserve"><value>توجد سيارة بنفس رقم اللوحة في ورشتك بالفعل.</value></data>
+  <data name="A job card is one visit of one car. Open it now and add parts and labor on the next page." xml:space="preserve"><value>أمر الشغل هو زيارة واحدة لسيارة واحدة. افتحه الآن وأضف القطع والمصنعية في الصفحة التالية.</value></data>
+  <data name="What does the car need?" xml:space="preserve"><value>ماذا تحتاج السيارة؟</value></data>
+  <data name="Open the job card" xml:space="preserve"><value>افتح أمر الشغل</value></data>
+  <data name="The notes are too long (2000 characters at most)." xml:space="preserve"><value>الملاحظات طويلة جدًا (2000 حرف كحد أقصى).</value></data>
+  <data name="Your shop is ready" xml:space="preserve"><value>ورشتك جاهزة</value></data>
+  <data name="Everything is in place. Here is what most shops do next." xml:space="preserve"><value>كل شيء في مكانه. هذا ما تفعله معظم الورش بعد ذلك.</value></data>
+  <data name="Go to the dashboard" xml:space="preserve"><value>اذهب إلى لوحة التحكم</value></data>
+  <data name="Invite your team" xml:space="preserve"><value>ادعُ فريقك</value></data>
+  <data name="Add your logo or pick a colour" xml:space="preserve"><value>أضف شعارك أو اختر لونًا</value></data>
+  <data name="Set your VAT percent, if you charge VAT" xml:space="preserve"><value>اضبط نسبة الضريبة إن كنت تحصّلها</value></data>
+  <data name="Open the setup guide" xml:space="preserve"><value>افتح دليل الإعداد</value></data>
+  <!-- growth-onboarding: CSV import -->
+  <data name="Import customers and cars" xml:space="preserve"><value>استيراد العملاء والسيارات</value></data>
+  <data name="Import" xml:space="preserve"><value>استيراد</value></data>
+  <data name="Bring your existing list from Excel or Google Sheets: one row per car, with its owner." xml:space="preserve"><value>أحضر قائمتك الحالية من إكسل أو جوجل شيتس: صف لكل سيارة مع صاحبها.</value></data>
+  <data name="1. Get the template" xml:space="preserve"><value>1. حمّل النموذج</value></data>
+  <data name="Download the empty file, fill it in with Excel or Google Sheets and save it as CSV UTF-8. Headers in English or Arabic are both understood." xml:space="preserve"><value>حمّل الملف الفارغ واملأه بإكسل أو جوجل شيتس واحفظه بصيغة CSV UTF-8. العناوين بالإنجليزية أو بالعربية كلاهما مفهوم.</value></data>
+  <data name="Template with English headers" xml:space="preserve"><value>نموذج بعناوين إنجليزية</value></data>
+  <data name="Template with Arabic headers" xml:space="preserve"><value>نموذج بعناوين عربية</value></data>
+  <data name="What the columns mean" xml:space="preserve"><value>معنى الأعمدة</value></data>
+  <data name="Customer name" xml:space="preserve"><value>اسم العميل</value></data>
+  <data name="Required" xml:space="preserve"><value>مطلوب</value></data>
+  <data name="Needed for a car" xml:space="preserve"><value>مطلوب للسيارة</value></data>
+  <data name="A customer with several cars: repeat the name and phone on each row. The phone number is what identifies a customer." xml:space="preserve"><value>عميل لديه عدة سيارات: كرّر الاسم والهاتف في كل صف. رقم الهاتف هو ما يحدد العميل.</value></data>
+  <data name="Leave the car columns empty to add a customer with no car." xml:space="preserve"><value>اترك أعمدة السيارة فارغة لإضافة عميل بلا سيارة.</value></data>
+  <data name="Customers and cars that are already in your shop are skipped, so uploading the same file twice adds nothing." xml:space="preserve"><value>يتم تخطي العملاء والسيارات الموجودة في ورشتك، لذلك رفع الملف نفسه مرتين لا يضيف شيئًا.</value></data>
+  <data name="Up to 2000 rows and 512 KB. Commas or semicolons both work." xml:space="preserve"><value>حتى 2000 صف و512 كيلوبايت. الفاصلة أو الفاصلة المنقوطة كلاهما مقبول.</value></data>
+  <data name="2. Upload and check" xml:space="preserve"><value>2. ارفع وراجع</value></data>
+  <data name="Nothing is saved yet. You will see what each row would do first." xml:space="preserve"><value>لم يُحفظ شيء بعد. سترى أولًا ما سيفعله كل صف.</value></data>
+  <data name="CSV file" xml:space="preserve"><value>ملف CSV</value></data>
+  <data name="Check the file" xml:space="preserve"><value>افحص الملف</value></data>
+  <data name="Check before importing" xml:space="preserve"><value>راجع قبل الاستيراد</value></data>
+  <data name="Customers to add" xml:space="preserve"><value>عملاء سيُضافون</value></data>
+  <data name="Cars to add" xml:space="preserve"><value>سيارات ستُضاف</value></data>
+  <data name="Skipped (already there)" xml:space="preserve"><value>متخطّى (موجود بالفعل)</value></data>
+  <data name="Rows with errors" xml:space="preserve"><value>صفوف بها أخطاء</value></data>
+  <data name="These columns are not used and were ignored:" xml:space="preserve"><value>هذه الأعمدة غير مستخدمة وتم تجاهلها:</value></data>
+  <data name="Rows with errors are not imported. Fix them in your file and upload it again, or import the good rows now and add the rest by hand." xml:space="preserve"><value>الصفوف التي بها أخطاء لا تُستورد. صحّحها في ملفك وارفعه مرة أخرى، أو استورد الصفوف السليمة الآن وأضف الباقي يدويًا.</value></data>
+  <data name="Import {0} customers and {1} cars" xml:space="preserve"><value>استيراد {0} عميل و{1} سيارة</value></data>
+  <data name="Download the rows that were not imported" xml:space="preserve"><value>نزّل الصفوف التي لم تُستورد</value></data>
+  <data name="Start over" xml:space="preserve"><value>ابدأ من جديد</value></data>
+  <data name="Rows" xml:space="preserve"><value>الصفوف</value></data>
+  <data name="Row" xml:space="preserve"><value>الصف</value></data>
+  <data name="Car" xml:space="preserve"><value>السيارة</value></data>
+  <data name="Result" xml:space="preserve"><value>النتيجة</value></data>
+  <data name="Existing customer" xml:space="preserve"><value>عميل موجود</value></data>
+  <data name="Showing the first {0} rows of {1}. The totals above and the import cover every row." xml:space="preserve"><value>عرض أول {0} صف من {1}. الإجماليات أعلاه والاستيراد يشملان كل الصفوف.</value></data>
+  <data name="Nothing to import: every row is already in your shop or has an error." xml:space="preserve"><value>لا شيء للاستيراد: كل صف موجود بالفعل في ورشتك أو به خطأ.</value></data>
+  <data name="Imported {0} customers and {1} cars. {2} rows were skipped as duplicates and {3} had errors." xml:space="preserve"><value>تم استيراد {0} عميل و{1} سيارة. تم تخطي {2} صف لأنها مكررة و{3} صف بها أخطاء.</value></data>
+  <data name="Choose a CSV file to upload." xml:space="preserve"><value>اختر ملف CSV لرفعه.</value></data>
+  <data name="The file is too large. The maximum size is 512 KB." xml:space="preserve"><value>الملف كبير جدًا. الحد الأقصى 512 كيلوبايت.</value></data>
+  <data name="The file is empty." xml:space="preserve"><value>الملف فارغ.</value></data>
+  <data name="The file is not saved as UTF-8. In Excel choose Save As, then CSV UTF-8 (Comma delimited)." xml:space="preserve"><value>الملف غير محفوظ بترميز UTF-8. في إكسل اختر حفظ باسم ثم CSV UTF-8 (محدد بفاصلة).</value></data>
+  <data name="The file is saved as Unicode text (UTF-16). In Excel choose Save As, then CSV UTF-8 (Comma delimited)." xml:space="preserve"><value>الملف محفوظ كنص يونيكود (UTF-16). في إكسل اختر حفظ باسم ثم CSV UTF-8 (محدد بفاصلة).</value></data>
+  <data name="A quotation mark is never closed, so the file cannot be read. Check the cells that contain quotes." xml:space="preserve"><value>توجد علامة اقتباس لم تُغلق، لذلك تعذّرت قراءة الملف. راجع الخلايا التي تحتوي على علامات اقتباس.</value></data>
+  <data name="The file has more than 2000 rows. Split it into smaller files." xml:space="preserve"><value>الملف يحتوي على أكثر من 2000 صف. قسّمه إلى ملفات أصغر.</value></data>
+  <data name="The file has more than 20 columns." xml:space="preserve"><value>الملف يحتوي على أكثر من 20 عمودًا.</value></data>
+  <data name="These columns are missing from the first row: {0}" xml:space="preserve"><value>هذه الأعمدة غير موجودة في الصف الأول: {0}</value></data>
+  <data name="The name is missing." xml:space="preserve"><value>الاسم مفقود.</value></data>
+  <data name="The name is longer than 100 characters." xml:space="preserve"><value>الاسم أطول من 100 حرف.</value></data>
+  <data name="The phone number is missing." xml:space="preserve"><value>رقم الهاتف مفقود.</value></data>
+  <data name="The notes are longer than 1000 characters." xml:space="preserve"><value>الملاحظات أطول من 1000 حرف.</value></data>
+  <data name="The plate number is missing." xml:space="preserve"><value>رقم اللوحة مفقود.</value></data>
+  <data name="The plate number is longer than 20 characters." xml:space="preserve"><value>رقم اللوحة أطول من 20 حرفًا.</value></data>
+  <data name="The make is missing." xml:space="preserve"><value>الماركة مفقودة.</value></data>
+  <data name="The make is longer than 50 characters." xml:space="preserve"><value>الماركة أطول من 50 حرفًا.</value></data>
+  <data name="The model is missing." xml:space="preserve"><value>الموديل مفقود.</value></data>
+  <data name="The model is longer than 50 characters." xml:space="preserve"><value>الموديل أطول من 50 حرفًا.</value></data>
+  <data name="The year must be between 1950 and 2100." xml:space="preserve"><value>يجب أن تكون السنة بين 1950 و2100.</value></data>
+  <data name="The mileage must be a whole number of kilometres up to 5,000,000." xml:space="preserve"><value>يجب أن يكون العداد عددًا صحيحًا من الكيلومترات حتى 5,000,000.</value></data>
+  <data name="The VIN is longer than 17 characters." xml:space="preserve"><value>رقم الشاسيه أطول من 17 حرفًا.</value></data>
+  <data name="A cell may not start with = + - or @ (a spreadsheet would run it as a formula)." xml:space="preserve"><value>لا يجوز أن تبدأ الخلية بـ = أو + أو - أو @ (قد يتعامل معها برنامج الجداول كمعادلة).</value></data>
+  <data name="A cell is longer than 1000 characters." xml:space="preserve"><value>توجد خلية أطول من 1000 حرف.</value></data>
+  <data name="New customer and car" xml:space="preserve"><value>عميل جديد وسيارة</value></data>
+  <data name="New car for an existing customer" xml:space="preserve"><value>سيارة جديدة لعميل موجود</value></data>
+  <data name="New customer" xml:space="preserve"><value>عميل جديد</value></data>
+  <data name="Skipped: this plate is already in your shop" xml:space="preserve"><value>تم التخطي: هذه اللوحة موجودة بالفعل في ورشتك</value></data>
+  <data name="Skipped: this plate appears earlier in the file" xml:space="preserve"><value>تم التخطي: هذه اللوحة مكررة في الملف</value></data>
+  <data name="Skipped: this customer already exists" xml:space="preserve"><value>تم التخطي: هذا العميل موجود بالفعل</value></data>
+  <!-- growth-onboarding: installable app -->
+  <data name="Install GarageDesk on this device" xml:space="preserve"><value>ثبّت GarageDesk على هذا الجهاز</value></data>
+  <data name="Install" xml:space="preserve"><value>تثبيت</value></data>
+  <data name="To install: tap Share, then Add to Home Screen." xml:space="preserve"><value>للتثبيت: اضغط مشاركة ثم إضافة إلى الشاشة الرئيسية.</value></data>
+  <!-- growth-onboarding: public landing page -->
+  <data name="Workshop manager for small car service shops" xml:space="preserve"><value>برنامج إدارة لورش خدمة السيارات الصغيرة</value></data>
+  <data name="Job cards, invoices, reminders and WhatsApp links for small car service shops. Arabic and English, on your phone." xml:space="preserve"><value>أوامر شغل وفواتير وتذكيرات وروابط واتساب لورش خدمة السيارات الصغيرة. بالعربية والإنجليزية وعلى هاتفك.</value></data>
+  <data name="Hi, I would like to know more about GarageDesk." xml:space="preserve"><value>مرحبًا، أود معرفة المزيد عن GarageDesk.</value></data>
+  <data name="Talk to us on WhatsApp" xml:space="preserve"><value>تحدث معنا على واتساب</value></data>
+  <data name="Invoices &amp; estimates" xml:space="preserve"><value>الفواتير وعروض الأسعار</value></data>
+  <data name="Clean A4 invoices and estimates in EGP, with discounts and VAT, ready to print or save as PDF." xml:space="preserve"><value>فواتير وعروض أسعار A4 نظيفة بالجنيه المصري مع الخصومات والضريبة، جاهزة للطباعة أو الحفظ بصيغة PDF.</value></data>
+  <data name="WhatsApp links" xml:space="preserve"><value>روابط واتساب</value></data>
+  <data name="Send customers a private link to their invoice, estimate or car status. No app and no login for them." xml:space="preserve"><value>أرسل للعميل رابطًا خاصًا لفاتورته أو عرض السعر أو حالة سيارته. بلا تطبيق وبلا تسجيل دخول.</value></data>
+  <data name="Payments &amp; balances" xml:space="preserve"><value>الدفعات والأرصدة</value></data>
+  <data name="Record part payments and see who owes you at a glance." xml:space="preserve"><value>سجّل الدفعات الجزئية واعرف من عليه مبالغ بنظرة واحدة.</value></data>
+  <data name="Your team" xml:space="preserve"><value>فريقك</value></data>
+  <data name="Cashiers and technicians get their own logins and see only what they need." xml:space="preserve"><value>للكاشير والفنيين حساباتهم الخاصة ولا يرى كل منهم إلا ما يحتاجه.</value></data>
+  <data name="Made for your phone" xml:space="preserve"><value>مصمم لهاتفك</value></data>
+  <data name="Arabic or English, light or dark. Add it to your home screen and it opens like an app." xml:space="preserve"><value>عربي أو إنجليزي، فاتح أو داكن. أضفه إلى شاشتك الرئيسية ويفتح كأنه تطبيق.</value></data>
+  <data name="See it at work" xml:space="preserve"><value>شاهده أثناء العمل</value></data>
+  <data name="Real screens from a demo shop." xml:space="preserve"><value>شاشات حقيقية من ورشة تجريبية.</value></data>
+  <data name="The dashboard on a phone, in Arabic and dark mode" xml:space="preserve"><value>لوحة التحكم على الهاتف، بالعربية والوضع الداكن</value></data>
+  <data name="The dashboard: today's numbers and who is due" xml:space="preserve"><value>لوحة التحكم: أرقام اليوم ومن حان موعده</value></data>
+  <data name="A job card: parts, labor and a clear total" xml:space="preserve"><value>أمر شغل: القطع والمصنعية وإجمالي واضح</value></data>
+  <data name="An invoice, ready to print or save as PDF" xml:space="preserve"><value>فاتورة جاهزة للطباعة أو الحفظ بصيغة PDF</value></data>
+  <data name="Up and running in an afternoon" xml:space="preserve"><value>جاهز للعمل في بضع ساعات</value></data>
+  <data name="Register, add your name and logo, and you are in." xml:space="preserve"><value>سجّل وأضف اسم ورشتك وشعارك وتبدأ العمل.</value></data>
+  <data name="Add your customers and cars" xml:space="preserve"><value>أضف عملاءك وسياراتهم</value></data>
+  <data name="Type the first ones in, or import your whole list from an Excel file." xml:space="preserve"><value>اكتب أول العملاء أو استورد قائمتك كاملة من ملف إكسل.</value></data>
+  <data name="Run the day from your phone" xml:space="preserve"><value>أدِر يومك من هاتفك</value></data>
+  <data name="Job cards, invoices and WhatsApp updates in a few taps." xml:space="preserve"><value>أوامر شغل وفواتير وتحديثات واتساب بضغطات قليلة.</value></data>
+  <data name="Ready to try it?" xml:space="preserve"><value>جاهز للتجربة؟</value></data>
+  <data name="Create your shop in a minute. Your data stays yours." xml:space="preserve"><value>أنشئ ورشتك في دقيقة. بياناتك تبقى ملكك.</value></data>
 </root>

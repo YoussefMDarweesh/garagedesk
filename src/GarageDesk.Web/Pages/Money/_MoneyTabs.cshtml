@@ -1,0 +1,17 @@
+@* The little menu at the top of the owner's money pages. *@
+@model string
+@{
+    var tabs = new (string Key, string Page, string Label)[]
+    {
+        ("profit", "/Money/Profit", L["Profit"].Value),
+        ("expenses", "/Money/Expenses", L["Expenses"].Value),
+        ("cashclose", "/Money/CashClose", L["Cash close"].Value),
+        ("export", "/Money/Export", L["Export"].Value),
+    };
+}
+<nav class="money-tabs" aria-label="@L["Money"]">
+    @foreach (var tab in tabs)
+    {
+        <a asp-page="@tab.Page" aria-current="@(tab.Key == Model ? "page" : null)">@tab.Label</a>
+    }
+</nav>

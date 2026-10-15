@@ -66,6 +66,34 @@
         </form>
     </section>
 
+    <section class="panel panel-pad mt-4 mb-4" aria-labelledby="share-message-heading">
+        <div class="panel-head mb-1"><h2 id="share-message-heading" class="panel-title">@L["WhatsApp message"]</h2></div>
+        <p class="text-secondary small">@L["The text that opens in WhatsApp when you send a link to a customer. Leave a box empty to use the built-in wording."]</p>
+        <p class="small mb-3">
+            @L["You can use"]
+            @foreach (var placeholder in ShareMessage.Placeholders)
+            {
+                <code class="ltr me-1">@placeholder</code>
+            }
+            &mdash; @L["{name} is the customer, {plate} the car, {shop} your shop and {link} the private link."]
+        </p>
+        @if (ViewData.ModelState.TryGetValue("shareMessage", out var shareError) && shareError.Errors.Count > 0)
+        {
+            <div class="validation-summary-errors" role="alert" data-share-message-error>@shareError.Errors[0].ErrorMessage</div>
+        }
+        <form method="post" asp-page-handler="ShareMessage">
+            <div class="mb-3">
+                <label for="shareMessageEn" class="form-label small text-secondary">@L["Message in English"]</label>
+                <textarea id="shareMessageEn" name="shareMessageEn" rows="3" maxlength="500" class="form-control" dir="ltr" placeholder="Hi {name}, your car {plate} is ready. Details: {link}">@Model.ShareMessageEn</textarea>
+            </div>
+            <div class="mb-3">
+                <label for="shareMessageAr" class="form-label small text-secondary">@L["Message in Arabic"]</label>
+                <textarea id="shareMessageAr" name="shareMessageAr" rows="3" maxlength="500" class="form-control" dir="rtl" placeholder="مرحبًا {name}، سيارتك {plate} جاهزة. التفاصيل: {link}">@Model.ShareMessageAr</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" data-save-share-message>@L["Save"]</button>
+        </form>
+    </section>
+
     <section class="panel panel-pad" aria-labelledby="accent-heading">
         <div class="panel-head mb-1"><h2 id="accent-heading" class="panel-title">@L["Accent colour"]</h2></div>
         <p class="text-secondary">@L["Pick the colour used for buttons, highlights and the car on your vehicle pages."]</p>

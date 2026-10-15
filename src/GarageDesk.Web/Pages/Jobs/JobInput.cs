@@ -27,6 +27,11 @@ public class JobInput
     [StringLength(2000)]
     [Display(Name = "Notes")]
     public string? Notes { get; set; }
+
+    /// <summary>The technician doing the job. Checked on the server: it must be an active member of the same shop.</summary>
+    [StringLength(450)]
+    [Display(Name = "Assigned to")]
+    public string? AssignedToUserId { get; set; }
 }
 
 /// <summary>The "add a line" form on a job card.</summary>
@@ -46,4 +51,8 @@ public class JobLineInput
     [Range(0, 10_000_000)]
     [Display(Name = "Unit price")]
     public decimal UnitPrice { get; set; }
+
+    /// <summary>A part from the catalog (optional). Checked on the server: it must be an active part of this shop.</summary>
+    [Display(Name = "Catalog part")]
+    public int? PartId { get; set; }
 }

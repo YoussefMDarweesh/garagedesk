@@ -104,7 +104,75 @@ public static class DemoDataCommand
             await output.WriteLineAsync($"Login:    {email} (already existed, password unchanged)");
         }
 
+        // The team: a cashier and a technician in the same shop, so every role can be tried.
+        var shopId = owner.ShopId!.Value;
+        await EnsureStaffAsync(users, configuration, output, shopId, ShopRole.Cashier, "Demo:CashierEmail", "Demo:CashierPassword",
+            "cashier@garagedesk.app", "Demo Cashier");
+        var technician = await EnsureStaffAsync(users, configuration, output, shopId, ShopRole.Technician, "Demo:TechnicianEmail", "Demo:TechnicianPassword",
+            "technician@garagedesk.app", "Demo Technician");
+
+        // Give the technician some of the shop's jobs and a commission, once (never over jobs someone already assigned).
+        if (technician is { Created: true } && !await shopDb.JobCards.AnyAsync(j => j.AssignedToUserId != null))
+        {
+            var jobs = await shopDb.JobCards.OrderBy(j => j.Id).ToListAsync();
+            foreach (var job in jobs.Where((_, index) => index % 3 == 0))
+            {
+                job.AssignedToUserId = technician.User.Id;
+            }
+
+            technician.User.CommissionPercent = 10;
+            await users.UpdateAsync(technician.User);
+            await shopDb.SaveChangesAsync();
+            await output.WriteLineAsync($"Gave {jobs.Count(j => j.AssignedToUserId != null)} job cards to the demo technician (10% commission).");
+        }
+
         return 0;
+    }
+
+    private sealed record StaffResult(AppUser User, bool Created);
+
+    /// <summary>
+    /// Creates a staff login in the demo shop if it does not exist yet. The password comes from the setting, or is
+    /// random and printed once. Nothing is stored in the repository.
+    /// </summary>
+    private static async Task<StaffResult?> EnsureStaffAsync(
+        Microsoft.AspNetCore.Identity.UserManager<AppUser> users, IConfiguration configuration, TextWriter output,
+        int shopId, ShopRole role, string emailSetting, string passwordSetting, string defaultEmail, string fullName)
+    {
+        var email = configuration[emailSetting] is { Length: > 0 } configured ? configured : defaultEmail;
+        var existing = await users.FindByEmailAsync(email);
+        if (existing is not null)
+        {
+            if (existing.ShopId != shopId)
+            {
+                await output.WriteLineAsync($"{email} already belongs to another shop. Pick another address with {emailSetting}.");
+                return null;
+            }
+
+            await output.WriteLineAsync($"{role,-10} {email} (already existed, password unchanged)");
+            return new StaffResult(existing, false);
+        }
+
+        var password = configuration[passwordSetting];
+        var generated = string.IsNullOrEmpty(password);
+        if (generated)
+        {
+            password = GeneratePassword();
+        }
+
+        var user = new AppUser { UserName = email, Email = email, EmailConfirmed = true, ShopId = shopId, Role = role, IsActive = true, FullName = fullName };
+        var created = await users.CreateAsync(user, password!);
+        if (!created.Succeeded)
+        {
+            await output.WriteLineAsync($"Could not create the demo {role.ToString().ToLowerInvariant()}: " + string.Join("; ", created.Errors.Select(e => e.Description)));
+            return null;
+        }
+
+        await output.WriteLineAsync($"{role,-10} {email}");
+        await output.WriteLineAsync(generated
+            ? $"           Password: {password}   (shown once, save it now)"
+            : $"           Password: the value of {passwordSetting}");
+        return new StaffResult(user, true);
     }
 
     /// <summary>16 characters that satisfy Identity's default rules (upper, lower, digit, symbol) and skip look-alikes.</summary>

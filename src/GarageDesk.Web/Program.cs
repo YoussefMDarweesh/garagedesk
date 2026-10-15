@@ -1,5 +1,6 @@
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +33,24 @@ builder.Services.AddScoped<ICurrentShop, CurrentShop>();
 builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddClaimsPrincipalFactory<AppUserClaimsPrincipalFactory>()
-    .AddErrorDescriber<LocalizedIdentityErrorDescriber>();
+    .AddErrorDescriber<LocalizedIdentityErrorDescriber>()
+    .AddSignInManager<GarageSignInManager>(); // a deactivated user cannot sign in
+
+// Roles and policies (v1.3). The role is read from the database per request (ICurrentStaff), never trusted from the cookie.
+builder.Services.AddScoped<ICurrentStaff, CurrentStaff>();
+builder.Services.AddScoped<IAuthorizationHandler, ActiveMemberHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, ShopRoleHandler>();
+builder.Services.AddAuthorization(Policies.Register);
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    // A signed-in user who may not open a page gets a real 403, not a redirect to a login or "not found" page.
+    options.Events.OnRedirectToAccessDenied = context => ForbiddenResponse.WriteAsync(context.HttpContext);
+});
+// The public invitation page (/Join) gets its own per-address rate limit, next to v1.2's share-link one.
+builder.Services.AddInviteRateLimit(builder.Configuration);
+// Re-check the login cookie against the database (security stamp) every minute instead of every 30 minutes, so a
+// deactivated user's old cookie stops working quickly. (The policies above already refuse them on every request.)
+builder.Services.Configure<SecurityStampValidatorOptions>(options => options.ValidationInterval = TimeSpan.FromMinutes(1));
 
 // Languages: English (default) and Arabic. All translations live in Resources/SharedResource.ar.resx.
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
@@ -53,6 +71,9 @@ builder.Services.AddOptions<MvcOptions>()
         messages.SetAttemptedValueIsInvalidAccessor((value, field) => localizer["The value '{0}' is not valid for {1}.", value, field].Value);
         messages.SetValueIsInvalidAccessor(value => localizer["The value '{0}' is invalid.", value].Value);
     });
+
+// v1.2: secret public share links (/s/{token}), their rate limit and the owner-side link service.
+builder.Services.AddShareLinks(builder.Configuration);
 
 builder.Services.AddRazorPages()
     .AddRazorPagesOptions(options =>
@@ -101,6 +122,8 @@ app.UseRequestLocalization(options =>
 });
 
 app.UseRouting();
+
+app.UseShareLinkProtections();
 
 app.UseAuthorization();
 

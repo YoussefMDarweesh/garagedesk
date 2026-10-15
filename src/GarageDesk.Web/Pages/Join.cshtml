@@ -1,0 +1,63 @@
+@page "{token}"
+@model JoinModel
+@{
+    ViewData["Title"] = L["Join the team"].Value;
+}
+
+<div class="narrow" style="max-width: 32rem; margin-inline: auto">
+    @if (Model.AlreadySignedIn)
+    {
+        <section class="panel panel-pad">
+            <h1 class="h3 fw-bold">@L["You are already signed in"]</h1>
+            <p class="text-secondary">@L["Log out first, then open the invitation link again."]</p>
+            <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Model.HttpContext.Request.Path" method="post">
+                <button type="submit" class="btn btn-primary">@L["Log out"]</button>
+            </form>
+        </section>
+    }
+    else if (!Model.Valid)
+    {
+        <section class="panel panel-pad" data-invite-invalid>
+            <h1 class="h3 fw-bold">@L["This invitation link does not work"]</h1>
+            <p class="text-secondary mb-0">@L["It may have expired, been used already or been cancelled. Ask the shop owner for a new one."]</p>
+        </section>
+    }
+    else
+    {
+        <section class="panel panel-pad">
+            <p class="eyebrow mb-1">@Model.ShopName</p>
+            <h1 class="h3 fw-bold">@L["Join the team"]</h1>
+            <p class="text-secondary">@L["You are invited as {0}. Choose your email and password to create your login.", Model.RoleLabel]</p>
+
+            <partial name="_FormErrors" />
+
+            <form method="post" novalidate>
+                <div class="mb-3">
+                    <label asp-for="Input.FullName" class="form-label"></label>
+                    <input asp-for="Input.FullName" class="form-control" autocomplete="name" />
+                    <span asp-validation-for="Input.FullName"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Input.Email" class="form-label"></label>
+                    <input asp-for="Input.Email" type="email" class="form-control ltr" autocomplete="username" />
+                    <span asp-validation-for="Input.Email"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Input.Password" class="form-label"></label>
+                    <input asp-for="Input.Password" type="password" class="form-control" autocomplete="new-password" />
+                    <span asp-validation-for="Input.Password"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Input.ConfirmPassword" class="form-label"></label>
+                    <input asp-for="Input.ConfirmPassword" type="password" class="form-control" autocomplete="new-password" />
+                    <span asp-validation-for="Input.ConfirmPassword"></span>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">@L["Create my login"]</button>
+            </form>
+        </section>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

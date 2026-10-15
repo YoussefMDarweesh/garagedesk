@@ -1,0 +1,43 @@
+@page "{id:int}"
+@model GarageDesk.Web.Pages.Parts.EditModel
+@{
+    ViewData["Title"] = L["Edit part"].Value;
+}
+
+<div class="card shadow-sm auth-card">
+    <div class="card-body p-4 p-md-5">
+        <h1 class="h3 fw-bold mb-2">@L["Edit part"]</h1>
+        <p class="text-secondary mb-4">
+            @L["In stock"]: <span class="ltr num fw-bold">@Model.QuantityOnHand.ToString("0.##")</span>
+            &middot; <a asp-page="Stock" asp-route-id="@Model.PartId">@L["Receive or adjust stock"]</a>
+        </p>
+
+        <form method="post" asp-route-id="@Model.PartId" novalidate>
+            <partial name="_PartForm" model="Model" />
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">@L["Save"]</button>
+                <a class="btn btn-outline-secondary" asp-page="Index">@L["Cancel"]</a>
+            </div>
+        </form>
+
+        <hr class="my-4" />
+        @if (Model.IsActive)
+        {
+            <form method="post" asp-page-handler="Archive" asp-route-id="@Model.PartId" asp-route-archive="true"
+                  data-confirm="@L["Archive this part? It can no longer be picked on new lines, and old job cards keep it."]">
+                <button type="submit" class="btn btn-outline-danger btn-sm">@L["Archive part"]</button>
+            </form>
+        }
+        else
+        {
+            <form method="post" asp-page-handler="Archive" asp-route-id="@Model.PartId" asp-route-archive="false">
+                <button type="submit" class="btn btn-outline-secondary btn-sm">@L["Restore part"]</button>
+            </form>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

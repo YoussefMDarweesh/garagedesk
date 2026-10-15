@@ -2759,3 +2759,398 @@ html[lang="ar"] .inv-table th {
     text-decoration: none;
   }
 }
+
+/* ===== v1.2 share links (branch v1-2-share-links): the customer's public pages (/s/{token}) and the owner's link manager ===== */
+
+.share-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 0.8rem clamp(1rem, 4vw, 2.5rem);
+}
+
+.share-bar-title {
+  font-weight: 800;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.share-main {
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: 230mm;
+  margin-inline: auto;
+  padding: 0.5rem clamp(0.75rem, 4vw, 2.5rem) 2.5rem;
+}
+
+.share-footer {
+  padding: 1rem clamp(1rem, 4vw, 2.5rem);
+  color: var(--text-3);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-block-start: var(--s-4);
+}
+
+.share-actions-top {
+  max-width: 210mm;
+  margin-inline: auto;
+  margin-block: 0 var(--s-4);
+}
+
+.share-card {
+  max-width: 34rem;
+  margin-inline: auto;
+  padding: clamp(1.1rem, 4vw, 2rem);
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-2);
+}
+
+.share-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding-block-end: var(--s-4);
+  margin-block-end: var(--s-4);
+  border-block-end: 1px solid var(--line);
+}
+
+.share-logo {
+  width: 3.25rem;
+  height: 3.25rem;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.share-shop {
+  margin: 0;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+.share-shop-sub {
+  margin: 0;
+  color: var(--text-3);
+  font-size: 0.9rem;
+}
+
+.share-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem;
+}
+
+.share-vehicle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 var(--s-5);
+  font-weight: 600;
+}
+
+.share-stepper {
+  margin-block: var(--s-4);
+}
+
+.share-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.4rem 1rem;
+  margin: var(--s-5) 0 0;
+  padding-block-start: var(--s-4);
+  border-block-start: 1px solid var(--line);
+}
+
+.share-facts dt {
+  color: var(--text-3);
+  font-weight: 600;
+}
+
+.share-facts dd {
+  margin: 0;
+  text-align: end;
+  font-weight: 700;
+}
+
+.share-balance {
+  font-size: 1.15rem;
+}
+
+@media (max-width: 600px) {
+  .share-main .invoice {
+    padding: 1.1rem 1rem 1rem;
+  }
+}
+
+.share-link-row {
+  display: grid;
+  gap: 0.5rem;
+  padding-block: 0.75rem;
+  border-block-end: 1px solid var(--line);
+}
+
+.share-link-row:last-child {
+  border-block-end: 0;
+}
+
+.share-link-url {
+  direction: ltr;
+  text-align: start;
+  font-size: 0.82rem;
+}
+
+.share-link-meta {
+  color: var(--text-3);
+  font-size: 0.8rem;
+}
+
+@media print {
+  .share-bar,
+  .share-footer,
+  .share-actions {
+    display: none !important;
+  }
+
+  .share-main {
+    max-width: none;
+    padding: 0;
+  }
+}
+
+/* the "Tell the customer on WhatsApp" button inside a toast (see site.js) */
+.toast-card .toast-action {
+  flex: none;
+  margin-inline-start: auto;
+  padding: 0.3rem 0.75rem;
+  background: var(--accent-strong);
+  color: #fff;
+  border: 0;
+  border-radius: var(--r-pill);
+  font-weight: 700;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.toast-card .toast-action + button {
+  margin-inline-start: 0.4rem;
+}
+
+/* v1-4-stock-profit: the owner's money pages (profit, expenses, cash close, export) */
+.money-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-block-end: 1rem;
+}
+
+.money-tabs a {
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--r-pill);
+  background: var(--surface-3);
+  color: var(--text-2);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.money-tabs a[aria-current="page"] {
+  background: var(--accent-strong);
+  color: var(--on-accent);
+}
+
+.money-note {
+  color: var(--text-2);
+  font-size: 0.85rem;
+}
+
+.figure-negative {
+  color: var(--bad);
+/* ---- growth-onboarding: setup wizard ---- */
+.wizard-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 0 0 var(--s-5);
+  padding: 0;
+  list-style: none;
+}
+
+.wizard-steps li a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text-2);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.wizard-steps li.current a {
+  color: var(--text);
+  font-weight: 800;
+}
+
+.wizard-steps .tl-dot .num {
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 575.98px) {
+  .wizard-step-label {
+    font-size: 0.9rem;
+  }
+}
+
+/* ---- growth-onboarding: "install the app" banner (added by site.js, once per device) ---- */
+.install-banner {
+  position: fixed;
+  z-index: 1050;
+  inset-inline: var(--gutter, 1rem);
+  inset-block-end: var(--gutter, 1rem);
+  max-width: 34rem;
+  margin-inline: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-3);
+}
+
+.install-banner .install-text {
+  flex: 1 1 12rem;
+  font-weight: 600;
+}
+
+@media (max-width: 767.98px) {
+  /* sit above the bottom tab bar of the app shell */
+  body.app .install-banner {
+    inset-block-end: calc(5.25rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media print {
+  .install-banner {
+    display: none !important;
+  }
+}
+
+/* ---- growth-onboarding: public landing page (Pages/Shared/_Landing.cshtml) ---- */
+/* On a 360 px phone the brand, the language switch, the theme toggle and "Create your shop" do not fit in one row:
+   let the header wrap instead of scrolling the whole page sideways. */
+.public-header {
+  flex-wrap: wrap;
+  row-gap: var(--s-2);
+}
+
+.landing-section {
+  margin-block-start: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.landing-note {
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+}
+
+.landing-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #fff;
+  background: #128c4a;
+  border: 1px solid #128c4a;
+}
+
+.landing-whatsapp:hover,
+.landing-whatsapp:focus-visible {
+  color: #fff;
+  background: #0f7a40;
+  border-color: #0f7a40;
+}
+
+.landing-shots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: var(--s-5);
+  align-items: start;
+}
+
+.landing-shot {
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-2);
+  overflow: hidden;
+}
+
+.landing-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.landing-shot figcaption {
+  padding: 0.75rem 1rem;
+  color: var(--text-2);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.landing-shot-phone {
+  max-width: 20rem;
+  margin-inline: auto;
+}
+
+.landing-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: var(--s-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.landing-steps li {
+  padding: var(--s-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+}
+
+.landing-step-number {
+  display: inline-grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-block-end: 0.75rem;
+  border-radius: var(--r-pill);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-weight: 800;
+}
+
+.landing-cta {
+  margin-block: clamp(2.5rem, 6vw, 4.5rem) var(--s-4);
+  padding: clamp(1.5rem, 4vw, 3rem);
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  box-shadow: var(--sh-1);
+}

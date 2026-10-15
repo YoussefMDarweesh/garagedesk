@@ -29,10 +29,9 @@
     </div>
     <div class="page-actions">
         <a class="btn btn-outline-secondary" asp-page="Print" asp-route-id="@e.Id">@L["Print / Save as PDF"]</a>
-        @if (Model.WhatsAppUrl is { } wa)
-        {
-            <a class="btn btn-outline-secondary" href="@wa" target="_blank" rel="noopener" data-estimate-whatsapp><partial name="_Icon" model='"whatsapp"' />@L["Send on WhatsApp"]</a>
-        }
+        <form method="post" asp-page-handler="Share" asp-route-id="@e.Id" target="_blank" class="d-inline">
+            <button type="submit" class="btn btn-outline-secondary" data-estimate-whatsapp><partial name="_Icon" model='"whatsapp"' />@L["Send on WhatsApp"]</button>
+        </form>
         @if (e.JobCardId is int jobId)
         {
             <a class="btn btn-primary" asp-page="/Jobs/Details" asp-route-id="@jobId" data-estimate-job>@L["Open job card"]</a>
@@ -98,16 +97,36 @@
                 <form method="post" asp-page-handler="AddLine" asp-route-id="@e.Id" novalidate class="add-line">
                     <h3 class="form-section-title">@L["Add a line"]</h3>
                     <div class="row g-2 align-items-start">
+                        @if (Model.Parts.Count > 0)
+                        {
+                            <div class="col-12">
+                                <label asp-for="NewLine.PartId" class="form-label small text-secondary"></label>
+                                <select asp-for="NewLine.PartId" class="form-select" data-part-picker>
+                                    <option value="">@L["Not from the catalog (free text)"]</option>
+                                    @foreach (var part in Model.Parts)
+                                    {
+                                        <option value="@part.Id" data-name="@part.Name" data-price="@part.SellPrice.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)">@part.Name (@part.Quantity.ToString("0.##") @part.Unit)</option>
+                                    }
+                                </select>
+                                <div class="form-text">@L["Quoting a catalog part does not touch stock. It is taken from stock when the estimate becomes a job card."]</div>
+                            </div>
+                        }
                         <div class="col-sm-3 col-md-2">
                             <label asp-for="NewLine.Type" class="form-label small text-secondary"></label>
-                            <select asp-for="NewLine.Type" class="form-select">
+                            <select asp-for="NewLine.Type" class="form-select" data-part-type>
                                 <option value="@JobLineType.Part">@L["Part"]</option>
                                 <option value="@JobLineType.Labor">@L["Labor"]</option>
                             </select>
                         </div>
                         <div class="col-sm-9 col-md-4">
                             <label asp-for="NewLine.Description" class="form-label small text-secondary"></label>
-                            <input asp-for="NewLine.Description" class="form-control" autocomplete="off" />
+                            <input asp-for="NewLine.Description" class="form-control" autocomplete="off" list="parts-list" data-part-description />
+                            <datalist id="parts-list">
+                                @foreach (var part in Model.Parts)
+                                {
+                                    <option value="@part.Name"></option>
+                                }
+                            </datalist>
                             <span asp-validation-for="NewLine.Description"></span>
                         </div>
                         <div class="col-6 col-md-2">
@@ -117,7 +136,7 @@
                         </div>
                         <div class="col-6 col-md-2">
                             <label asp-for="NewLine.UnitPrice" class="form-label small text-secondary"></label>
-                            <input asp-for="NewLine.UnitPrice" class="form-control" inputmode="decimal" />
+                            <input asp-for="NewLine.UnitPrice" class="form-control" inputmode="decimal" data-part-price />
                             <span asp-validation-for="NewLine.UnitPrice"></span>
                         </div>
                         <div class="col-md-2 d-grid align-self-end">
@@ -183,6 +202,15 @@
             {
                 <p class="small text-secondary mt-3 mb-0" dir="auto">@e.Notes</p>
             }
+        </section>
+
+        <section class="panel panel-pad mb-3" aria-labelledby="est-share-heading" data-share-panel>
+            <div class="panel-head"><h2 id="est-share-heading" class="panel-title">@L["Share with the customer"]</h2></div>
+            <p class="text-secondary small">@L["Send a private link on WhatsApp. The customer opens it without logging in and sees only this estimate."]</p>
+            <form method="post" asp-page-handler="CreateLink" asp-route-id="@e.Id" class="mb-3">
+                <button type="submit" class="btn btn-outline-secondary btn-sm w-100" data-create-link="estimate">@L["Get estimate link"]</button>
+            </form>
+            <partial name="_ShareLinks" model="Model.Links" />
         </section>
     </div>
 </div>

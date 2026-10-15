@@ -1,0 +1,144 @@
+@page
+@model GarageDesk.Web.Pages.Money.CashCloseModel
+@using GarageDesk.Web.Services
+@{
+    ViewData["Title"] = L["Cash close"].Value;
+    var figures = Model.Figures;
+    string DifferenceText(decimal d) => d == 0 ? L["The drawer is exact."].Value : d > 0 ? L["The drawer has more than expected."].Value : L["The drawer is short."].Value;
+}
+
+<div class="page-head">
+    <div>
+        <p class="eyebrow mb-1">@L["Owner only"]</p>
+        <h1>@L["Cash close"]</h1>
+        <p class="page-sub"><span class="ltr num" data-day>@Model.Day.ToString("yyyy-MM-dd")</span></p>
+    </div>
+    <div class="page-actions">
+        <form method="get" class="d-flex gap-2 align-items-center">
+            <label class="visually-hidden" for="close-date">@L["Date"]</label>
+            <input id="close-date" type="date" name="date" value="@Model.Day.ToString("yyyy-MM-dd")" max="@ShopClock.Today().ToString("yyyy-MM-dd")" class="form-control" />
+            <button type="submit" class="btn btn-outline-secondary">@L["Show"]</button>
+        </form>
+    </div>
+</div>
+
+<partial name="_MoneyTabs" model='"cashclose"' />
+
+@if (!string.IsNullOrEmpty(Model.StatusMessage))
+{
+    <div class="toast-source" data-toast="success" role="status">@Model.StatusMessage</div>
+}
+
+<div class="row g-3 g-lg-4">
+    <div class="col-lg-6">
+        <section class="panel panel-pad mb-3 mb-lg-4" aria-labelledby="day-heading">
+            <div class="panel-head"><h2 id="day-heading" class="panel-title">@L["The day's figures"]</h2></div>
+            <dl class="row mb-0 g-1" data-figures>
+                <dt class="col-6 text-secondary fw-normal">@L["Cash received"]</dt>
+                <dd class="col-6 text-end mb-1" data-cash><partial name="_Money" model="figures.Received.Cash" /></dd>
+                <dt class="col-6 text-secondary fw-normal">@L["Card received"]</dt>
+                <dd class="col-6 text-end mb-1" data-card><partial name="_Money" model="figures.Received.Card" /></dd>
+                <dt class="col-6 text-secondary fw-normal">@L["Bank transfer received"]</dt>
+                <dd class="col-6 text-end mb-1" data-transfer><partial name="_Money" model="figures.Received.Transfer" /></dd>
+                <dt class="col-6 text-secondary fw-normal">@L["Wallet received"]</dt>
+                <dd class="col-6 text-end mb-1" data-wallet><partial name="_Money" model="figures.Received.Wallet" /></dd>
+                <dt class="col-6 border-top pt-2">@L["Total received"]</dt>
+                <dd class="col-6 text-end border-top pt-2 fw-bold" data-received-total><partial name="_Money" model="figures.Received.Total" /></dd>
+                <dt class="col-6 text-secondary fw-normal">@L["Expenses paid"]</dt>
+                <dd class="col-6 text-end mb-1" data-expenses><partial name="_Money" model="figures.ExpensesTotal" /></dd>
+                <dt class="col-6 text-secondary fw-normal">@L["of which from the drawer"]</dt>
+                <dd class="col-6 text-end mb-1" data-cash-expenses><partial name="_Money" model="figures.CashExpenses" /></dd>
+            </dl>
+            <p class="money-note mt-3 mb-0">@L["Expected cash in the drawer = cash already there at the start + cash received - expenses paid from the drawer. Card, transfer and wallet payments are not in the drawer."]</p>
+        </section>
+    </div>
+
+    <div class="col-lg-6">
+        <section class="panel panel-pad mb-3 mb-lg-4" aria-labelledby="count-heading">
+            <div class="panel-head"><h2 id="count-heading" class="panel-title">@L["Count the drawer"]</h2></div>
+            <form method="post" asp-page-handler="Close" asp-route-date="@Model.Day.ToString("yyyy-MM-dd")" novalidate
+                  data-confirm="@L["Save this close? It cannot be changed afterwards. A correction is a new close."]">
+                <div class="mb-2">
+                    <label asp-for="Input.OpeningCash" class="form-label small text-secondary"></label>
+                    <input asp-for="Input.OpeningCash" type="number" step="0.01" min="0" class="form-control" inputmode="decimal" />
+                    <span asp-validation-for="Input.OpeningCash"></span>
+                </div>
+                <p class="mb-3 small">@L["Expected cash in the drawer"]: <span class="fw-bold" data-expected><partial name="_Money" model="Model.Expected" /></span></p>
+                <div class="mb-2">
+                    <label asp-for="Input.CountedCash" class="form-label small text-secondary"></label>
+                    <input asp-for="Input.CountedCash" type="number" step="0.01" min="0" class="form-control" inputmode="decimal" />
+                    <span asp-validation-for="Input.CountedCash"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Input.Note" class="form-label small text-secondary"></label>
+                    <input asp-for="Input.Note" class="form-control" autocomplete="off" />
+                </div>
+                <button type="submit" class="btn btn-primary w-100">@L["Save the close"]</button>
+            </form>
+        </section>
+    </div>
+</div>
+
+<section class="panel panel-pad mb-4" aria-labelledby="closes-heading">
+    <div class="panel-head"><h2 id="closes-heading" class="panel-title">@L["Closes for this day"]</h2></div>
+    @if (Model.Closes.Count == 0)
+    {
+        <p class="text-secondary mb-0">@L["This day has not been closed yet."]</p>
+    }
+    else
+    {
+        <div class="data-table-wrap">
+            <table class="data-table" data-closes>
+                <thead>
+                    <tr>
+                        <th scope="col">@L["Saved"]</th>
+                        <th scope="col" class="cell-end">@L["Expected"]</th>
+                        <th scope="col" class="cell-end">@L["Counted"]</th>
+                        <th scope="col" class="cell-end">@L["Difference"]</th>
+                        <th scope="col">@L["By"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var close in Model.Closes)
+                {
+                    <tr data-close="@close.Id">
+                        <td>
+                            <span class="ltr num">@ShopClock.ToShopTime(close.ClosedAtUtc).ToString("yyyy-MM-dd HH:mm")</span>
+                            @if (close.Id == Model.Closes[0].Id) { <span class="chip chip-ok">@L["Current"]</span> }
+                            @if (Model.ChangedSinceClose(close)) { <span class="chip chip-warn" data-changed>@L["Payments or expenses changed since"]</span> }
+                            @if (!string.IsNullOrWhiteSpace(close.Note)) { <div class="small text-secondary">@close.Note</div> }
+                        </td>
+                        <td class="cell-end"><partial name="_Money" model="close.ExpectedCash" /></td>
+                        <td class="cell-end"><partial name="_Money" model="close.CountedCash" /></td>
+                        <td class="cell-end fw-bold @(close.Difference < 0 ? "figure-negative" : "")" data-difference>
+                            <partial name="_Money" model="close.Difference" />
+                            <div class="small fw-normal">@DifferenceText(close.Difference)</div>
+                        </td>
+                        <td>@close.ClosedByName</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+@if (Model.Recent.Count > 0)
+{
+    <section class="panel panel-pad" aria-labelledby="recent-heading">
+        <div class="panel-head"><h2 id="recent-heading" class="panel-title">@L["Recent closes"]</h2></div>
+        <ul class="list-unstyled mb-0 small" data-recent>
+            @foreach (var close in Model.Recent)
+            {
+                <li class="d-flex justify-content-between py-1 border-bottom">
+                    <a asp-page="CashClose" asp-route-date="@close.Date.ToString("yyyy-MM-dd")" class="ltr num">@close.Date.ToString("yyyy-MM-dd")</a>
+                    <span class="@(close.Difference < 0 ? "figure-negative" : "")"><partial name="_Money" model="close.Difference" /></span>
+                </li>
+            }
+        </ul>
+    </section>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

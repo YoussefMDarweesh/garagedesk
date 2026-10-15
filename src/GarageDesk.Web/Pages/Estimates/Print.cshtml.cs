@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using GarageDesk.Web.Data;
 using GarageDesk.Web.Models;
 using GarageDesk.Web.Services;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace GarageDesk.Web.Pages.Estimates;
 
 /// <summary>The printable A4 estimate. Same paper as the invoice, without the payment block.</summary>
+[Authorize(Policy = Policies.Staff)]
 public class PrintModel(ApplicationDbContext db) : PageModel
 {
     public Estimate Estimate { get; private set; } = null!;

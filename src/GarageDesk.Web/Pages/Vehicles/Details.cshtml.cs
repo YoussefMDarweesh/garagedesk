@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using GarageDesk.Web.Data;
 using GarageDesk.Web.Models;
 using GarageDesk.Web.Services;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GarageDesk.Web.Pages.Vehicles;
 
+[Authorize(Policy = Policies.Staff)]
 public class DetailsModel(ApplicationDbContext db) : PageModel
 {
     /// <summary>The service interval the status tiles measure against, in kilometres (the oil-change suggestion).</summary>

@@ -10,11 +10,19 @@
     ViewData["Title"] = $"{L["Invoice"]} {job.InvoiceLabel ?? "#" + job.Id}";
 }
 
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="toast-source" data-toast="danger" role="alert">@Model.ErrorMessage</div>
+}
+
 @* On screen: a toolbar and the invoice as a sheet of A4 paper. On paper: only the invoice (see the print rules in site.css). *@
 <div class="invoice-toolbar">
     <a class="btn btn-outline-secondary" asp-page="Details" asp-route-id="@job.Id"><partial name="_Icon" model='"chevron-left"' />@L["Back to job card"]</a>
     <div class="d-flex align-items-center gap-3 flex-wrap">
         <span class="text-secondary small">@L["Choose Save as PDF as the printer to get a PDF."]</span>
+        <form method="post" asp-page-handler="Share" asp-route-id="@job.Id" target="_blank" class="d-inline">
+            <button type="submit" class="btn btn-outline-secondary" data-invoice-whatsapp><partial name="_Icon" model='"whatsapp"' />@L["Send on WhatsApp"]</button>
+        </form>
         <button type="button" class="btn btn-primary" data-print><partial name="_Icon" model='"file-text"' />@L["Print / Save as PDF"]</button>
     </div>
 </div>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Offline · GarageDesk</title>
+  <style>
+    :root { --bg: #f4f6fb; --card: #ffffff; --text: #0b1324; --muted: #55607a; --accent: #c2410c; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #060b18; --card: #131d36; --text: #f1f5ff; --muted: #a6b0c8; --accent: #fb923c; }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 1rem;
+      background: var(--bg); color: var(--text);
+      font: 16px/1.5 system-ui, "Segoe UI", "IBM Plex Sans Arabic", Tahoma, sans-serif;
+    }
+    main { width: 100%; max-width: 30rem; background: var(--card); border-radius: 24px; padding: 2rem 1.5rem; text-align: center; box-shadow: 0 20px 50px -25px rgba(0, 0, 0, 0.35); }
+    .mark { width: 4rem; height: 4rem; border-radius: 18px; margin: 0 auto 1rem; display: block; }
+    h1 { font-size: 1.35rem; margin: 0 0 0.35rem; }
+    p { margin: 0 0 1rem; color: var(--muted); }
+    .ar { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid rgba(127, 127, 127, 0.25); }
+    a.retry {
+      display: inline-block; margin-top: 0.5rem; padding: 0.65rem 1.4rem; border-radius: 999px;
+      background: var(--accent); color: #fff; font-weight: 700; text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <img class="mark" src="/icons/icon-192.png" alt="" width="64" height="64" />
+    <section lang="en" dir="ltr">
+      <h1>You are offline</h1>
+      <p>GarageDesk needs an internet connection to show your shop's data. Nothing is lost: check your connection and try again.</p>
+    </section>
+    <section class="ar" lang="ar" dir="rtl">
+      <h1>أنت غير متصل بالإنترنت</h1>
+      <p>يحتاج GarageDesk إلى اتصال بالإنترنت لعرض بيانات ورشتك. لم يضِع شيء: تحقق من اتصالك وحاول مرة أخرى.</p>
+    </section>
+    <a class="retry" href="/">Try again · حاول مرة أخرى</a>
+  </main>
+</body>
+</html>

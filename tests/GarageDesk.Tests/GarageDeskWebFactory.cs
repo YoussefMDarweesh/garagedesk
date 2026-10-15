@@ -25,6 +25,10 @@ public class GarageDeskWebFactory : WebApplicationFactory<Program>
         // Program.cs insists on a connection string; this dummy is never used to connect.
         builder.UseSetting("ConnectionStrings:Default", "Host=unused;Database=unused");
 
+        // Every test request comes from the same (unknown) address, so the invitation page's rate limit is set high
+        // here; the test that checks the limit uses its own factory with a low one.
+        builder.UseSetting("Invites:PermitPerMinute", "100000");
+
         builder.ConfigureServices(services =>
         {
             // Remove everything AddDbContext<ApplicationDbContext>(UseNpgsql) registered

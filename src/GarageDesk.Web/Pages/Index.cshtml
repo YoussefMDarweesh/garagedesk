@@ -3,63 +3,22 @@
 @using GarageDesk.Web.Services
 @model IndexModel
 @{
-    ViewData["Title"] = Model.ShopName ?? L["Home"].Value;
     var signedIn = User.Identity?.IsAuthenticated == true;
+    ViewData["Title"] = Model.ShopName ?? (signedIn ? L["Home"].Value : L["Workshop manager for small car service shops"].Value);
+    if (!signedIn)
+    {
+        ViewData["Description"] = L["Job cards, invoices, reminders and WhatsApp links for small car service shops. Arabic and English, on your phone."].Value;
+    }
 }
 
 @if (!signedIn)
 {
-    @* ------------------------------------------------ visitors: the landing page ------------------------------------------------ *@
-    <section class="landing-hero">
-        <div>
-            <p class="eyebrow">@L["For small car service shops"]</p>
-            <h1 class="mb-3">@L["One place for every job, car and customer."]</h1>
-            <p class="lead mb-4">
-                @L["Replace paper job cards, WhatsApp scrolling and Excel sheets with a simple workshop manager. Know what was done, what it cost, and when each car is due back."]
-            </p>
-            <div class="d-flex flex-wrap gap-2">
-                <a class="btn btn-primary btn-lg" asp-area="Identity" asp-page="/Account/Register">@L["Create your shop"]</a>
-                <a class="btn btn-lg" style="color:#fff;border:1px solid rgba(255,255,255,.3)" asp-area="Identity" asp-page="/Account/Login">@L["Log in"]</a>
-            </div>
-        </div>
-        <div class="landing-car"><partial name="_CarSilhouette" /></div>
-    </section>
-
-    <section class="mt-5">
-        <h2 class="h4 fw-bold text-center mb-4">@L["What GarageDesk does"]</h2>
-        <div class="row g-4">
-            @{
-                var features = new (string Icon, string Title, string Text, bool Live)[]
-                {
-                    ("shield", L["Shop accounts"].Value, L["Every shop is its own private space. One shop never sees another shop's data."].Value, true),
-                    ("users", L["Customers & vehicles"].Value, L["Find any customer or car in seconds by name, phone or plate number."].Value, true),
-                    ("clipboard", L["Job cards"].Value, L["Parts and labor lines with totals worked out for you, from booked to paid."].Value, true),
-                    ("clock", L["Service history"].Value, L["Every visit for a car, newest first, with mileage and what was done."].Value, true),
-                    ("bell", L["Reminders"].Value, L["See who is due or overdue and message them on WhatsApp in one tap."].Value, true),
-                    ("file-text", L["Invoices"].Value, L["Clean A4 invoices in EGP, ready to print or save as PDF."].Value, false),
-                };
-            }
-            @foreach (var feature in features)
-            {
-                <div class="col-md-6 col-lg-4">
-                    <div class="feature-tile">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <span class="icon-tile"><partial name="_Icon" model="feature.Icon" /></span>
-                            <span class="chip @(feature.Live ? "chip-ok" : "")">@(feature.Live ? L["Available"] : L["Coming soon"])</span>
-                        </div>
-                        <h3 class="h6 fw-bold">@feature.Title</h3>
-                        <p class="text-secondary mb-0">@feature.Text</p>
-                    </div>
-                </div>
-            }
-        </div>
-    </section>
+    @* Visitors get the public landing page: the same for everyone, nothing about any shop (see _Landing.cshtml). *@
+    <partial name="_Landing" />
 }
 else
 {
     @* ------------------------------------------------ the dashboard ------------------------------------------------ *@
-    var firstSteps = Model.CustomerCount == 0 || Model.VehicleCount == 0 || Model.JobCount == 0;
-
     <div class="page-head">
         <div>
             <p class="eyebrow mb-1">@L["Your shop"]</p>
@@ -73,41 +32,15 @@ else
         </div>
     </div>
 
-    @if (firstSteps)
+    @* Derived from the shop's real data on every request (see SetupProgress), so it survives a refresh. *@
+    @if (!Model.Setup.CoreDone)
     {
-        <section class="panel panel-pad mb-4" aria-labelledby="getting-started">
-            <div class="panel-head">
-                <h2 id="getting-started" class="panel-title">@L["Getting started"]</h2>
-                <span class="chip chip-accent">@L["3 quick steps"]</span>
-            </div>
-            <ol class="list-unstyled d-grid gap-3 mb-0">
-                @{
-                    var steps = new (bool Done, string Text, string Page)[]
-                    {
-                        (Model.CustomerCount > 0, L["Add your first customer"].Value, "/Customers/Create"),
-                        (Model.VehicleCount > 0, L["Add their vehicle"].Value, "/Vehicles/Create"),
-                        (Model.JobCount > 0, L["Open your first job card"].Value, "/Jobs/Create"),
-                    };
-                }
-                @foreach (var step in steps)
-                {
-                    <li class="d-flex align-items-center gap-3">
-                        <span class="tl-dot @(step.Done ? "ok" : "")"><partial name="_Icon" model='step.Done ? "check" : "plus"' /></span>
-                        @if (step.Done)
-                        {
-                            <span class="text-secondary text-decoration-line-through">@step.Text</span>
-                        }
-                        else
-                        {
-                            <a class="fw-bold" asp-page="@step.Page">@step.Text</a>
-                        }
-                    </li>
-                }
-            </ol>
-        </section>
+        <partial name="_SetupChecklist" model="new SetupChecklistModel(Model.Setup, Model.CanSeeReports)" />
     }
 
     <div class="row g-3 g-lg-4 mb-4">
+        @if (Model.CanSeeReports)
+        {
         <div class="col-6 col-xl">
             <a class="stat-card" asp-page="/Jobs/Index" asp-route-status="Paid">
                 <div class="stat-top"><span class="stat-label">@L["Revenue this month"]</span><span class="icon-tile"><partial name="_Icon" model='"coins"' /></span></div>
@@ -125,6 +58,14 @@ else
                 </p>
             </a>
         </div>
+        <div class="col-6 col-xl">
+            <a class="stat-card" asp-page="/Money/Profit" data-profit-card title="@L["Payments received this month, minus expenses paid this month."]">
+                <div class="stat-top"><span class="stat-label">@L["Profit this month"]</span><span class="icon-tile"><partial name="_Icon" model='"trending-up"' /></span></div>
+                <p class="stat-value @(Model.ProfitThisMonth < 0 ? "figure-negative" : "")" data-profit><span class="ltr">@MoneyFormat.Amount(Model.ProfitThisMonth)</span> <small class="fs-6 text-secondary">@L["EGP"]</small></p>
+                <p class="stat-sub">@L["Cash basis: received minus expenses"]</p>
+            </a>
+        </div>
+        }
         <div class="col-6 col-xl">
             <a class="stat-card" asp-page="/Jobs/Index">
                 <div class="stat-top"><span class="stat-label">@L["Open job cards"]</span><span class="icon-tile"><partial name="_Icon" model='"clipboard"' /></span></div>
@@ -146,6 +87,29 @@ else
                 <p class="stat-sub">@L["Across {0} customers", Model.CustomerCount]</p>
             </a>
         </div>
+        @if (Model.Stock.PartCount > 0)
+        {
+        <div class="col-6 col-xl">
+            <a class="stat-card" asp-page="/Parts/Index" asp-route-show="@(Model.Stock.LowCount > 0 ? "low" : null)" data-stock-card>
+                <div class="stat-top"><span class="stat-label">@L["Running low"]</span><span class="icon-tile"><partial name="_Icon" model='"package"' /></span></div>
+                <p class="stat-value" data-low-count>@Model.Stock.LowCount</p>
+                <p class="stat-sub">
+                    @if (Model.Stock.StockValue is decimal stockValue)
+                    {
+                        <span data-stock-value>@L["Stock value (at cost)"]: <span class="ltr num">@MoneyFormat.Amount(stockValue)</span> @L["EGP"]</span>
+                    }
+                    else if (Model.Stock.LowNames.Count > 0)
+                    {
+                        @string.Join(", ", Model.Stock.LowNames)
+                    }
+                    else
+                    {
+                        @L["Parts at or below their alert level"]
+                    }
+                </p>
+            </a>
+        </div>
+        }
         <div class="col-12 col-xl">
             <a class="stat-card" asp-page="/Receivables/Index">
                 <div class="stat-top"><span class="stat-label">@L["Outstanding"]</span><span class="icon-tile"><partial name="_Icon" model='"alert"' /></span></div>
@@ -156,6 +120,8 @@ else
     </div>
 
     <div class="row g-3 g-lg-4 mb-4">
+        @if (Model.CanSeeReports)
+        {
         <div class="col-xl-8">
             <section class="panel panel-pad h-100" aria-labelledby="activity-heading">
                 <div class="panel-head">
@@ -211,8 +177,9 @@ else
                 }
             </section>
         </div>
+        }
 
-        <div class="col-xl-4">
+        <div class="@(Model.CanSeeReports ? "col-xl-4" : "col-xl-12")">
             <section class="panel h-100" aria-labelledby="due-heading">
                 <div class="panel-pad pb-0">
                     <div class="panel-head mb-2">

@@ -1,0 +1,54 @@
+@using System.Globalization
+@using GarageDesk.Web.Services
+@* The frame of the customer's public pages (/s/{token}). No app chrome, no menu, no links into the app, and nothing
+   that needs a login. It does not read the user, the shop claim or the database. *@
+@{
+    var lang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    if (!Cultures.Supported.Contains(lang)) { lang = Cultures.Default; }
+    var isRtl = Cultures.IsRightToLeft(lang);
+    var bootstrapCss = Url.Content("~/lib/bootstrap/dist/css/" + (isRtl ? "bootstrap.rtl.min.css" : "bootstrap.min.css"));
+    var currentUrl = $"{Context.Request.PathBase}{Context.Request.Path}";
+    // Only a known preset name is ever written into the page.
+    var accent = ViewData["Accent"] as string;
+    var accentAttribute = Accents.IsPreset(accent) && accent != Accents.Default ? $" data-accent=\"{accent}\"" : "";
+}
+<!DOCTYPE html>
+<html lang="@lang" dir="@(isRtl ? "rtl" : "ltr")"@Html.Raw(accentAttribute)>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="color-scheme" content="light dark" />
+    <title>@ViewData["Title"]</title>
+    <script>
+        (function () {
+            try {
+                var theme = localStorage.getItem("gd-theme");
+                if (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches) { theme = "dark"; }
+                if (theme) { document.documentElement.setAttribute("data-bs-theme", theme); }
+            } catch (e) { }
+        })();
+    </script>
+    <link rel="stylesheet" href="@bootstrapCss" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="public share">
+    <header class="share-bar">
+        <span class="share-bar-title">@ViewData["ShopName"]</span>
+        <span class="flex-fill"></span>
+        <partial name="_LanguageSwitch" model="currentUrl" />
+        <partial name="_ThemeToggle" />
+    </header>
+
+    <main id="main" class="share-main">
+        @RenderBody()
+    </main>
+
+    <footer class="share-footer">
+        <span>@L["Prices in EGP"]</span>
+    </footer>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</body>
+</html>

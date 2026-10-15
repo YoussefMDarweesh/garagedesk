@@ -1,0 +1,42 @@
+@* The link manager: the live share links of one job card or estimate, each with copy, views and revoke.
+   The page that includes it must have the RevokeLink handler. *@
+@model GarageDesk.Web.Services.ShareLinksPanel
+@using GarageDesk.Web.Models
+@using GarageDesk.Web.Services
+@if (Model.Rows.Count == 0)
+{
+    <p class="text-secondary small mb-0" data-share-empty>@L["No share links yet."]</p>
+}
+else
+{
+    <div data-share-links>
+    @foreach (var row in Model.Rows)
+    {
+        <div class="share-link-row" data-share-link>
+            <div class="d-flex justify-content-between align-items-center gap-2">
+                <span class="chip chip-info">@(row.Kind switch { ShareLinkKind.Invoice => L["Invoice link"], ShareLinkKind.Estimate => L["Estimate link"], _ => L["Status link"] })</span>
+                <form method="post" asp-page-handler="RevokeLink" asp-route-id="@Model.TargetId" asp-route-linkId="@row.Id"
+                      data-confirm="@L["Revoke this link? The customer will no longer be able to open it."]">
+                    <button type="submit" class="btn btn-outline-secondary btn-sm" data-revoke>@L["Revoke"]</button>
+                </form>
+            </div>
+            @if (row.Url is not null)
+            {
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control share-link-url" value="@row.Url" readonly onfocus="this.select()" aria-label="@L["Link"]" />
+                    <button type="button" class="btn btn-outline-secondary" data-copy="@row.Url" data-copied="@L["Link copied."]">@L["Copy"]</button>
+                </div>
+            }
+            else
+            {
+                <p class="small text-secondary mb-0">@L["This link cannot be shown again. Revoke it and send a new one."]</p>
+            }
+            <p class="share-link-meta mb-0">
+                @L["Views"]: <span class="ltr num" data-view-count>@row.ViewCount</span>
+                &middot; @L["Last viewed"]: <span class="ltr num">@(row.LastViewedAtUtc is { } seen ? ShopClock.ToLocalDate(seen).ToString("yyyy-MM-dd") : "-")</span>
+                &middot; @L["Expires"]: <span class="ltr num">@ShopClock.ToLocalDate(row.ExpiresAtUtc).ToString("yyyy-MM-dd")</span>
+            </p>
+        </div>
+    }
+    </div>
+}

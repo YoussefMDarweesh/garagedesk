@@ -48,6 +48,23 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
 
     public DbSet<NumberSequence> NumberSequences => Set<NumberSequence>();
 
+    public DbSet<ShareLink> ShareLinks => Set<ShareLink>();
+
+    public DbSet<StaffInvite> StaffInvites => Set<StaffInvite>();
+
+    public DbSet<JobAuditEntry> JobAuditEntries => Set<JobAuditEntry>();
+
+    // v1.4: stock and profit
+    public DbSet<Part> Parts => Set<Part>();
+
+    public DbSet<StockMovement> StockMovements => Set<StockMovement>();
+
+    public DbSet<ExpenseCategory> ExpenseCategories => Set<ExpenseCategory>();
+
+    public DbSet<Expense> Expenses => Set<Expense>();
+
+    public DbSet<CashClose> CashCloses => Set<CashClose>();
+
     // Read by the query filters below. EF evaluates it per context instance, i.e. per request.
     private int? CurrentShopId => _currentShop.ShopId;
 
@@ -60,6 +77,16 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             .WithMany()
             .HasForeignKey(u => u.ShopId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // v1.3: role, active flag, name and commission percent (the migration backfills existing users as active Owners).
+        builder.Entity<AppUser>(user =>
+        {
+            user.Property(u => u.Role).HasConversion<string>().HasMaxLength(20);
+            user.Property(u => u.FullName).HasMaxLength(100);
+            user.Property(u => u.CommissionPercent).HasPrecision(5, 2);
+            user.HasIndex(u => new { u.ShopId, u.Role });
+            user.Ignore(u => u.DisplayLabel);
+        });
 
         // A user can only ever see their own shop row.
         builder.Entity<Shop>(shop =>
@@ -112,6 +139,9 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             // The totals are worked out from the lines, never stored.
             job.HasIndex(j => new { j.ShopId, j.InvoiceNumber }).IsUnique();
             job.HasIndex(j => j.EstimateId);
+            job.Property(j => j.AssignedToUserId).HasMaxLength(450);
+            job.HasIndex(j => new { j.ShopId, j.AssignedToUserId });
+            job.HasOne(j => j.AssignedTo).WithMany().HasForeignKey(j => j.AssignedToUserId).OnDelete(DeleteBehavior.Restrict);
             job.Ignore(j => j.InvoiceLabel);
             job.Ignore(j => j.PartsTotal).Ignore(j => j.LaborTotal).Ignore(j => j.Total).Ignore(j => j.IsLocked)
                 .Ignore(j => j.Subtotal).Ignore(j => j.DiscountValue).Ignore(j => j.VatValue).Ignore(j => j.PaidTotal).Ignore(j => j.Balance).Ignore(j => j.PaymentState);
@@ -178,6 +208,124 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             sequence.HasOne<Shop>().WithMany().HasForeignKey(s => s.ShopId).OnDelete(DeleteBehavior.Restrict);
         });
 
+        builder.Entity<ShareLink>(link =>
+        {
+            link.Property(l => l.Kind).HasConversion<string>().HasMaxLength(20);
+            link.Property(l => l.TokenHash).HasMaxLength(32);
+            link.Property(l => l.TokenProtected).HasMaxLength(500);
+            link.Property(l => l.Language).HasMaxLength(5);
+            link.HasIndex(l => l.TokenHash).IsUnique();
+            link.HasIndex(l => new { l.ShopId, l.Kind, l.TargetId });
+            link.HasOne<Shop>().WithMany().HasForeignKey(l => l.ShopId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<StaffInvite>(invite =>
+        {
+            invite.Property(i => i.TokenHash).HasMaxLength(64);
+            invite.Property(i => i.Role).HasConversion<string>().HasMaxLength(20);
+            invite.Property(i => i.FullName).HasMaxLength(100);
+            invite.Property(i => i.Phone).HasMaxLength(30);
+            invite.Property(i => i.CreatedByUserId).HasMaxLength(450);
+            invite.Property(i => i.UsedByUserId).HasMaxLength(450);
+            invite.HasIndex(i => i.TokenHash).IsUnique();
+            invite.HasIndex(i => new { i.ShopId, i.UsedAtUtc, i.RevokedAtUtc });
+            invite.HasOne<Shop>().WithMany().HasForeignKey(i => i.ShopId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<JobAuditEntry>(entry =>
+        {
+            entry.Property(a => a.Kind).HasConversion<string>().HasMaxLength(20);
+            entry.Property(a => a.Detail).HasMaxLength(200);
+            entry.Property(a => a.UserId).HasMaxLength(450);
+            entry.Property(a => a.UserName).HasMaxLength(100);
+            entry.HasIndex(a => new { a.ShopId, a.JobCardId, a.AtUtc });
+            entry.HasOne(a => a.JobCard).WithMany().HasForeignKey(a => a.JobCardId).OnDelete(DeleteBehavior.Restrict);
+            entry.HasOne<Shop>().WithMany().HasForeignKey(a => a.ShopId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // v1.4: parts catalog, stock movements (append-only), expenses and the daily cash close (immutable).
+        builder.Entity<Part>(part =>
+        {
+            part.Property(p => p.Name).HasMaxLength(100);
+            part.Property(p => p.Sku).HasMaxLength(40);
+            part.Property(p => p.Unit).HasMaxLength(20);
+            part.Property(p => p.Supplier).HasMaxLength(100);
+            part.Property(p => p.CostPrice).HasPrecision(12, 2);
+            part.Property(p => p.SellPrice).HasPrecision(12, 2);
+            part.Property(p => p.QuantityOnHand).HasPrecision(12, 2);
+            part.Property(p => p.LowStockThreshold).HasPrecision(12, 2);
+            part.HasIndex(p => new { p.ShopId, p.Name });
+            part.HasIndex(p => new { p.ShopId, p.Sku });
+            part.HasOne<Shop>().WithMany().HasForeignKey(p => p.ShopId).OnDelete(DeleteBehavior.Restrict);
+            part.Ignore(p => p.IsLow);
+        });
+
+        builder.Entity<StockMovement>(movement =>
+        {
+            movement.Property(m => m.Kind).HasConversion<string>().HasMaxLength(20);
+            movement.Property(m => m.QuantityChange).HasPrecision(12, 2);
+            movement.Property(m => m.QuantityAfter).HasPrecision(12, 2);
+            movement.Property(m => m.UnitCost).HasPrecision(12, 2);
+            movement.Property(m => m.Note).HasMaxLength(200);
+            movement.Property(m => m.UserId).HasMaxLength(450);
+            movement.Property(m => m.UserName).HasMaxLength(100);
+            movement.HasIndex(m => new { m.ShopId, m.PartId, m.AtUtc });
+            movement.HasOne(m => m.Part).WithMany().HasForeignKey(m => m.PartId).OnDelete(DeleteBehavior.Restrict);
+            movement.HasOne(m => m.JobCard).WithMany().HasForeignKey(m => m.JobCardId).OnDelete(DeleteBehavior.Restrict);
+            movement.HasOne<Shop>().WithMany().HasForeignKey(m => m.ShopId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<JobLine>(line =>
+        {
+            line.Property(l => l.UnitCost).HasPrecision(12, 2);
+            line.Property(l => l.AddedByUserId).HasMaxLength(450);
+            line.HasIndex(l => l.PartId);
+            line.HasOne<Part>().WithMany().HasForeignKey(l => l.PartId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<EstimateLine>(line =>
+        {
+            line.HasIndex(l => l.PartId);
+            line.HasOne<Part>().WithMany().HasForeignKey(l => l.PartId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<ExpenseCategory>(category =>
+        {
+            category.Property(c => c.Name).HasMaxLength(60);
+            category.HasIndex(c => new { c.ShopId, c.Name }).IsUnique();
+            category.HasOne<Shop>().WithMany().HasForeignKey(c => c.ShopId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<Expense>(expense =>
+        {
+            expense.Property(e => e.Amount).HasPrecision(12, 2);
+            expense.Property(e => e.Note).HasMaxLength(200);
+            expense.Property(e => e.CreatedByUserId).HasMaxLength(450);
+            expense.Property(e => e.CreatedByName).HasMaxLength(100);
+            expense.HasIndex(e => new { e.ShopId, e.Date });
+            expense.HasOne(e => e.Category).WithMany().HasForeignKey(e => e.CategoryId).OnDelete(DeleteBehavior.Restrict);
+            expense.HasOne<Shop>().WithMany().HasForeignKey(e => e.ShopId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<CashClose>(close =>
+        {
+            close.Property(c => c.OpeningCash).HasPrecision(12, 2);
+            close.Property(c => c.CashReceived).HasPrecision(12, 2);
+            close.Property(c => c.CardReceived).HasPrecision(12, 2);
+            close.Property(c => c.TransferReceived).HasPrecision(12, 2);
+            close.Property(c => c.WalletReceived).HasPrecision(12, 2);
+            close.Property(c => c.ExpensesTotal).HasPrecision(12, 2);
+            close.Property(c => c.CashExpenses).HasPrecision(12, 2);
+            close.Property(c => c.ExpectedCash).HasPrecision(12, 2);
+            close.Property(c => c.CountedCash).HasPrecision(12, 2);
+            close.Property(c => c.Difference).HasPrecision(12, 2);
+            close.Property(c => c.Note).HasMaxLength(200);
+            close.Property(c => c.ClosedByUserId).HasMaxLength(450);
+            close.Property(c => c.ClosedByName).HasMaxLength(100);
+            close.HasIndex(c => new { c.ShopId, c.Date });
+            close.HasOne<Shop>().WithMany().HasForeignKey(c => c.ShopId).OnDelete(DeleteBehavior.Restrict);
+        });
+
         // THE PATTERN: every entity that implements IShopOwned gets the same filter automatically.
         // Adding a new shop-owned entity later needs no extra filter code, just ": IShopOwned".
         foreach (var entityType in builder.Model.GetEntityTypes()
@@ -207,6 +355,19 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     /// <summary>New shop-owned rows get the current shop's id; writing into another shop is refused.</summary>
     private void EnforceShopOwnership()
     {
+        // The job card history is append-only: it can be added to, never edited or removed.
+        if (ChangeTracker.Entries<JobAuditEntry>().Any(e => e.State is EntityState.Modified or EntityState.Deleted))
+        {
+            throw new InvalidOperationException("The job card history is append-only.");
+        }
+
+        // v1.4: the stock ledger and the cash closes are append-only too.
+        if (ChangeTracker.Entries<StockMovement>().Any(e => e.State is EntityState.Modified or EntityState.Deleted)
+            || ChangeTracker.Entries<CashClose>().Any(e => e.State is EntityState.Modified or EntityState.Deleted))
+        {
+            throw new InvalidOperationException("Stock movements and cash closes are append-only.");
+        }
+
         foreach (var entry in ChangeTracker.Entries<IShopOwned>()
                      .Where(e => e.State is EntityState.Added or EntityState.Modified))
         {

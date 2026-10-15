@@ -34,10 +34,20 @@ All of these come from the seeded demo shop, "Demo Motors" (see [Run it locally]
 - **Service history:** every visit for a car, newest first, with date, mileage, what was done and the total.
 - **Reminders:** by date, by mileage, or both. Overdue and due-soon ones show on the dashboard and in a bell in the top bar, each with a **Send on WhatsApp** button that opens a pre-filled message (no paid API).
 - **Printable invoices:** one clean A4 page per job card, in EGP, in English or Arabic. No PDF library: the browser prints or saves it.
+- **Share links (WhatsApp-first):** send a customer a private link; they open it with no login and see their invoice, estimate or car status. Links are secret, expire, can be revoked and show only the minimum. Threat model: [docs/SECURITY_SHARE_LINKS.md](docs/SECURITY_SHARE_LINKS.md).
+- **Parts and stock (v1.4):** a parts catalog (name, SKU, unit, cost, sell price, low-stock alert, supplier). Picking a part on a job card, an estimate or the technician page takes it from stock; taking the line off puts it back. Every change is an append-only stock movement, so the quantity is always explainable; the running-low list and a dashboard card tell you what to reorder.
+- **Expenses, profit and the daily cash close (v1.4, owner only):** expenses by editable category; monthly profit on a **cash basis** (payments received minus expenses paid) and profit per job (revenue before VAT minus the cost of the catalog parts used); a daily close that works out the cash that should be in the drawer, takes your count and saves the difference as a record that cannot be changed.
+- **CSV export (v1.4, owner only):** payments, expenses and job cards for a date range, as a UTF-8 file with a byte order mark so Excel shows Arabic correctly. Cells that could be read as a formula are defused.
 - **English and Arabic (right to left)** and **light and dark** themes.
 - **Shop logo and accent colour** from a settings page, shown in the navigation and on invoices.
 - **Dashboard** with real numbers only: customers, vehicles, open job cards, revenue this month, a monthly activity chart and the latest service history.
 - **Demo seeder:** one command creates the shop "Demo Motors" with 10 customers, 15 cars and a year of history.
+- **My team (v1.3):** staff accounts with three roles. The *owner* sees everything; the *cashier* handles customers, job cards, payments, invoices and estimates but not settings, staff or reports; the *technician* sees only the job cards assigned to them and never a price, total, payment or customer phone number. Owners invite people with a one-time link, deactivate them, assign job cards, set a commission percent per person, and read a monthly commissions report and each job card's history. See [docs/ROLES.md](docs/ROLES.md).
+- **Money (v1.1):** per-shop invoice and estimate numbers, partial payments with a balance per job card, a "who owes me" page, discounts, optional VAT, and estimates that convert into job cards.
+- **Setup wizard and checklist (growth):** a new owner is guided through logo and colour, the first customer and car, and the first job card. The dashboard checklist is worked out from the shop's real data, so it ticks itself and survives a refresh.
+- **CSV import (growth):** bring customers and cars from Excel or Google Sheets (saved as CSV UTF-8, comma or semicolon). A template in English or Arabic, a preview with per-row errors and duplicate detection, then one all-or-nothing import. Uploading the same file twice adds nothing.
+- **Installable app (growth):** add GarageDesk to a phone's home screen. The service worker caches static files only, never pages. See [docs/PWA.md](docs/PWA.md).
+- **Public landing page (growth):** logged-out visitors see what GarageDesk does, in English or Arabic, with screenshots, sign-in and sign-up links and an optional WhatsApp contact button. It shows nothing about any shop.
 
 ## How it works
 
@@ -67,6 +77,8 @@ Shop-owned entities implement one marker interface (`IShopOwned`). The `DbContex
 ## Key engineering decisions
 - **Tenant isolation is enforced and tested, not assumed.** The global query filter covers reads, a write guard covers saves, and every shop-owned entity has an isolation test: shop B asking for shop A's id gets a 404, and an attempt to write across shops throws.
 - **Money.** `decimal`, never floating point. A line total is `quantity × unit price` rounded to the piastre (half away from zero, like a printed invoice). Job totals are worked out from the lines and never stored, so the job card and the invoice cannot disagree (they share the same code, and a test compares them).
+- **Stock is a ledger, and cost is the owner's.** A part's quantity only changes together with a stock movement (opening, purchase, used on a job card, put back, correction), in the same save, and movements can never be edited or deleted. Two people changing the same quantity at once cannot overwrite each other. The cost of a part is copied onto the job line when it is added, so a later price change never rewrites old profit. Cost, stock value, profit, expenses, cash close and export are owner-only; a cashier sees sell prices and quantities, a technician sees names and quantities and no money at all.
+- **Profit definitions are written down.** Monthly profit (cash basis) = payments received in the month, by the day received, minus expenses paid in the month. Payments include VAT where the shop charges it. Job profit = subtotal minus discount (before VAT) minus the recorded cost of catalog parts; labor has no cost and free-text parts have no known cost (the page says so). Expected cash in the drawer = cash already there at the start + cash payments - expenses paid from the drawer.
 - **Mileage only goes up.** A job card's odometer reading raises the vehicle's current mileage when it is higher. An older or mistyped lower reading never winds it back.
 - **Reminders.** A reminder is overdue once its date has passed or the vehicle's mileage is past the due mileage; due soon within 14 days or 500 km. With both, whichever comes first counts. Marking a job card Done offers the next oil change (6 months and +10,000 km, editable).
 - **Localization with one `.resx` table.** The English text is the key, Arabic is `SharedResource.ar.resx`. A test scans the source for every translatable string and fails if one has no Arabic. RTL comes from CSS logical properties only (a test fails if a physical `left` or `right` sneaks in); phone numbers, VINs and amounts stay left-to-right inside Arabic text.
@@ -128,6 +140,8 @@ dotnet run --project src/GarageDesk.Web -- --seed-demo
 
 This creates "Demo Motors" with 10 customers, 15 cars (three each of Skoda, Volkswagen, Hyundai, Kia and Toyota), about 50 job cards and a mix of overdue and upcoming reminders, then exits. Running it again changes nothing.
 
+It also creates a **cashier** (`cashier@garagedesk.app`) and a **technician** (`technician@garagedesk.app`) in the same shop, and gives the technician a third of the job cards and a 10% commission. Their passwords come from `Demo:CashierPassword` and `Demo:TechnicianPassword` (user-secrets or environment variables); without them a random password is printed once. The addresses can be changed with `Demo:CashierEmail` and `Demo:TechnicianEmail`.
+
 ```bash
 # 4. Start the app
 dotnet run --project src/GarageDesk.Web
@@ -159,11 +173,15 @@ This project is built with AI coding agents under my direction, and I want to be
 
 ## Known limitations
 - **Not hosted.** There is no live demo; run it locally (see above).
-- **Invoice numbers are job card numbers.** An invoice shows the job card's id (for example `#66`), not a per-shop sequence, so a shop's invoice numbers jump. A per-shop sequence is a planned follow-up.
-- **No VAT, no discounts.** Totals are parts plus labor.
+- **Invoice and estimate numbers are per shop (v1.1)** (`INV-0001`, `EST-0001`), given once when a document is issued. They are never reused, so a cancelled document leaves a gap.
+- **Money is simple (v1.1).** One optional VAT percent per shop, one discount per job card (an amount or a percent), payments by cash, card, transfer or wallet. No tax invoices with registration numbers, no refunds flow, and no stock or profit yet.
+- **CSV import is one file shape.** One row per car with its owner; the phone number identifies a customer and the normalized plate identifies a car. Existing customers are never updated by an import (only skipped), there is no Excel (.xlsx) reader (save as CSV UTF-8), and a file is limited to 2,000 rows and 512 KB.
+- **The installable app needs a connection.** The service worker keeps only static files and shows an offline page; it never stores your pages, so nothing works offline. The install prompt depends on the browser (see [docs/PWA.md](docs/PWA.md)).
+- **The landing page's WhatsApp button is off until configured.** Set `Landing:WhatsAppNumber` (environment variable `Landing__WhatsAppNumber`); empty hides the button.
 - **No email or SMS sending.** WhatsApp messages open in WhatsApp; nothing is sent by the server.
 - **English and Arabic only,** and one currency (EGP).
-- **One owner login per shop;** no staff accounts or roles yet.
+- **Team and roles are new (v1.3).** Three fixed roles, no custom permissions; one role per person and one shop per person. Commission uses a person's *current* percent, so changing it also changes past months in the report. Free-text job notes are shown to technicians as typed, so do not put prices in them.
+- **Stock and profit are new (v1.4).** The catalog picker is a select with name suggestions, not a search-as-you-type box, so a very large catalog is clumsy. Taking stock happens when a line is added, not when the job is finished. Receiving stock sets the part's cost to the latest price (no average cost). Expenses have no payment method beyond "paid from the drawer". The cash close does not know about cash you banked or took out of the drawer except through the opening amount you type. Monthly profit is cash basis only: it does not match the job-level profit month by month.
 - **Sessions end when the server restarts** when it runs in a container, because the keys that protect login cookies are not persisted yet.
 - **The demo data is editable.** The demo shop is a normal shop: anything you change stays changed, and there is no "reset demo" command.
 - **Print layout was verified by emulation,** with tests and by applying the print rules to the page at A4 width. I have not checked a printed PDF from every browser.
@@ -183,7 +201,6 @@ Full scope and acceptance criteria: [SPEC.md](SPEC.md)
 
 ### What I'd build next
 - Per-shop invoice numbers (`INV-0001`), then VAT and discounts.
-- Staff accounts with limited roles.
 - A real host for the demo, and a "reset demo" command.
 - Persisting the data-protection keys so logins survive restarts.
 - Sending reminders on a schedule, not only on a tap.

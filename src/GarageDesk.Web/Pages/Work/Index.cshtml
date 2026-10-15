@@ -1,0 +1,67 @@
+@page
+@using GarageDesk.Web.Models
+@model GarageDesk.Web.Pages.Work.IndexModel
+@{
+    ViewData["Title"] = L["My jobs"].Value;
+}
+
+<div class="page-head">
+    <div>
+        <p class="eyebrow mb-1">@L["Assigned to you"]</p>
+        <h1>@L["My jobs"]</h1>
+        <p class="page-sub">@L["{0} job cards", Model.Jobs.Count]</p>
+    </div>
+</div>
+
+<div class="toolbar">
+    <div class="seg" role="group" aria-label="@L["Show"]">
+        <a class="@(Model.ShowAll ? "" : "active")" asp-page="Index">@L["Open"]</a>
+        <a class="@(Model.ShowAll ? "active" : "")" asp-page="Index" asp-route-show="all">@L["All"]</a>
+    </div>
+</div>
+
+@if (Model.Jobs.Count == 0)
+{
+    <section class="panel">
+        <div class="empty">
+            <span class="icon-tile"><partial name="_Icon" model='"clipboard"' /></span>
+            <h2>@L["Nothing assigned to you right now."]</h2>
+            <p>@L["When the shop gives you a job card it shows up here."]</p>
+        </div>
+    </section>
+}
+else
+{
+    <section class="panel">
+        <div class="data-table-wrap">
+            <table class="data-table" data-my-jobs>
+                <thead>
+                    <tr>
+                        <th scope="col">@L["Job"]</th>
+                        <th scope="col">@L["Date in"]</th>
+                        <th scope="col">@L["Vehicle"]</th>
+                        <th scope="col">@L["Owner"]</th>
+                        <th scope="col">@L["Status"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var job in Model.Jobs)
+                {
+                    @* A paid job is shown as Done: whether and when the customer paid is not the technician's business. *@
+                    var shown = job.Status == JobStatus.Paid ? JobStatus.Done : job.Status;
+                    <tr>
+                        <td><a class="identity-name" asp-page="Job" asp-route-id="@job.Id"><span class="ltr num">#@job.Id</span></a></td>
+                        <td><span class="ltr num">@job.DateIn.ToString("yyyy-MM-dd")</span></td>
+                        <td>
+                            <span class="plate" dir="auto">@job.Plate</span>
+                            <span class="text-secondary ms-1">@job.Make @job.Model</span>
+                        </td>
+                        <td>@job.OwnerName</td>
+                        <td><partial name="_StatusBadge" model="shown" /></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </section>
+}

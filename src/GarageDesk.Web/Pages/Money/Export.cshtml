@@ -1,0 +1,41 @@
+@page
+@model GarageDesk.Web.Pages.Money.ExportModel
+@{
+    ViewData["Title"] = L["Export"].Value;
+}
+
+<div class="page-head">
+    <div>
+        <p class="eyebrow mb-1">@L["Owner only"]</p>
+        <h1>@L["Export"]</h1>
+        <p class="page-sub">@L["Download your records as a CSV file that opens in Excel."]</p>
+    </div>
+</div>
+
+<partial name="_MoneyTabs" model='"export"' />
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="toast-source" data-toast="danger" role="alert">@Model.ErrorMessage</div>
+}
+
+<section class="panel panel-pad" aria-labelledby="range-heading">
+    <h2 id="range-heading" class="panel-title">@L["Date range"]</h2>
+    <form method="get" asp-page="Export" class="row g-3 align-items-end" data-export-form>
+        <input type="hidden" name="handler" value="Download" />
+        <div class="col-sm-6 col-md-3">
+            <label for="export-from" class="form-label small text-secondary">@L["From"]</label>
+            <input id="export-from" type="date" name="from" value="@Model.FromText" class="form-control" required />
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <label for="export-to" class="form-label small text-secondary">@L["To"]</label>
+            <input id="export-to" type="date" name="to" value="@Model.ToText" class="form-control" required />
+        </div>
+        <div class="col-12 d-flex flex-wrap gap-2">
+            <button type="submit" name="kind" value="payments" class="btn btn-primary" data-export="payments"><partial name="_Icon" model='"download"' />@L["Payments"]</button>
+            <button type="submit" name="kind" value="expenses" class="btn btn-outline-secondary" data-export="expenses"><partial name="_Icon" model='"download"' />@L["Expenses"]</button>
+            <button type="submit" name="kind" value="jobs" class="btn btn-outline-secondary" data-export="jobs"><partial name="_Icon" model='"download"' />@L["Job cards"]</button>
+        </div>
+    </form>
+    <p class="money-note mt-3 mb-0">@L["Up to 366 days at a time. The file is UTF-8 with Arabic column titles when the app is in Arabic. Text that starts with = + - or @ gets a leading quote so Excel cannot run it as a formula."]</p>
+</section>
