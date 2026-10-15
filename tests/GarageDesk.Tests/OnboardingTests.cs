@@ -237,6 +237,45 @@ public partial class OnboardingTests(GarageDeskWebFactory factory) : IClassFixtu
     }
 
     [Fact]
+    public async Task A_wizard_job_card_has_no_lines_so_it_has_no_stock_or_profit_effect()
+    {
+        // v1.4 stock rules: only catalog part lines move stock. The wizard's job card carries notes and no lines.
+        var (userId, shop) = await TestData.CreateOwnerAsync(factory, "Stock Safe Wizard Garage");
+        var client = factory.CreateClientFor(userId, shop);
+        await PostCarAsync(client, plate: "STK 100");
+        int vehicleId;
+        using (var db = factory.CreateContextFor(shop))
+        {
+            vehicleId = (await db.Vehicles.SingleAsync()).Id;
+            db.Parts.Add(new Part { Name = "Oil filter", CostPrice = 50, SellPrice = 80 });
+            await db.SaveChangesAsync();
+        }
+
+        var response = await PostJobAsync(client, vehicleId, "Service");
+
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        using var check = factory.CreateContextFor(shop);
+        var job = await check.JobCards.Include(j => j.Lines).SingleAsync();
+        Assert.Empty(job.Lines);
+        Assert.Empty(await check.StockMovements.ToListAsync());
+        Assert.Equal(0, job.Total);
+    }
+
+    [Fact]
+    public async Task The_checklist_a_cashier_sees_has_no_owner_money_cards_from_the_v1_4_dashboard()
+    {
+        var (_, shop) = await TestData.CreateOwnerAsync(factory, "Cashier Money Garage");
+        var cashierId = await TestData.CreateStaffAsync(factory, shop, ShopRole.Cashier);
+
+        var home = await TestData.BodyAsync(await factory.CreateClientFor(cashierId, shop).GetAsync("/"));
+
+        Assert.Contains("data-setup-checklist", home);
+        Assert.DoesNotContain("data-profit-card", home);
+        Assert.DoesNotContain("data-setup-item=\"brand\"", home);
+        Assert.DoesNotContain("data-setup-item=\"vat\"", home);
+    }
+
+    [Fact]
     public async Task Step_three_cannot_use_another_shops_vehicle()
     {
         var (userId, shop) = await TestData.CreateOwnerAsync(factory, "Mine Garage");
