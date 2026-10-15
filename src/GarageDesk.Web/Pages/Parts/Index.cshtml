@@ -26,7 +26,7 @@
 }
 
 <div class="row g-3 mb-3">
-    <div class="col-6 col-lg-3">
+    <div class="col-12 col-sm-6 col-lg-3">
         <a class="stat-card" asp-page="Index" asp-route-show="low" data-low-stock-card>
             <div class="stat-top"><span class="stat-label">@L["Running low"]</span><span class="icon-tile"><partial name="_Icon" model='"alert"' /></span></div>
             <p class="stat-value">@Model.LowCount</p>
@@ -35,7 +35,7 @@
     </div>
     @if (Model.IsOwner && Model.StockValue is decimal value)
     {
-        <div class="col-6 col-lg-3">
+        <div class="col-12 col-sm-6 col-lg-3">
             <div class="stat-card" data-stock-value title="@L["Quantity on hand times cost price, over all active parts."]">
                 <div class="stat-top"><span class="stat-label">@L["Stock value (at cost)"]</span><span class="icon-tile"><partial name="_Icon" model='"coins"' /></span></div>
                 <p class="stat-value"><span class="ltr">@MoneyFormat.Amount(value)</span> <small class="fs-6 text-secondary">@L["EGP"]</small></p>
