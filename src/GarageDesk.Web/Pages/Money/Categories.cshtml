@@ -1,0 +1,54 @@
+@page
+@model GarageDesk.Web.Pages.Money.CategoriesModel
+@{
+    ViewData["Title"] = L["Expense categories"].Value;
+}
+
+<nav class="mb-3">
+    <a asp-page="Expenses" class="text-secondary text-decoration-none"><partial name="_Icon" model='"chevron-left"' /> @L["Expenses"]</a>
+</nav>
+
+<div class="page-head">
+    <div>
+        <p class="eyebrow mb-1">@L["Owner only"]</p>
+        <h1>@L["Expense categories"]</h1>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.StatusMessage))
+{
+    <div class="toast-source" data-toast="success" role="status">@Model.StatusMessage</div>
+}
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="toast-source" data-toast="danger" role="alert">@Model.ErrorMessage</div>
+}
+
+<section class="panel panel-pad mb-4">
+    <ul class="list-unstyled mb-0" data-categories>
+        @foreach (var category in Model.Categories)
+        {
+            <li class="d-flex flex-wrap align-items-center gap-2 py-2 border-bottom" data-category="@category.Name">
+                <span class="flex-grow-1 @(category.IsActive ? "" : "text-secondary")">
+                    @Model.CategoryName(category.Name)
+                    @if (!category.IsActive) { <span class="chip">@L["Archived"]</span> }
+                </span>
+                <form method="post" asp-page-handler="Rename" asp-route-id="@category.Id" class="d-flex gap-2">
+                    <input name="name" value="@category.Name" maxlength="60" class="form-control form-control-sm" aria-label="@L["Name"]" />
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">@L["Rename"]</button>
+                </form>
+                <form method="post" asp-page-handler="Active" asp-route-id="@category.Id" asp-route-active="@(!category.IsActive)">
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">@(category.IsActive ? L["Archive"] : L["Restore"])</button>
+                </form>
+            </li>
+        }
+    </ul>
+</section>
+
+<section class="panel panel-pad">
+    <h2 class="panel-title">@L["Add a category"]</h2>
+    <form method="post" asp-page-handler="Add" class="d-flex gap-2">
+        <input name="name" maxlength="60" class="form-control" aria-label="@L["Name"]" autocomplete="off" />
+        <button type="submit" class="btn btn-primary">@L["Add"]</button>
+    </form>
+</section>

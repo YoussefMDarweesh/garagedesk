@@ -665,5 +665,91 @@
   <data name="Parts purchase" xml:space="preserve"><value>شراء قطع</value></data>
   <data name="Utilities" xml:space="preserve"><value>المرافق</value></data>
   <data name="Other" xml:space="preserve"><value>أخرى</value></data>
+  <data name="Category" xml:space="preserve"><value>التصنيف</value></data>
+  <data name="Amount (EGP)" xml:space="preserve"><value>المبلغ (جنيه)</value></data>
+  <data name="Paid in cash from the drawer" xml:space="preserve"><value>مدفوع نقدًا من الدرج</value></data>
+  <data name="Choose a category." xml:space="preserve"><value>اختر تصنيفًا.</value></data>
+  <data name="Expense saved." xml:space="preserve"><value>تم حفظ المصروف.</value></data>
+  <data name="Expense removed." xml:space="preserve"><value>تم حذف المصروف.</value></data>
+  <data name="Expenses" xml:space="preserve"><value>المصروفات</value></data>
+  <data name="Add an expense" xml:space="preserve"><value>إضافة مصروف</value></data>
+  <data name="Cash taken out of the drawer lowers the cash you should have at the end of the day." xml:space="preserve"><value>النقد المأخوذ من الدرج يقلل النقد المتوقع في نهاية اليوم.</value></data>
+  <data name="Add expense" xml:space="preserve"><value>إضافة المصروف</value></data>
+  <data name="Edit categories" xml:space="preserve"><value>تعديل التصنيفات</value></data>
+  <data name="By category" xml:space="preserve"><value>حسب التصنيف</value></data>
+  <data name="No expenses this month." xml:space="preserve"><value>لا توجد مصروفات هذا الشهر.</value></data>
+  <data name="This month" xml:space="preserve"><value>هذا الشهر</value></data>
+  <data name="Not from the drawer" xml:space="preserve"><value>ليس من الدرج</value></data>
+  <data name="Remove this expense?" xml:space="preserve"><value>حذف هذا المصروف؟</value></data>
+  <data name="Enter a name of up to 60 characters." xml:space="preserve"><value>أدخل اسمًا لا يزيد عن 60 حرفًا.</value></data>
+  <data name="You already have a category with this name." xml:space="preserve"><value>لديك تصنيف بهذا الاسم بالفعل.</value></data>
+  <data name="Category added." xml:space="preserve"><value>تمت إضافة التصنيف.</value></data>
+  <data name="Category renamed." xml:space="preserve"><value>تمت إعادة تسمية التصنيف.</value></data>
+  <data name="Category restored." xml:space="preserve"><value>تمت استعادة التصنيف.</value></data>
+  <data name="Category archived." xml:space="preserve"><value>تمت أرشفة التصنيف.</value></data>
+  <data name="Expense categories" xml:space="preserve"><value>تصنيفات المصروفات</value></data>
+  <data name="Rename" xml:space="preserve"><value>إعادة تسمية</value></data>
+  <data name="Archive" xml:space="preserve"><value>أرشفة</value></data>
+  <data name="Restore" xml:space="preserve"><value>استعادة</value></data>
+  <data name="Add a category" xml:space="preserve"><value>إضافة تصنيف</value></data>
+  <data name="Cash close" xml:space="preserve"><value>إقفال الخزينة</value></data>
+  <data name="Export" xml:space="preserve"><value>تصدير</value></data>
+  <data name="Cash basis" xml:space="preserve"><value>على أساس النقد</value></data>
+  <data name="Payments received this month, minus expenses paid this month." xml:space="preserve"><value>المدفوعات المستلمة هذا الشهر ناقص المصروفات المدفوعة هذا الشهر.</value></data>
+  <data name="Payments received this month" xml:space="preserve"><value>المدفوعات المستلمة هذا الشهر</value></data>
+  <data name="Expenses paid this month" xml:space="preserve"><value>المصروفات المدفوعة هذا الشهر</value></data>
+  <data name="Received minus expenses" xml:space="preserve"><value>المستلم ناقص المصروفات</value></data>
+  <data name="How profit is worked out" xml:space="preserve"><value>كيف يُحسب الربح</value></data>
+  <data name="Monthly profit is on a cash basis: the payments received in the month (by the day they were received) minus the expenses paid in the month (by their date). It does not matter when the car came in." xml:space="preserve"><value>ربح الشهر على أساس النقد: المدفوعات المستلمة في الشهر (حسب يوم استلامها) ناقص المصروفات المدفوعة في الشهر (حسب تاريخها). لا يهم متى دخلت السيارة.</value></data>
+  <data name="Payments include VAT where you charge it, because that is the money that came in." xml:space="preserve"><value>تشمل المدفوعات ضريبة القيمة المضافة حيث تحصّلها، لأنها الأموال التي دخلت فعلًا.</value></data>
+  <data name="Profit per job card is its revenue (subtotal minus discount, before VAT) minus the cost of the catalog parts used. Labor has no cost. Parts typed as free text have no known cost." xml:space="preserve"><value>ربح أمر الشغل هو إيراده (الإجمالي الفرعي ناقص الخصم، قبل الضريبة) ناقص تكلفة قطع الكتالوج المستخدمة. المصنعية بلا تكلفة. القطع المكتوبة كنص حر ليست لها تكلفة معروفة.</value></data>
+  <data name="Received by method" xml:space="preserve"><value>المستلم حسب طريقة الدفع</value></data>
+  <data name="Expenses by category" xml:space="preserve"><value>المصروفات حسب التصنيف</value></data>
+  <data name="Profit per paid job card" xml:space="preserve"><value>الربح لكل أمر شغل مدفوع</value></data>
+  <data name="Paid job cards with a visit date in this month." xml:space="preserve"><value>أوامر الشغل المدفوعة التي تاريخ زيارتها في هذا الشهر.</value></data>
+  <data name="No paid job cards in this month." xml:space="preserve"><value>لا توجد أوامر شغل مدفوعة في هذا الشهر.</value></data>
+  <data name="Some part lines are free text, so their cost is not known." xml:space="preserve"><value>بعض بنود القطع نص حر، لذلك تكلفتها غير معروفة.</value></data>
+  <data name="Profit this month" xml:space="preserve"><value>ربح هذا الشهر</value></data>
+  <data name="Cash basis: received minus expenses" xml:space="preserve"><value>على أساس النقد: المستلم ناقص المصروفات</value></data>
+  <data name="Cash already in the drawer at the start of the day" xml:space="preserve"><value>النقد الموجود في الدرج في بداية اليوم</value></data>
+  <data name="Cash you counted now" xml:space="preserve"><value>النقد الذي عددته الآن</value></data>
+  <data name="The day was closed." xml:space="preserve"><value>تم إقفال اليوم.</value></data>
+  <data name="The drawer is exact." xml:space="preserve"><value>الدرج مطابق تمامًا.</value></data>
+  <data name="The drawer has more than expected." xml:space="preserve"><value>في الدرج أكثر من المتوقع.</value></data>
+  <data name="The drawer is short." xml:space="preserve"><value>في الدرج عجز.</value></data>
+  <data name="The day's figures" xml:space="preserve"><value>أرقام اليوم</value></data>
+  <data name="Cash received" xml:space="preserve"><value>نقد مستلم</value></data>
+  <data name="Card received" xml:space="preserve"><value>مستلم بالبطاقة</value></data>
+  <data name="Bank transfer received" xml:space="preserve"><value>مستلم بالتحويل البنكي</value></data>
+  <data name="Wallet received" xml:space="preserve"><value>مستلم بالمحفظة</value></data>
+  <data name="Total received" xml:space="preserve"><value>إجمالي المستلم</value></data>
+  <data name="Expenses paid" xml:space="preserve"><value>المصروفات المدفوعة</value></data>
+  <data name="of which from the drawer" xml:space="preserve"><value>منها من الدرج</value></data>
+  <data name="Expected cash in the drawer = cash already there at the start + cash received - expenses paid from the drawer. Card, transfer and wallet payments are not in the drawer." xml:space="preserve"><value>النقد المتوقع في الدرج = النقد الموجود في البداية + النقد المستلم - المصروفات المدفوعة من الدرج. مدفوعات البطاقة والتحويل والمحفظة ليست في الدرج.</value></data>
+  <data name="Count the drawer" xml:space="preserve"><value>عدّ الدرج</value></data>
+  <data name="Save this close? It cannot be changed afterwards. A correction is a new close." xml:space="preserve"><value>حفظ هذا الإقفال؟ لا يمكن تغييره بعد ذلك. والتصحيح يكون بإقفال جديد.</value></data>
+  <data name="Expected cash in the drawer" xml:space="preserve"><value>النقد المتوقع في الدرج</value></data>
+  <data name="Save the close" xml:space="preserve"><value>حفظ الإقفال</value></data>
+  <data name="Closes for this day" xml:space="preserve"><value>إقفالات هذا اليوم</value></data>
+  <data name="This day has not been closed yet." xml:space="preserve"><value>لم يُقفل هذا اليوم بعد.</value></data>
+  <data name="Saved" xml:space="preserve"><value>وقت الحفظ</value></data>
+  <data name="Expected" xml:space="preserve"><value>المتوقع</value></data>
+  <data name="Counted" xml:space="preserve"><value>المعدود</value></data>
+  <data name="Difference" xml:space="preserve"><value>الفرق</value></data>
+  <data name="Current" xml:space="preserve"><value>الحالي</value></data>
+  <data name="Payments or expenses changed since" xml:space="preserve"><value>تغيّرت المدفوعات أو المصروفات بعد الإقفال</value></data>
+  <data name="Recent closes" xml:space="preserve"><value>آخر الإقفالات</value></data>
+  <data name="Choose a start and an end date, at most 366 days apart." xml:space="preserve"><value>اختر تاريخ بداية وتاريخ نهاية، بفارق 366 يومًا على الأكثر.</value></data>
+  <data name="Invoice number" xml:space="preserve"><value>رقم الفاتورة</value></data>
+  <data name="Customer" xml:space="preserve"><value>العميل</value></data>
+  <data name="Entered by" xml:space="preserve"><value>أدخله</value></data>
+  <data name="Yes" xml:space="preserve"><value>نعم</value></data>
+  <data name="No" xml:space="preserve"><value>لا</value></data>
+  <data name="Visit date" xml:space="preserve"><value>تاريخ الزيارة</value></data>
+  <data name="Download your records as a CSV file that opens in Excel." xml:space="preserve"><value>نزّل سجلاتك كملف CSV يُفتح في إكسل.</value></data>
+  <data name="Date range" xml:space="preserve"><value>الفترة</value></data>
+  <data name="From" xml:space="preserve"><value>من</value></data>
+  <data name="To" xml:space="preserve"><value>إلى</value></data>
+  <data name="Up to 366 days at a time. The file is UTF-8 with Arabic column titles when the app is in Arabic. Text that starts with = + - or @ gets a leading quote so Excel cannot run it as a formula." xml:space="preserve"><value>حتى 366 يومًا في المرة الواحدة. الملف بترميز UTF-8 وبعناوين أعمدة عربية عندما يكون التطبيق بالعربية. النص الذي يبدأ بـ = + - أو @ يُضاف قبله علامة اقتباس حتى لا يُنفّذه إكسل كمعادلة.</value></data>
   <!-- end v1-4-stock-profit -->
 </root>

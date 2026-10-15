@@ -2946,3 +2946,35 @@ html[lang="ar"] .inv-table th {
 .toast-card .toast-action + button {
   margin-inline-start: 0.4rem;
 }
+
+/* v1-4-stock-profit: the owner's money pages (profit, expenses, cash close, export) */
+.money-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-block-end: 1rem;
+}
+
+.money-tabs a {
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--r-pill);
+  background: var(--surface-3);
+  color: var(--text-2);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.money-tabs a[aria-current="page"] {
+  background: var(--accent-strong);
+  color: var(--on-accent);
+}
+
+.money-note {
+  color: var(--text-2);
+  font-size: 0.85rem;
+}
+
+.figure-negative {
+  color: var(--bad);
+}
