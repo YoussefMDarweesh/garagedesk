@@ -3051,6 +3051,13 @@ html[lang="ar"] .inv-table th {
 }
 
 /* ---- growth-onboarding: public landing page (Pages/Shared/_Landing.cshtml) ---- */
+/* On a 360 px phone the brand, the language switch, the theme toggle and "Create your shop" do not fit in one row:
+   let the header wrap instead of scrolling the whole page sideways. */
+.public-header {
+  flex-wrap: wrap;
+  row-gap: var(--s-2);
+}
+
 .landing-section {
   margin-block-start: clamp(2.5rem, 6vw, 4.5rem);
 }

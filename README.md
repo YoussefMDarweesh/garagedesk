@@ -43,6 +43,11 @@ All of these come from the seeded demo shop, "Demo Motors" (see [Run it locally]
 - **Dashboard** with real numbers only: customers, vehicles, open job cards, revenue this month, a monthly activity chart and the latest service history.
 - **Demo seeder:** one command creates the shop "Demo Motors" with 10 customers, 15 cars and a year of history.
 - **My team (v1.3):** staff accounts with three roles. The *owner* sees everything; the *cashier* handles customers, job cards, payments, invoices and estimates but not settings, staff or reports; the *technician* sees only the job cards assigned to them and never a price, total, payment or customer phone number. Owners invite people with a one-time link, deactivate them, assign job cards, set a commission percent per person, and read a monthly commissions report and each job card's history. See [docs/ROLES.md](docs/ROLES.md).
+- **Money (v1.1):** per-shop invoice and estimate numbers, partial payments with a balance per job card, a "who owes me" page, discounts, optional VAT, and estimates that convert into job cards.
+- **Setup wizard and checklist (growth):** a new owner is guided through logo and colour, the first customer and car, and the first job card. The dashboard checklist is worked out from the shop's real data, so it ticks itself and survives a refresh.
+- **CSV import (growth):** bring customers and cars from Excel or Google Sheets (saved as CSV UTF-8, comma or semicolon). A template in English or Arabic, a preview with per-row errors and duplicate detection, then one all-or-nothing import. Uploading the same file twice adds nothing.
+- **Installable app (growth):** add GarageDesk to a phone's home screen. The service worker caches static files only, never pages. See [docs/PWA.md](docs/PWA.md).
+- **Public landing page (growth):** logged-out visitors see what GarageDesk does, in English or Arabic, with screenshots, sign-in and sign-up links and an optional WhatsApp contact button. It shows nothing about any shop.
 
 ## How it works
 
@@ -168,8 +173,11 @@ This project is built with AI coding agents under my direction, and I want to be
 
 ## Known limitations
 - **Not hosted.** There is no live demo; run it locally (see above).
-- **Invoice numbers are job card numbers.** An invoice shows the job card's id (for example `#66`), not a per-shop sequence, so a shop's invoice numbers jump. A per-shop sequence is a planned follow-up.
-- **No VAT, no discounts.** Totals are parts plus labor.
+- **Invoice and estimate numbers are per shop (v1.1)** (`INV-0001`, `EST-0001`), given once when a document is issued. They are never reused, so a cancelled document leaves a gap.
+- **Money is simple (v1.1).** One optional VAT percent per shop, one discount per job card (an amount or a percent), payments by cash, card, transfer or wallet. No tax invoices with registration numbers, no refunds flow, and no stock or profit yet.
+- **CSV import is one file shape.** One row per car with its owner; the phone number identifies a customer and the normalized plate identifies a car. Existing customers are never updated by an import (only skipped), there is no Excel (.xlsx) reader (save as CSV UTF-8), and a file is limited to 2,000 rows and 512 KB.
+- **The installable app needs a connection.** The service worker keeps only static files and shows an offline page; it never stores your pages, so nothing works offline. The install prompt depends on the browser (see [docs/PWA.md](docs/PWA.md)).
+- **The landing page's WhatsApp button is off until configured.** Set `Landing:WhatsAppNumber` (environment variable `Landing__WhatsAppNumber`); empty hides the button.
 - **No email or SMS sending.** WhatsApp messages open in WhatsApp; nothing is sent by the server.
 - **English and Arabic only,** and one currency (EGP).
 - **Team and roles are new (v1.3).** Three fixed roles, no custom permissions; one role per person and one shop per person. Commission uses a person's *current* percent, so changing it also changes past months in the report. Free-text job notes are shown to technicians as typed, so do not put prices in them.
