@@ -3011,3 +3011,41 @@ html[lang="ar"] .inv-table th {
     font-size: 0.9rem;
   }
 }
+
+/* ---- growth-onboarding: "install the app" banner (added by site.js, once per device) ---- */
+.install-banner {
+  position: fixed;
+  z-index: 1050;
+  inset-inline: var(--gutter, 1rem);
+  inset-block-end: var(--gutter, 1rem);
+  max-width: 34rem;
+  margin-inline: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-3);
+}
+
+.install-banner .install-text {
+  flex: 1 1 12rem;
+  font-weight: 600;
+}
+
+@media (max-width: 767.98px) {
+  /* sit above the bottom tab bar of the app shell */
+  body.app .install-banner {
+    inset-block-end: calc(5.25rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media print {
+  .install-banner {
+    display: none !important;
+  }
+}

@@ -69,7 +69,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="GarageDesk: a simple workshop manager for small car service shops." />
+    <meta name="description" content="@(ViewData["Description"] ?? "GarageDesk: a simple workshop manager for small car service shops.")" />
     <meta name="color-scheme" content="light dark" />
     <title>@ViewData["Title"] · GarageDesk</title>
     <script type="importmap"></script>
@@ -86,6 +86,14 @@
         })();
     </script>
     <link rel="icon" href="~/favicon.ico" sizes="any" />
+    @* growth-onboarding: installable app (docs/PWA.md). The service worker caches static files only, never pages. *@
+    <link rel="icon" type="image/svg+xml" href="~/icons/icon.svg" />
+    <link rel="apple-touch-icon" href="~/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="~/manifest.webmanifest" />
+    <meta name="theme-color" content="#0b1324" />
+    <meta name="gd-sw" content="@Url.Content("~/sw.js")" data-scope="@Url.Content("~/")"
+          data-install-title="@L["Install GarageDesk on this device"]" data-install-action="@L["Install"]"
+          data-install-dismiss="@L["Not now"]" data-install-ios="@L["To install: tap Share, then Add to Home Screen."]" />
     <link rel="stylesheet" href="@bootstrapCss" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>

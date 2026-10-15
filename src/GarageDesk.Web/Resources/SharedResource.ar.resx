@@ -844,4 +844,8 @@
   <data name="Skipped: this plate is already in your shop" xml:space="preserve"><value>تم التخطي: هذه اللوحة موجودة بالفعل في ورشتك</value></data>
   <data name="Skipped: this plate appears earlier in the file" xml:space="preserve"><value>تم التخطي: هذه اللوحة مكررة في الملف</value></data>
   <data name="Skipped: this customer already exists" xml:space="preserve"><value>تم التخطي: هذا العميل موجود بالفعل</value></data>
+  <!-- growth-onboarding: installable app -->
+  <data name="Install GarageDesk on this device" xml:space="preserve"><value>ثبّت GarageDesk على هذا الجهاز</value></data>
+  <data name="Install" xml:space="preserve"><value>تثبيت</value></data>
+  <data name="To install: tap Share, then Add to Home Screen." xml:space="preserve"><value>للتثبيت: اضغط مشاركة ثم إضافة إلى الشاشة الرئيسية.</value></data>
 </root>

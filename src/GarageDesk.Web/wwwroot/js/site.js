@@ -335,3 +335,69 @@
     }
   });
 })();
+
+// ---- growth-onboarding: installable app (docs/PWA.md) ----
+// Registers the service worker (static files only, never pages) and offers "Install" once per device. Nothing here
+// is needed for the site to work.
+(() => {
+  "use strict";
+  const meta = document.querySelector('meta[name="gd-sw"]');
+  if (!meta) return;
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register(meta.content, { scope: meta.dataset.scope || "/" }).catch(() => { /* not available here: fine */ });
+    });
+  }
+
+  const standalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  const KEY = "gd-install-dismissed";
+  const dismissed = () => { try { return localStorage.getItem(KEY) === "1"; } catch { return false; } };
+  if (standalone || dismissed()) return;
+
+  const show = (text, actionLabel, onAction) => {
+    if (document.querySelector(".install-banner")) return;
+    const banner = document.createElement("div");
+    banner.className = "install-banner";
+    banner.setAttribute("role", "region");
+    banner.setAttribute("aria-label", meta.dataset.installTitle || "Install");
+    const message = document.createElement("span");
+    message.className = "install-text";
+    message.textContent = text;
+    banner.appendChild(message);
+    if (onAction) {
+      const action = document.createElement("button");
+      action.type = "button";
+      action.className = "btn btn-primary btn-sm";
+      action.textContent = actionLabel;
+      action.addEventListener("click", async () => { await onAction(); banner.remove(); });
+      banner.appendChild(action);
+    }
+    const close = document.createElement("button");
+    close.type = "button";
+    close.className = "btn btn-outline-secondary btn-sm";
+    close.textContent = meta.dataset.installDismiss || "Not now";
+    close.addEventListener("click", () => {
+      try { localStorage.setItem(KEY, "1"); } catch { /* storage blocked: it just asks again next visit */ }
+      banner.remove();
+    });
+    banner.appendChild(close);
+    document.body.appendChild(banner);
+  };
+
+  // Chrome, Edge, Android: the browser says it can install the app and hands over a prompt to open on a click.
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    show(meta.dataset.installTitle, meta.dataset.installAction, async () => {
+      event.prompt();
+      await event.userChoice;
+    });
+  });
+  window.addEventListener("appinstalled", () => document.querySelector(".install-banner")?.remove());
+
+  // iPhone and iPad Safari never fire that event: show a one-line how-to instead.
+  const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !/CriOS|FxiOS/.test(navigator.userAgent);
+  if (ios) {
+    show(meta.dataset.installIos, "", null);
+  }
+})();
