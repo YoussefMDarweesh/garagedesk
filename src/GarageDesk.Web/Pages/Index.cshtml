@@ -127,6 +127,13 @@ else
                 </p>
             </a>
         </div>
+        <div class="col-6 col-xl">
+            <a class="stat-card" asp-page="/Money/Profit" data-profit-card title="@L["Payments received this month, minus expenses paid this month."]">
+                <div class="stat-top"><span class="stat-label">@L["Profit this month"]</span><span class="icon-tile"><partial name="_Icon" model='"trending-up"' /></span></div>
+                <p class="stat-value @(Model.ProfitThisMonth < 0 ? "figure-negative" : "")" data-profit><span class="ltr">@MoneyFormat.Amount(Model.ProfitThisMonth)</span> <small class="fs-6 text-secondary">@L["EGP"]</small></p>
+                <p class="stat-sub">@L["Cash basis: received minus expenses"]</p>
+            </a>
+        </div>
         }
         <div class="col-6 col-xl">
             <a class="stat-card" asp-page="/Jobs/Index">

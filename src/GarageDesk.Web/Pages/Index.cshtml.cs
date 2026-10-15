@@ -73,6 +73,13 @@ public class IndexModel(ApplicationDbContext db, ICurrentStaff currentStaff) : P
     /// <summary>Revenue and the activity chart are reports: owners only.</summary>
     public bool CanSeeReports { get; private set; }
 
+    /// <summary>v1.4, owner only: payments received minus expenses paid this month (cash basis).</summary>
+    public decimal ProfitThisMonth { get; private set; }
+
+    public decimal ReceivedThisMonth { get; private set; }
+
+    public decimal ExpensesThisMonth { get; private set; }
+
     /// <summary>v1.4: the stock card. Everyone who sees the dashboard sees what is running low; the value at cost is the owner's.</summary>
     public StockSummary Stock { get; private set; } = new(0, 0, [], null);
 
@@ -115,6 +122,12 @@ public class IndexModel(ApplicationDbContext db, ICurrentStaff currentStaff) : P
         if (CanSeeReports)
         {
             await LoadActivityAsync();
+
+            var monthStart = new DateOnly(Today.Year, Today.Month, 1);
+            var (received, spent) = await ProfitReport.CashAsync(db, monthStart, monthStart.AddMonths(1));
+            ReceivedThisMonth = received.Total;
+            ExpensesThisMonth = spent;
+            ProfitThisMonth = received.Total - spent;
         }
         await LoadRemindersAsync();
         Stock = await StockSummary.LoadAsync(db, includeCost: CanSeeReports);

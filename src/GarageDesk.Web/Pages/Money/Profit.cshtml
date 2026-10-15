@@ -1,0 +1,144 @@
+@page
+@model GarageDesk.Web.Pages.Money.ProfitModel
+@using GarageDesk.Web.Services
+@{
+    ViewData["Title"] = L["Profit"].Value;
+    var report = Model.Report;
+}
+
+<div class="page-head">
+    <div>
+        <p class="eyebrow mb-1">@L["Owner only"]</p>
+        <h1>@L["Profit"]</h1>
+        <p class="page-sub"><span class="ltr num" data-month>@Model.MonthStart.ToString("yyyy-MM")</span> &middot; @L["Cash basis"]</p>
+    </div>
+    <div class="page-actions">
+        <a class="btn btn-outline-secondary" asp-page="Profit" asp-route-month="@Model.PreviousKey"><partial name="_Icon" model='"chevron-left"' />@L["Previous month"]</a>
+        <a class="btn btn-outline-secondary" asp-page="Profit" asp-route-month="@Model.NextKey">@L["Next month"]</a>
+    </div>
+</div>
+
+<partial name="_MoneyTabs" model='"profit"' />
+
+<div class="row g-3 g-lg-4 mb-4">
+    <div class="col-12 col-md-4">
+        <div class="stat-card" title="@L["Payments received this month, minus expenses paid this month."]">
+            <div class="stat-top"><span class="stat-label">@L["Received"]</span><span class="icon-tile"><partial name="_Icon" model='"coins"' /></span></div>
+            <p class="stat-value" data-received><span class="ltr">@MoneyFormat.Amount(report.Received.Total)</span> <small class="fs-6 text-secondary">@L["EGP"]</small></p>
+            <p class="stat-sub">@L["Payments received this month"]</p>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <a class="stat-card" asp-page="Expenses" asp-route-month="@Model.MonthStart.ToString("yyyy-MM")">
+            <div class="stat-top"><span class="stat-label">@L["Expenses"]</span><span class="icon-tile"><partial name="_Icon" model='"alert"' /></span></div>
+            <p class="stat-value" data-expenses><span class="ltr">@MoneyFormat.Amount(report.ExpensesTotal)</span> <small class="fs-6 text-secondary">@L["EGP"]</small></p>
+            <p class="stat-sub">@L["Expenses paid this month"]</p>
+        </a>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="stat-card">
+            <div class="stat-top"><span class="stat-label">@L["Profit"]</span><span class="icon-tile"><partial name="_Icon" model='"trending-up"' /></span></div>
+            <p class="stat-value @(report.CashProfit < 0 ? "figure-negative" : "")" data-cash-profit><span class="ltr">@MoneyFormat.Amount(report.CashProfit)</span> <small class="fs-6 text-secondary">@L["EGP"]</small></p>
+            <p class="stat-sub">@L["Received minus expenses"]</p>
+        </div>
+    </div>
+</div>
+
+<section class="panel panel-pad mb-4" aria-labelledby="how-heading">
+    <h2 id="how-heading" class="panel-title">@L["How profit is worked out"]</h2>
+    <ul class="mb-0 text-secondary">
+        <li>@L["Monthly profit is on a cash basis: the payments received in the month (by the day they were received) minus the expenses paid in the month (by their date). It does not matter when the car came in."]</li>
+        <li>@L["Payments include VAT where you charge it, because that is the money that came in."]</li>
+        <li>@L["Profit per job card is its revenue (subtotal minus discount, before VAT) minus the cost of the catalog parts used. Labor has no cost. Parts typed as free text have no known cost."]</li>
+    </ul>
+</section>
+
+<div class="row g-3 g-lg-4 mb-4">
+    <div class="col-lg-6">
+        <section class="panel panel-pad h-100" aria-labelledby="methods-heading">
+            <div class="panel-head"><h2 id="methods-heading" class="panel-title">@L["Received by method"]</h2></div>
+            <dl class="row mb-0 g-1" data-by-method>
+                <dt class="col-6 text-secondary fw-normal">@L["Cash"]</dt>
+                <dd class="col-6 text-end mb-1" data-method="Cash"><partial name="_Money" model="report.Received.Cash" /></dd>
+                <dt class="col-6 text-secondary fw-normal">@L["Card"]</dt>
+                <dd class="col-6 text-end mb-1" data-method="Card"><partial name="_Money" model="report.Received.Card" /></dd>
+                <dt class="col-6 text-secondary fw-normal">@L["Bank transfer"]</dt>
+                <dd class="col-6 text-end mb-1" data-method="BankTransfer"><partial name="_Money" model="report.Received.Transfer" /></dd>
+                <dt class="col-6 text-secondary fw-normal">@L["Wallet"]</dt>
+                <dd class="col-6 text-end mb-1" data-method="Wallet"><partial name="_Money" model="report.Received.Wallet" /></dd>
+            </dl>
+        </section>
+    </div>
+    <div class="col-lg-6">
+        <section class="panel panel-pad h-100" aria-labelledby="categories-heading">
+            <div class="panel-head"><h2 id="categories-heading" class="panel-title">@L["Expenses by category"]</h2></div>
+            @if (report.ExpensesByCategory.Count == 0)
+            {
+                <p class="text-secondary mb-0">@L["No expenses this month."]</p>
+            }
+            else
+            {
+                <dl class="row mb-0 g-1">
+                    @foreach (var category in report.ExpensesByCategory)
+                    {
+                        <dt class="col-6 text-secondary fw-normal">@Model.CategoryName(category.Category)</dt>
+                        <dd class="col-6 text-end mb-1"><partial name="_Money" model="category.Total" /></dd>
+                    }
+                </dl>
+            }
+        </section>
+    </div>
+</div>
+
+<section class="panel" aria-labelledby="jobs-heading">
+    <div class="panel-pad pb-0">
+        <h2 id="jobs-heading" class="panel-title">@L["Profit per paid job card"]</h2>
+        <p class="money-note">@L["Paid job cards with a visit date in this month."]</p>
+    </div>
+    @if (report.Jobs.Count == 0)
+    {
+        <div class="empty"><p>@L["No paid job cards in this month."]</p></div>
+    }
+    else
+    {
+        <div class="data-table-wrap">
+            <table class="data-table" data-job-profits>
+                <thead>
+                    <tr>
+                        <th scope="col">@L["Job card"]</th>
+                        <th scope="col">@L["Vehicle"]</th>
+                        <th scope="col" class="cell-end">@L["Revenue (before VAT)"]</th>
+                        <th scope="col" class="cell-end">@L["Part cost"]</th>
+                        <th scope="col" class="cell-end">@L["Profit"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var job in report.Jobs)
+                {
+                    <tr data-job="@job.JobId">
+                        <td>
+                            <a asp-page="/Jobs/Details" asp-route-id="@job.JobId" class="ltr num">#@job.JobId</a>
+                            @if (job.InvoiceLabel is not null) { <span class="chip chip-info ltr num">@job.InvoiceLabel</span> }
+                        </td>
+                        <td><span class="plate" dir="auto">@job.Plate</span></td>
+                        <td class="cell-end"><partial name="_Money" model="job.Revenue" /></td>
+                        <td class="cell-end"><partial name="_Money" model="job.PartCost" /></td>
+                        <td class="cell-end fw-bold @(job.Profit < 0 ? "figure-negative" : "")" data-job-profit-value>
+                            <partial name="_Money" model="job.Profit" />
+                            @if (job.PartLinesWithoutCost > 0) { <span class="chip" title="@L["Some part lines are free text, so their cost is not known."]">*</span> }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th scope="row" colspan="2">@L["Total"]</th>
+                        <td class="cell-end fw-bold"><partial name="_Money" model="report.JobRevenue" /></td>
+                        <td class="cell-end fw-bold"><partial name="_Money" model="report.JobPartCost" /></td>
+                        <td class="cell-end fw-bold" data-job-profit-total><partial name="_Money" model="report.JobProfit" /></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    }
+</section>
