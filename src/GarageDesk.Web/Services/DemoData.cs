@@ -218,6 +218,9 @@ public static class DemoData
         db.Estimates.Add(quote);
         db.NumberSequences.Add(new NumberSequence { Kind = DocumentNumbers.Estimate, LastValue = 1 });
 
+        // v1.4: the parts catalog and its stock ledger, expenses and recent cash closes.
+        await DemoStockData.AddAsync(db, today, created, quote, cancellationToken);
+
         await db.SaveChangesAsync(cancellationToken);
         return true;
     }

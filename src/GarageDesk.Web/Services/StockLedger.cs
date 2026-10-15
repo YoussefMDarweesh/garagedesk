@@ -36,6 +36,8 @@ public static class StockLedger
         ApplicationDbContext db, Part part, StockMovementKind kind, decimal change, StaffContext? actor,
         JobCard? job = null, decimal? unitCost = null, string note = "")
     {
+        // Quantities are kept to two decimals (that is what the database stores), so the ledger and the part agree exactly.
+        change = JobTotals.Round(change);
         part.QuantityOnHand = JobTotals.Round(part.QuantityOnHand + change);
         var movement = new StockMovement
         {
@@ -96,6 +98,7 @@ public static class JobLines
             return LineOutcome.Fail(StockLedger.Messages.Locked);
         }
 
+        quantity = JobTotals.Round(quantity); // two decimals, as stored
         Part? part = null;
         if (partId is int id)
         {

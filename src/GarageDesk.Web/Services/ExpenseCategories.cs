@@ -13,6 +13,7 @@ public static class ExpenseCategories
     /// <summary>
     /// The shop's categories, creating the five defaults the first time they are needed. Safe to call from two
     /// requests at once: the unique (shop, name) index stops duplicates and the loser just reads what the winner made.
+    /// It saves the context, so call it before queuing other changes you want saved together.
     /// </summary>
     public static async Task<List<ExpenseCategory>> EnsureDefaultsAsync(ApplicationDbContext db)
     {
@@ -29,7 +30,11 @@ public static class ExpenseCategories
             }
             catch (DbUpdateException)
             {
-                db.ChangeTracker.Clear();
+                // Someone else created them a moment ago. Forget only our copies; anything else pending stays as it was.
+                foreach (var entry in db.ChangeTracker.Entries<ExpenseCategory>().Where(e => e.State == EntityState.Added).ToList())
+                {
+                    entry.State = EntityState.Detached;
+                }
             }
         }
 

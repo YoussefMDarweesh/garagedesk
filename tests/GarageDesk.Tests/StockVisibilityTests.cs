@@ -185,6 +185,26 @@ public class StockVisibilityTests(GarageDeskWebFactory factory) : IClassFixture<
         Assert.DoesNotContain(SellText, after);
         Assert.DoesNotContain("190.50", after);
         Assert.DoesNotContain(CostText, after);
+
+        // No word of the owner's money features either, in English or in Arabic.
+        var arabic = factory.CreateClientFor(tech, shop);
+        arabic.DefaultRequestHeaders.Add("Cookie", ".AspNetCore.Culture=c%3Dar%7Cuic%3Dar");
+        var arabicPage = await TestData.BodyAsync(await arabic.GetAsync($"/Work/Job/{job}"));
+        foreach (var html in new[] { page, after, arabicPage })
+        {
+            foreach (var word in new[] { "Cost", "Profit", "Stock value", "Expenses", "Revenue", "/Parts", "/Money", "data-price", SellText, CostText })
+            {
+                Assert.False(html.Contains(word, StringComparison.OrdinalIgnoreCase), $"The technician's page must not contain \"{word}\".");
+            }
+        }
+
+        // The vehicle history page they can reach shows no cost or profit either.
+        using var historyDb = factory.CreateContextFor(shop);
+        var vehicleId = (await historyDb.JobCards.SingleAsync(j => j.Id == job)).VehicleId;
+        var history = await TestData.BodyAsync(await client.GetAsync($"/Work/Vehicle/{vehicleId}"));
+        Assert.DoesNotContain(CostText, history);
+        Assert.DoesNotContain(SellText, history);
+        Assert.DoesNotContain("Profit", history);
     }
 
     [Fact]

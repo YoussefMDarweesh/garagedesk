@@ -93,14 +93,19 @@ public class StockModel(ApplicationDbContext db, ICurrentStaff currentStaff, ISt
         }
 
         var actor = await currentStaff.GetAsync();
+
+        // Made first: it saves the context when a shop's categories do not exist yet, and nothing else is pending.
+        var categories = Purchase.RecordExpense && quantity * cost > 0
+            ? await ExpenseCategories.EnsureDefaultsAsync(db)
+            : [];
+
         StockLedger.Apply(db, part, StockMovementKind.Purchase, quantity, actor, unitCost: cost, note: Purchase.Note?.Trim() ?? "");
 
         // The latest purchase price becomes the part's cost, for job cards added from now on. Old lines keep theirs.
         part.CostPrice = cost;
 
-        if (Purchase.RecordExpense && quantity * cost > 0)
+        if (categories.Count > 0)
         {
-            var categories = await ExpenseCategories.EnsureDefaultsAsync(db);
             var category = categories.FirstOrDefault(c => c.Name == ExpenseCategories.PartsPurchase && c.IsActive)
                            ?? categories.FirstOrDefault(c => c.IsActive);
             if (category is not null)

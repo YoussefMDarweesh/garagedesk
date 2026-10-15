@@ -128,6 +128,24 @@ public class StockTests(GarageDeskWebFactory factory) : IClassFixture<GarageDesk
     }
 
     [Fact]
+    public async Task Fractional_quantities_are_kept_to_the_piastre_so_the_line_the_ledger_and_the_part_agree()
+    {
+        var (owner, shop) = await TestData.CreateOwnerAsync(factory, "Stock Fraction");
+        var part = await StockTestData.SeedPartAsync(factory, shop, "Engine oil", quantity: 20.5m, cost: 40.10m, sell: 55m);
+        var job = await StockTestData.EmptyJobAsync(factory, shop);
+        var client = factory.CreateClientFor(owner, shop);
+
+        await StockTestData.AddLineAsync(client, job, part, "Engine oil", "1.005"); // half a piastre: rounds away from zero
+        await StockTestData.AddLineAsync(client, job, part, "Engine oil", "2.5");
+
+        using var db = factory.CreateContextFor(shop);
+        var lines = await db.JobLines.OrderBy(l => l.Id).ToListAsync();
+        Assert.Equal([1.01m, 2.5m], lines.Select(l => l.Quantity).ToArray());
+        Assert.Equal(16.99m, await StockTestData.QuantityAsync(factory, shop, part)); // 20.5 - 1.01 - 2.5
+        Assert.Equal(16.99m, await StockTestData.LedgerSumAsync(factory, shop, part));
+    }
+
+    [Fact]
     public async Task Removing_the_line_puts_the_stock_back_and_the_ledger_stays_consistent()
     {
         var (owner, shop) = await TestData.CreateOwnerAsync(factory, "Stock Remove");

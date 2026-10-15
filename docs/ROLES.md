@@ -12,6 +12,10 @@ GarageDesk shops have three roles. A person has exactly one role in exactly one 
 | Shop settings (logo, accent, VAT) | yes | no | no |
 | My team (invite, roles, deactivate, commission percent) | yes | no | no |
 | Commissions report, job card History panel | yes | no | no |
+| Parts catalog: look, sell prices, quantities, running-low list (v1.4) | yes | yes (no cost, no stock value) | no |
+| Parts: add, edit, receive or correct stock, cost price, stock value, negative-stock switch (v1.4) | yes | no | no |
+| Use a catalog part on a job card or estimate (v1.4) | yes | yes | names and quantities only, on their own jobs |
+| Money: profit, expenses, cash close, CSV export, job profit panel (v1.4) | yes | no | no |
 
 ## How it is enforced
 
@@ -22,6 +26,13 @@ GarageDesk shops have three roles. A person has exactly one role in exactly one 
 * **The last active owner** cannot be demoted or deactivated (checked inside a transaction that locks the shop row, so two owners cannot do it at the same time).
 * **Invitations** are 256-bit random tokens in a link; only the SHA-256 hash is stored. They work once, expire after 7 days, can be cancelled, and unknown, expired, used and cancelled links all give the same 404. The role and shop come from the invitation, never from the form.
 * **Assignment** accepts only an active technician or owner of the same shop; the check is on the server.
+
+## Cost and profit visibility (v1.4)
+
+* The part **cost price** is read from the database only for owners (the catalog list and the job card page branch on the role before the query, so a cashier's page never carries it, not even hidden). The cost recorded on a job line is rendered only inside the owner's profit panel.
+* **Technicians** get a picker built from names, units and quantities; the sell price is not even selected. A catalog part they add is priced from the catalog on the server. They can take back a catalog part they added themselves (the stock goes back); any other priced line stays the front desk's.
+* The money pages (`/Money/...`), the parts add/edit/stock pages and the CSV export carry the `Owner` policy. The parts list is `Staff`; its one write handler (the negative-stock switch) checks for an owner again.
+* The public share pages and the invoice never include cost or profit.
 
 ## Commission rule
 
