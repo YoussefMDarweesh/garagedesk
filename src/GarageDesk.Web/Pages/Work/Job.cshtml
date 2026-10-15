@@ -93,16 +93,37 @@
                 <form method="post" asp-page-handler="AddLine" asp-route-id="@job.Id" novalidate class="add-line">
                     <h3 class="form-section-title">@L["Add a note"]</h3>
                     <div class="row g-2 align-items-start">
+                        @if (Model.Parts.Count > 0)
+                        {
+                            @* Names and how many are on the shelf. Prices are never sent to this page. *@
+                            <div class="col-12">
+                                <label asp-for="NewLine.PartId" class="form-label small text-secondary"></label>
+                                <select asp-for="NewLine.PartId" class="form-select" data-part-picker>
+                                    <option value="">@L["Not from the catalog (free text)"]</option>
+                                    @foreach (var part in Model.Parts)
+                                    {
+                                        <option value="@part.Id" data-name="@part.Name">@part.Name (@part.Quantity.ToString("0.##") @part.Unit)</option>
+                                    }
+                                </select>
+                                <div class="form-text">@L["Choosing a part takes it from stock."]</div>
+                            </div>
+                        }
                         <div class="col-sm-3 col-md-3">
                             <label asp-for="NewLine.Type" class="form-label small text-secondary"></label>
-                            <select asp-for="NewLine.Type" class="form-select">
+                            <select asp-for="NewLine.Type" class="form-select" data-part-type>
                                 <option value="@JobLineType.Part">@L["Part"]</option>
                                 <option value="@JobLineType.Labor">@L["Labor"]</option>
                             </select>
                         </div>
                         <div class="col-sm-9 col-md-5">
                             <label asp-for="NewLine.Description" class="form-label small text-secondary"></label>
-                            <input asp-for="NewLine.Description" class="form-control" autocomplete="off" />
+                            <input asp-for="NewLine.Description" class="form-control" autocomplete="off" list="parts-list" data-part-description />
+                            <datalist id="parts-list">
+                                @foreach (var part in Model.Parts)
+                                {
+                                    <option value="@part.Name"></option>
+                                }
+                            </datalist>
                             <span asp-validation-for="NewLine.Description"></span>
                         </div>
                         <div class="col-6 col-md-2">

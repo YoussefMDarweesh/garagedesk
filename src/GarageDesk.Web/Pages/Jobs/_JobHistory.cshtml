@@ -32,6 +32,8 @@
             JobAuditKind.PaymentAdded when parts.Length == 2 => L["Payment of {0} EGP received ({1})", parts[0], MethodName(parts[1])].Value,
             JobAuditKind.PaymentVoided when parts.Length == 2 => L["Payment of {0} EGP voided", parts[0]].Value,
             JobAuditKind.Assigned => string.IsNullOrEmpty(entry.Detail) ? L["Unassigned"].Value : L["Assigned to {0}", entry.Detail].Value,
+            JobAuditKind.PartUsed when parts.Length == 2 => L["{0} x {1} taken from stock", parts[1], parts[0]].Value,
+            JobAuditKind.PartReturned when parts.Length == 2 => L["{0} x {1} put back in stock", parts[1], parts[0]].Value,
             _ => entry.Kind.ToString(),
         };
     }

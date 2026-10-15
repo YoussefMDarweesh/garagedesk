@@ -73,6 +73,9 @@ public class IndexModel(ApplicationDbContext db, ICurrentStaff currentStaff) : P
     /// <summary>Revenue and the activity chart are reports: owners only.</summary>
     public bool CanSeeReports { get; private set; }
 
+    /// <summary>v1.4: the stock card. Everyone who sees the dashboard sees what is running low; the value at cost is the owner's.</summary>
+    public StockSummary Stock { get; private set; } = new(0, 0, [], null);
+
     public async Task<IActionResult> OnGetAsync()
     {
         if (User.Identity?.IsAuthenticated != true)
@@ -114,6 +117,7 @@ public class IndexModel(ApplicationDbContext db, ICurrentStaff currentStaff) : P
             await LoadActivityAsync();
         }
         await LoadRemindersAsync();
+        Stock = await StockSummary.LoadAsync(db, includeCost: CanSeeReports);
 
         RecentJobs = await db.JobCards.AsNoTracking()
             .Include(j => j.Vehicle).ThenInclude(v => v!.Customer)

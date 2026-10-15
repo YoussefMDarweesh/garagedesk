@@ -149,6 +149,29 @@ else
                 <p class="stat-sub">@L["Across {0} customers", Model.CustomerCount]</p>
             </a>
         </div>
+        @if (Model.Stock.PartCount > 0)
+        {
+        <div class="col-6 col-xl">
+            <a class="stat-card" asp-page="/Parts/Index" asp-route-show="@(Model.Stock.LowCount > 0 ? "low" : null)" data-stock-card>
+                <div class="stat-top"><span class="stat-label">@L["Running low"]</span><span class="icon-tile"><partial name="_Icon" model='"package"' /></span></div>
+                <p class="stat-value" data-low-count>@Model.Stock.LowCount</p>
+                <p class="stat-sub">
+                    @if (Model.Stock.StockValue is decimal stockValue)
+                    {
+                        <span data-stock-value>@L["Stock value (at cost)"]: <span class="ltr num">@MoneyFormat.Amount(stockValue)</span> @L["EGP"]</span>
+                    }
+                    else if (Model.Stock.LowNames.Count > 0)
+                    {
+                        @string.Join(", ", Model.Stock.LowNames)
+                    }
+                    else
+                    {
+                        @L["Parts at or below their alert level"]
+                    }
+                </p>
+            </a>
+        </div>
+        }
         <div class="col-12 col-xl">
             <a class="stat-card" asp-page="/Receivables/Index">
                 <div class="stat-top"><span class="stat-label">@L["Outstanding"]</span><span class="icon-tile"><partial name="_Icon" model='"alert"' /></span></div>

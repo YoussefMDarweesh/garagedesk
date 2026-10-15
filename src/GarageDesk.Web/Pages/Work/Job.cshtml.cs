@@ -31,6 +31,10 @@ public class WorkLineInput
     [Range(0.01, 100_000)]
     [Display(Name = "Quantity")]
     public decimal Quantity { get; set; } = 1;
+
+    /// <summary>A part from the shop's catalog (optional). Its price is filled in on the server; the technician never sees it.</summary>
+    [Display(Name = "Catalog part")]
+    public int? PartId { get; set; }
 }
 
 /// <summary>
@@ -41,6 +45,9 @@ public class WorkLineInput
 public class JobModel(ApplicationDbContext db, ICurrentStaff currentStaff, IStringLocalizer<SharedResource> localizer) : PageModel
 {
     public WorkJob Job { get; private set; } = null!;
+
+    /// <summary>The catalog for the picker: names, units and how many are on the shelf. No prices.</summary>
+    public List<WorkPartOption> Parts { get; private set; } = [];
 
     [BindProperty]
     public WorkLineInput NewLine { get; set; } = new();
@@ -109,21 +116,32 @@ public class JobModel(ApplicationDbContext db, ICurrentStaff currentStaff, IStri
             return Fail(id, "A paid job card can no longer be changed.");
         }
 
+        // Without JavaScript the description can be left empty when a catalog part is chosen: the part's name is used.
+        if (NewLine.PartId is int pickedId && string.IsNullOrWhiteSpace(NewLine.Description))
+        {
+            var pickedName = await db.Parts.Where(p => p.Id == pickedId).Select(p => p.Name).FirstOrDefaultAsync();
+            if (pickedName is not null)
+            {
+                NewLine.Description = pickedName;
+                ModelState.Remove($"{nameof(NewLine)}.{nameof(NewLine.Description)}");
+            }
+        }
+
         if (!ModelState.IsValid)
         {
             await LoadAsync(id);
             return Page();
         }
 
-        db.JobLines.Add(new JobLine
+        // A free-text note has no price (the front desk adds it later). A catalog part takes stock and is priced from
+        // the catalog on the server, whatever was posted; the technician never sees or sets the number.
+        var added = await JobLines.AddAsync(db, await currentStaff.GetAsync(), job, NewLine.Type, NewLine.Description,
+            NewLine.Quantity, 0m, NewLine.PartId, priceFromCatalog: true);
+        if (!added.Ok)
         {
-            JobCardId = job.Id,
-            Type = NewLine.Type,
-            Description = NewLine.Description.Trim(),
-            Quantity = NewLine.Quantity,
-            UnitPrice = 0, // priced later by the owner or cashier
-        });
-        await db.SaveChangesAsync();
+            ErrorMessage = localizer[added.Error!, added.Args ?? []];
+        }
+
         return RedirectToPage(new { id });
     }
 
@@ -135,21 +153,28 @@ public class JobModel(ApplicationDbContext db, ICurrentStaff currentStaff, IStri
             return denied;
         }
 
-        var job = await db.JobCards.FirstAsync(j => j.Id == id);
+        var job = await db.JobCards.Include(j => j.Lines).Include(j => j.Payments).FirstAsync(j => j.Id == id);
         if (job.IsLocked)
         {
             return Fail(id, "A paid job card can no longer be changed.");
         }
 
-        // Only a note that has not been priced yet can be taken back; a priced line belongs to the front desk.
-        var line = await db.JobLines.FirstOrDefaultAsync(l => l.Id == lineId && l.JobCardId == id && l.UnitPrice == 0);
+        // A note that has not been priced yet can be taken back, and so can a catalog part this person added
+        // themselves; any other priced line belongs to the front desk.
+        var staff = (await currentStaff.GetAsync())!;
+        var line = job.Lines.FirstOrDefault(l => l.Id == lineId && (l.UnitPrice == 0 || (l.PartId != null && l.AddedByUserId == staff.UserId)));
         if (line is null)
         {
             return NotFound();
         }
 
-        db.JobLines.Remove(line);
-        await db.SaveChangesAsync();
+        // Gives the stock back. Refused (without any numbers) if the customer has paid more than the new total.
+        var removed = await JobLines.RemoveAsync(db, staff, job, line);
+        if (!removed.Ok)
+        {
+            ErrorMessage = localizer[removed.Error!, removed.Args ?? []];
+        }
+
         return RedirectToPage(new { id });
     }
 
@@ -180,6 +205,8 @@ public class JobModel(ApplicationDbContext db, ICurrentStaff currentStaff, IStri
     private async Task LoadAsync(int id)
     {
         // Projected field by field: UnitPrice is only used to decide whether a line may be taken back, never sent on.
+        var me = (await currentStaff.GetAsync())!.UserId;
+        Parts = await PartPicker.LoadForTechnicianAsync(db);
         var job = await db.JobCards.AsNoTracking()
             .Where(j => j.Id == id)
             .Select(j => new
@@ -195,7 +222,7 @@ public class JobModel(ApplicationDbContext db, ICurrentStaff currentStaff, IStri
                 Owner = j.Vehicle.Customer!.Name,
                 j.MileageAtVisit,
                 j.Notes,
-                Lines = j.Lines.OrderBy(l => l.Id).Select(l => new { l.Id, l.Type, l.Description, l.Quantity, Unpriced = l.UnitPrice == 0 }).ToList(),
+                Lines = j.Lines.OrderBy(l => l.Id).Select(l => new { l.Id, l.Type, l.Description, l.Quantity, Unpriced = l.UnitPrice == 0 || (l.PartId != null && l.AddedByUserId == me) }).ToList(),
             })
             .FirstAsync();
 

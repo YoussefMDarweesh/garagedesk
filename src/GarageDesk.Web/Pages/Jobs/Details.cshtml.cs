@@ -17,6 +17,12 @@ public class DetailsModel(ApplicationDbContext db, ICurrentStaff currentStaff, I
 
     public bool CanSeeHistory { get; private set; }
 
+    /// <summary>Part costs and the job's profit: owners only.</summary>
+    public bool CanSeeProfit { get; private set; }
+
+    /// <summary>The active catalog parts, for the picker.</summary>
+    public List<PartOption> Parts { get; private set; } = [];
+
     public JobCard Job { get; private set; } = null!;
 
     [BindProperty]
@@ -62,21 +68,30 @@ public class DetailsModel(ApplicationDbContext db, ICurrentStaff currentStaff, I
             return Fail(id, "A paid job card can no longer be changed.");
         }
 
+        // Without JavaScript the description can be left empty when a catalog part is chosen: the part's name is used.
+        if (NewLine.PartId is int pickedId && string.IsNullOrWhiteSpace(NewLine.Description))
+        {
+            var pickedName = await db.Parts.Where(p => p.Id == pickedId).Select(p => p.Name).FirstOrDefaultAsync();
+            if (pickedName is not null)
+            {
+                NewLine.Description = pickedName;
+                ModelState.Remove($"{nameof(NewLine)}.{nameof(NewLine.Description)}");
+            }
+        }
+
         if (!ModelState.IsValid)
         {
             await LoadAsync(id);
             return Page();
         }
 
-        db.JobLines.Add(new JobLine
+        // A catalog part takes stock, copies its cost onto the line and (when no price was typed) its sell price.
+        var added = await JobLines.AddAsync(db, await currentStaff.GetAsync(), job, NewLine.Type, NewLine.Description,
+            NewLine.Quantity, NewLine.UnitPrice, NewLine.PartId);
+        if (!added.Ok)
         {
-            JobCardId = job.Id,
-            Type = NewLine.Type,
-            Description = NewLine.Description.Trim(),
-            Quantity = NewLine.Quantity,
-            UnitPrice = NewLine.UnitPrice,
-        });
-        await db.SaveChangesAsync();
+            return Fail(id, added);
+        }
 
         return RedirectToPage(new { id });
     }
@@ -100,14 +115,12 @@ public class DetailsModel(ApplicationDbContext db, ICurrentStaff currentStaff, I
             return NotFound();
         }
 
-        // The total must never drop below what the customer has already paid.
-        if (job.PaidTotal > JobTotals.Total(job.Subtotal - line.LineTotal, job.DiscountAmount, job.DiscountPercent, job.VatPercent))
+        // Takes the line off (refused if the total would fall below what was paid) and gives its stock back.
+        var removed = await JobLines.RemoveAsync(db, await currentStaff.GetAsync(), job, line);
+        if (!removed.Ok)
         {
-            return Fail(id, "Payments already received are more than the new total. Void the latest payment first.");
+            return Fail(id, removed);
         }
-
-        db.JobLines.Remove(line);
-        await db.SaveChangesAsync();
 
         return RedirectToPage(new { id });
     }
@@ -291,8 +304,15 @@ public class DetailsModel(ApplicationDbContext db, ICurrentStaff currentStaff, I
         Job = job;
         Links = new ShareLinksPanel(job.Id, await shares.ListLiveAsync(job.Id, ShareLinkKind.Status, ShareLinkKind.Invoice));
 
-        // The history is for owners only; for anyone else it is not even read.
+        // The catalog for the "add a line" picker (sell prices only: cost is for owners and is read below).
+        if (!job.IsLocked)
+        {
+            Parts = await PartPicker.LoadAsync(db);
+        }
+
+        // The history, the part costs and the profit are for owners only; for anyone else they are not even read.
         CanSeeHistory = (await currentStaff.GetAsync())?.IsOwner == true;
+        CanSeeProfit = CanSeeHistory;
         if (CanSeeHistory)
         {
             History = await db.JobAuditEntries.AsNoTracking()
@@ -308,6 +328,12 @@ public class DetailsModel(ApplicationDbContext db, ICurrentStaff currentStaff, I
     private IActionResult Fail(int id, string englishMessage)
     {
         ErrorMessage = localizer[englishMessage];
+        return RedirectToPage(new { id });
+    }
+
+    private IActionResult Fail(int id, LineOutcome outcome)
+    {
+        ErrorMessage = localizer[outcome.Error!, outcome.Args ?? []];
         return RedirectToPage(new { id });
     }
 }

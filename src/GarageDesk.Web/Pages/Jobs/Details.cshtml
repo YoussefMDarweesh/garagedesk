@@ -1,5 +1,6 @@
 @page "{id:int}"
 @using GarageDesk.Web.Models
+@using GarageDesk.Web.Services
 @model DetailsModel
 @{
     var job = Model.Job;
@@ -114,7 +115,14 @@
                         {
                             <tr>
                                 <td><span class="chip @(line.Type == JobLineType.Part ? "chip-info" : "chip-accent")">@(line.Type == JobLineType.Part ? L["Part"] : L["Labor"])</span></td>
-                                <td class="fw-semibold">@line.Description</td>
+                                <td class="fw-semibold">
+                                    @line.Description
+                                    @if (line.PartId is not null) { <span class="chip" data-from-stock>@L["From stock"]</span> }
+                                    @if (Model.CanSeeProfit && line.UnitCost is decimal unitCost)
+                                    {
+                                        <div class="small text-secondary fw-normal" data-line-cost>@L["Cost"] <span class="ltr num">@MoneyFormat.Amount(unitCost)</span> @L["EGP"]</div>
+                                    }
+                                </td>
                                 <td class="cell-end num"><span class="ltr">@line.Quantity.ToString("0.##")</span></td>
                                 <td class="cell-end"><partial name="_Money" model="line.UnitPrice" /></td>
                                 <td class="cell-end fw-bold"><partial name="_Money" model="line.LineTotal" /></td>
@@ -139,16 +147,36 @@
                 <form method="post" asp-page-handler="AddLine" asp-route-id="@job.Id" novalidate class="add-line">
                     <h3 class="form-section-title">@L["Add a line"]</h3>
                     <div class="row g-2 align-items-start">
+                        @if (Model.Parts.Count > 0)
+                        {
+                            <div class="col-12">
+                                <label asp-for="NewLine.PartId" class="form-label small text-secondary"></label>
+                                <select asp-for="NewLine.PartId" class="form-select" data-part-picker>
+                                    <option value="">@L["Not from the catalog (free text)"]</option>
+                                    @foreach (var part in Model.Parts)
+                                    {
+                                        <option value="@part.Id" data-name="@part.Name" data-price="@part.SellPrice.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)">@part.Name (@part.Quantity.ToString("0.##") @part.Unit)</option>
+                                    }
+                                </select>
+                                <div class="form-text">@L["Choosing a part takes it from stock and fills in its price."]</div>
+                            </div>
+                        }
                         <div class="col-sm-3 col-md-2">
                             <label asp-for="NewLine.Type" class="form-label small text-secondary"></label>
-                            <select asp-for="NewLine.Type" class="form-select">
+                            <select asp-for="NewLine.Type" class="form-select" data-part-type>
                                 <option value="@JobLineType.Part">@L["Part"]</option>
                                 <option value="@JobLineType.Labor">@L["Labor"]</option>
                             </select>
                         </div>
                         <div class="col-sm-9 col-md-4">
                             <label asp-for="NewLine.Description" class="form-label small text-secondary"></label>
-                            <input asp-for="NewLine.Description" class="form-control" autocomplete="off" />
+                            <input asp-for="NewLine.Description" class="form-control" autocomplete="off" list="parts-list" data-part-description />
+                            <datalist id="parts-list">
+                                @foreach (var part in Model.Parts)
+                                {
+                                    <option value="@part.Name"></option>
+                                }
+                            </datalist>
                             <span asp-validation-for="NewLine.Description"></span>
                         </div>
                         <div class="col-6 col-md-2">
@@ -158,7 +186,7 @@
                         </div>
                         <div class="col-6 col-md-2">
                             <label asp-for="NewLine.UnitPrice" class="form-label small text-secondary"></label>
-                            <input asp-for="NewLine.UnitPrice" type="number" step="0.01" min="0" inputmode="decimal" class="form-control" />
+                            <input asp-for="NewLine.UnitPrice" type="number" step="0.01" min="0" inputmode="decimal" class="form-control" data-part-price />
                             <span asp-validation-for="NewLine.UnitPrice"></span>
                         </div>
                         <div class="col-12 col-md-2 d-grid">
@@ -198,6 +226,31 @@
                 <dd class="col-6 text-end border-top pt-3 mb-0 fw-bold fs-5" data-job-total><partial name="_Money" model="job.Total" /></dd>
             </dl>
         </section>
+
+        @if (Model.CanSeeProfit)
+        {
+            @* Owner only: what the shop paid for the parts and what is left. Worked out from the lines, never stored. *@
+            var partCost = GarageDesk.Web.Services.JobProfit.PartCost(job.Lines);
+            var withoutCost = GarageDesk.Web.Services.JobProfit.PartLinesWithoutCost(job.Lines);
+            <section class="panel panel-pad mb-3 mb-lg-4" aria-labelledby="profit-heading" data-job-profit>
+                <div class="panel-head"><h2 id="profit-heading" class="panel-title">@L["Profit on this job"]</h2><span class="chip">@L["Owner only"]</span></div>
+                <dl class="row mb-2 g-1">
+                    <dt class="col-6 text-secondary fw-normal">@L["Revenue (before VAT)"]</dt>
+                    <dd class="col-6 text-end mb-1" data-profit-revenue><partial name="_Money" model="GarageDesk.Web.Services.JobProfit.Revenue(job)" /></dd>
+                    <dt class="col-6 text-secondary fw-normal">@L["Part cost"]</dt>
+                    <dd class="col-6 text-end mb-1" data-profit-cost>&minus; <partial name="_Money" model="partCost" /></dd>
+                    <dt class="col-6 border-top pt-2 mb-0">@L["Profit"]</dt>
+                    <dd class="col-6 text-end border-top pt-2 mb-0 fw-bold" data-profit-value><partial name="_Money" model="GarageDesk.Web.Services.JobProfit.Of(job)" /></dd>
+                </dl>
+                <p class="text-secondary small mb-0" title="@L["Profit = subtotal minus discount, minus the cost of the parts taken from stock. Labor has no cost. VAT is not income."]">
+                    @L["Profit = subtotal minus discount, minus the cost of the parts taken from stock. Labor has no cost. VAT is not income."]
+                    @if (withoutCost > 0)
+                    {
+                        <span data-profit-uncosted> @L["{0} part lines are free text, so their cost is not known.", withoutCost]</span>
+                    }
+                </p>
+            </section>
+        }
 
         <section class="panel panel-pad mb-3 mb-lg-4" aria-labelledby="payments-heading">
             <div class="panel-head">

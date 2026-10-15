@@ -51,4 +51,8 @@ public class JobLineInput
     [Range(0, 10_000_000)]
     [Display(Name = "Unit price")]
     public decimal UnitPrice { get; set; }
+
+    /// <summary>A part from the catalog (optional). Checked on the server: it must be an active part of this shop.</summary>
+    [Display(Name = "Catalog part")]
+    public int? PartId { get; set; }
 }

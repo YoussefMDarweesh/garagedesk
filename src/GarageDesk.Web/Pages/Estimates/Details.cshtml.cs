@@ -15,6 +15,9 @@ public class DetailsModel(ApplicationDbContext db, ICurrentStaff currentStaff, I
 {
     public Estimate Estimate { get; private set; } = null!;
 
+    /// <summary>The active catalog parts, for the picker.</summary>
+    public List<PartOption> Parts { get; private set; } = [];
+
     /// <summary>The label of the job card this estimate was converted into (for the link).</summary>
     public int? JobCardId => Estimate.JobCardId;
 
@@ -84,19 +87,38 @@ public class DetailsModel(ApplicationDbContext db, ICurrentStaff currentStaff, I
             return Fail(id, "An accepted estimate can no longer be changed.");
         }
 
+        // A quoted catalog part must be an active part of this shop (another shop's id finds nothing).
+        Part? part = null;
+        if (NewLine.PartId is int pickedId)
+        {
+            part = await db.Parts.AsNoTracking().FirstOrDefaultAsync(p => p.Id == pickedId && p.IsActive);
+            if (part is null)
+            {
+                return Fail(id, StockLedger.Messages.UnknownPart);
+            }
+
+            if (string.IsNullOrWhiteSpace(NewLine.Description))
+            {
+                NewLine.Description = part.Name;
+                ModelState.Remove($"{nameof(NewLine)}.{nameof(NewLine.Description)}");
+            }
+        }
+
         if (!ModelState.IsValid)
         {
             await LoadAsync(id);
             return Page();
         }
 
+        // Quoting does not touch stock; converting the estimate into a job card does (once).
         db.EstimateLines.Add(new EstimateLine
         {
             EstimateId = estimate.Id,
-            Type = NewLine.Type,
+            Type = part is null ? NewLine.Type : JobLineType.Part,
             Description = NewLine.Description.Trim(),
             Quantity = NewLine.Quantity,
-            UnitPrice = NewLine.UnitPrice,
+            UnitPrice = part is not null && NewLine.UnitPrice == 0 ? part.SellPrice : NewLine.UnitPrice,
+            PartId = part?.Id,
         });
         await db.SaveChangesAsync();
         return RedirectToPage(new { id });
@@ -170,7 +192,29 @@ public class DetailsModel(ApplicationDbContext db, ICurrentStaff currentStaff, I
             return RedirectToPage("/Jobs/Details", new { id = existing });
         }
 
+        // Catalog parts on the quote are taken from stock now, once, as the job card is created. Estimates themselves
+        // never touched stock, so nothing is deducted twice. If the shelf cannot cover it, nothing is created.
+        var wanted = estimate.Lines.Where(l => l.PartId != null && l.Type == JobLineType.Part)
+            .GroupBy(l => l.PartId!.Value).ToDictionary(g => g.Key, g => g.Sum(l => l.Quantity));
+        var parts = wanted.Count == 0
+            ? new Dictionary<int, Part>()
+            : await db.Parts.Where(p => wanted.Keys.Contains(p.Id)).ToDictionaryAsync(p => p.Id);
+        if (!await StockLedger.AllowsNegativeAsync(db))
+        {
+            foreach (var (partId, quantity) in wanted)
+            {
+                if (parts.TryGetValue(partId, out var short_) && short_.QuantityOnHand < quantity)
+                {
+                    ErrorMessage = localizer[StockLedger.Messages.ConvertShort, short_.Name,
+                        short_.QuantityOnHand.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture),
+                        quantity.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)];
+                    return RedirectToPage(new { id });
+                }
+            }
+        }
+
         await using var tx = await db.Database.BeginTransactionAsync();
+        var actor = await currentStaff.GetAsync();
         var job = new JobCard
         {
             VehicleId = estimate.VehicleId,
@@ -183,21 +227,46 @@ public class DetailsModel(ApplicationDbContext db, ICurrentStaff currentStaff, I
             VatPercent = estimate.VatPercent,
             EstimateId = estimate.Id,
         };
-        job.Lines.AddRange(estimate.Lines.OrderBy(l => l.Id).Select(l => new JobLine
+        job.Lines.AddRange(estimate.Lines.OrderBy(l => l.Id).Select(l =>
         {
-            Type = l.Type,
-            Description = l.Description,
-            Quantity = l.Quantity,
-            UnitPrice = l.UnitPrice,
+            var part = l.PartId is int pid && l.Type == JobLineType.Part ? parts.GetValueOrDefault(pid) : null;
+            return new JobLine
+            {
+                Type = l.Type,
+                Description = l.Description,
+                Quantity = l.Quantity,
+                UnitPrice = l.UnitPrice,
+                PartId = part?.Id,
+                UnitCost = part?.CostPrice,
+                AddedByUserId = actor?.UserId,
+            };
         }));
         db.JobCards.Add(job);
-        JobAudit.Add(db, await currentStaff.GetAsync(), job, JobAuditKind.Created, estimate.Label);
-        await db.SaveChangesAsync();
+        JobAudit.Add(db, actor, job, JobAuditKind.Created, estimate.Label);
+        foreach (var line in estimate.Lines.Where(l => l.PartId != null && l.Type == JobLineType.Part).OrderBy(l => l.Id))
+        {
+            if (parts.GetValueOrDefault(line.PartId!.Value) is { } part)
+            {
+                StockLedger.Apply(db, part, StockMovementKind.JobUse, -line.Quantity, actor, job, note: part.Name);
+                JobAudit.Add(db, actor, job, JobAuditKind.PartUsed, StockLedger.AuditDetail(part.Name, line.Quantity));
+            }
+        }
 
         estimate.Status = EstimateStatus.Accepted;
-        estimate.JobCardId = job.Id;
-        await db.SaveChangesAsync();
-        await tx.CommitAsync();
+        try
+        {
+            await db.SaveChangesAsync();
+
+            estimate.JobCardId = job.Id;
+            await db.SaveChangesAsync();
+            await tx.CommitAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            // Someone changed a part's stock at the same moment: nothing was created, try again.
+            ErrorMessage = localizer[StockLedger.Messages.Changed];
+            return RedirectToPage(new { id });
+        }
 
         StatusMessage = localizer["Estimate accepted. This is the new job card."];
         return RedirectToPage("/Jobs/Details", new { id = job.Id });
@@ -217,6 +286,11 @@ public class DetailsModel(ApplicationDbContext db, ICurrentStaff currentStaff, I
 
         estimate.Lines = estimate.Lines.OrderBy(l => l.Id).ToList();
         Estimate = estimate;
+        if (!estimate.IsLocked)
+        {
+            Parts = await PartPicker.LoadAsync(db);
+        }
+
         Links = new ShareLinksPanel(estimate.Id, await shares.ListLiveAsync(estimate.Id, ShareLinkKind.Estimate));
         return true;
     }
