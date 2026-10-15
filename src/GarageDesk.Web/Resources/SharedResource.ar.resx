@@ -776,4 +776,72 @@
   <data name="Add your logo or pick a colour" xml:space="preserve"><value>أضف شعارك أو اختر لونًا</value></data>
   <data name="Set your VAT percent, if you charge VAT" xml:space="preserve"><value>اضبط نسبة الضريبة إن كنت تحصّلها</value></data>
   <data name="Open the setup guide" xml:space="preserve"><value>افتح دليل الإعداد</value></data>
+  <!-- growth-onboarding: CSV import -->
+  <data name="Import customers and cars" xml:space="preserve"><value>استيراد العملاء والسيارات</value></data>
+  <data name="Import" xml:space="preserve"><value>استيراد</value></data>
+  <data name="Bring your existing list from Excel or Google Sheets: one row per car, with its owner." xml:space="preserve"><value>أحضر قائمتك الحالية من إكسل أو جوجل شيتس: صف لكل سيارة مع صاحبها.</value></data>
+  <data name="1. Get the template" xml:space="preserve"><value>1. حمّل النموذج</value></data>
+  <data name="Download the empty file, fill it in with Excel or Google Sheets and save it as CSV UTF-8. Headers in English or Arabic are both understood." xml:space="preserve"><value>حمّل الملف الفارغ واملأه بإكسل أو جوجل شيتس واحفظه بصيغة CSV UTF-8. العناوين بالإنجليزية أو بالعربية كلاهما مفهوم.</value></data>
+  <data name="Template with English headers" xml:space="preserve"><value>نموذج بعناوين إنجليزية</value></data>
+  <data name="Template with Arabic headers" xml:space="preserve"><value>نموذج بعناوين عربية</value></data>
+  <data name="What the columns mean" xml:space="preserve"><value>معنى الأعمدة</value></data>
+  <data name="Customer name" xml:space="preserve"><value>اسم العميل</value></data>
+  <data name="Required" xml:space="preserve"><value>مطلوب</value></data>
+  <data name="Needed for a car" xml:space="preserve"><value>مطلوب للسيارة</value></data>
+  <data name="A customer with several cars: repeat the name and phone on each row. The phone number is what identifies a customer." xml:space="preserve"><value>عميل لديه عدة سيارات: كرّر الاسم والهاتف في كل صف. رقم الهاتف هو ما يحدد العميل.</value></data>
+  <data name="Leave the car columns empty to add a customer with no car." xml:space="preserve"><value>اترك أعمدة السيارة فارغة لإضافة عميل بلا سيارة.</value></data>
+  <data name="Customers and cars that are already in your shop are skipped, so uploading the same file twice adds nothing." xml:space="preserve"><value>يتم تخطي العملاء والسيارات الموجودة في ورشتك، لذلك رفع الملف نفسه مرتين لا يضيف شيئًا.</value></data>
+  <data name="Up to 2000 rows and 512 KB. Commas or semicolons both work." xml:space="preserve"><value>حتى 2000 صف و512 كيلوبايت. الفاصلة أو الفاصلة المنقوطة كلاهما مقبول.</value></data>
+  <data name="2. Upload and check" xml:space="preserve"><value>2. ارفع وراجع</value></data>
+  <data name="Nothing is saved yet. You will see what each row would do first." xml:space="preserve"><value>لم يُحفظ شيء بعد. سترى أولًا ما سيفعله كل صف.</value></data>
+  <data name="CSV file" xml:space="preserve"><value>ملف CSV</value></data>
+  <data name="Check the file" xml:space="preserve"><value>افحص الملف</value></data>
+  <data name="Check before importing" xml:space="preserve"><value>راجع قبل الاستيراد</value></data>
+  <data name="Customers to add" xml:space="preserve"><value>عملاء سيُضافون</value></data>
+  <data name="Cars to add" xml:space="preserve"><value>سيارات ستُضاف</value></data>
+  <data name="Skipped (already there)" xml:space="preserve"><value>متخطّى (موجود بالفعل)</value></data>
+  <data name="Rows with errors" xml:space="preserve"><value>صفوف بها أخطاء</value></data>
+  <data name="These columns are not used and were ignored:" xml:space="preserve"><value>هذه الأعمدة غير مستخدمة وتم تجاهلها:</value></data>
+  <data name="Rows with errors are not imported. Fix them in your file and upload it again, or import the good rows now and add the rest by hand." xml:space="preserve"><value>الصفوف التي بها أخطاء لا تُستورد. صحّحها في ملفك وارفعه مرة أخرى، أو استورد الصفوف السليمة الآن وأضف الباقي يدويًا.</value></data>
+  <data name="Import {0} customers and {1} cars" xml:space="preserve"><value>استيراد {0} عميل و{1} سيارة</value></data>
+  <data name="Download the rows that were not imported" xml:space="preserve"><value>نزّل الصفوف التي لم تُستورد</value></data>
+  <data name="Start over" xml:space="preserve"><value>ابدأ من جديد</value></data>
+  <data name="Rows" xml:space="preserve"><value>الصفوف</value></data>
+  <data name="Row" xml:space="preserve"><value>الصف</value></data>
+  <data name="Car" xml:space="preserve"><value>السيارة</value></data>
+  <data name="Result" xml:space="preserve"><value>النتيجة</value></data>
+  <data name="Existing customer" xml:space="preserve"><value>عميل موجود</value></data>
+  <data name="Showing the first {0} rows of {1}. The totals above and the import cover every row." xml:space="preserve"><value>عرض أول {0} صف من {1}. الإجماليات أعلاه والاستيراد يشملان كل الصفوف.</value></data>
+  <data name="Nothing to import: every row is already in your shop or has an error." xml:space="preserve"><value>لا شيء للاستيراد: كل صف موجود بالفعل في ورشتك أو به خطأ.</value></data>
+  <data name="Imported {0} customers and {1} cars. {2} rows were skipped as duplicates and {3} had errors." xml:space="preserve"><value>تم استيراد {0} عميل و{1} سيارة. تم تخطي {2} صف لأنها مكررة و{3} صف بها أخطاء.</value></data>
+  <data name="Choose a CSV file to upload." xml:space="preserve"><value>اختر ملف CSV لرفعه.</value></data>
+  <data name="The file is too large. The maximum size is 512 KB." xml:space="preserve"><value>الملف كبير جدًا. الحد الأقصى 512 كيلوبايت.</value></data>
+  <data name="The file is empty." xml:space="preserve"><value>الملف فارغ.</value></data>
+  <data name="The file is not saved as UTF-8. In Excel choose Save As, then CSV UTF-8 (Comma delimited)." xml:space="preserve"><value>الملف غير محفوظ بترميز UTF-8. في إكسل اختر حفظ باسم ثم CSV UTF-8 (محدد بفاصلة).</value></data>
+  <data name="The file is saved as Unicode text (UTF-16). In Excel choose Save As, then CSV UTF-8 (Comma delimited)." xml:space="preserve"><value>الملف محفوظ كنص يونيكود (UTF-16). في إكسل اختر حفظ باسم ثم CSV UTF-8 (محدد بفاصلة).</value></data>
+  <data name="A quotation mark is never closed, so the file cannot be read. Check the cells that contain quotes." xml:space="preserve"><value>توجد علامة اقتباس لم تُغلق، لذلك تعذّرت قراءة الملف. راجع الخلايا التي تحتوي على علامات اقتباس.</value></data>
+  <data name="The file has more than 2000 rows. Split it into smaller files." xml:space="preserve"><value>الملف يحتوي على أكثر من 2000 صف. قسّمه إلى ملفات أصغر.</value></data>
+  <data name="The file has more than 20 columns." xml:space="preserve"><value>الملف يحتوي على أكثر من 20 عمودًا.</value></data>
+  <data name="These columns are missing from the first row: {0}" xml:space="preserve"><value>هذه الأعمدة غير موجودة في الصف الأول: {0}</value></data>
+  <data name="The name is missing." xml:space="preserve"><value>الاسم مفقود.</value></data>
+  <data name="The name is longer than 100 characters." xml:space="preserve"><value>الاسم أطول من 100 حرف.</value></data>
+  <data name="The phone number is missing." xml:space="preserve"><value>رقم الهاتف مفقود.</value></data>
+  <data name="The notes are longer than 1000 characters." xml:space="preserve"><value>الملاحظات أطول من 1000 حرف.</value></data>
+  <data name="The plate number is missing." xml:space="preserve"><value>رقم اللوحة مفقود.</value></data>
+  <data name="The plate number is longer than 20 characters." xml:space="preserve"><value>رقم اللوحة أطول من 20 حرفًا.</value></data>
+  <data name="The make is missing." xml:space="preserve"><value>الماركة مفقودة.</value></data>
+  <data name="The make is longer than 50 characters." xml:space="preserve"><value>الماركة أطول من 50 حرفًا.</value></data>
+  <data name="The model is missing." xml:space="preserve"><value>الموديل مفقود.</value></data>
+  <data name="The model is longer than 50 characters." xml:space="preserve"><value>الموديل أطول من 50 حرفًا.</value></data>
+  <data name="The year must be between 1950 and 2100." xml:space="preserve"><value>يجب أن تكون السنة بين 1950 و2100.</value></data>
+  <data name="The mileage must be a whole number of kilometres up to 5,000,000." xml:space="preserve"><value>يجب أن يكون العداد عددًا صحيحًا من الكيلومترات حتى 5,000,000.</value></data>
+  <data name="The VIN is longer than 17 characters." xml:space="preserve"><value>رقم الشاسيه أطول من 17 حرفًا.</value></data>
+  <data name="A cell may not start with = + - or @ (a spreadsheet would run it as a formula)." xml:space="preserve"><value>لا يجوز أن تبدأ الخلية بـ = أو + أو - أو @ (قد يتعامل معها برنامج الجداول كمعادلة).</value></data>
+  <data name="A cell is longer than 1000 characters." xml:space="preserve"><value>توجد خلية أطول من 1000 حرف.</value></data>
+  <data name="New customer and car" xml:space="preserve"><value>عميل جديد وسيارة</value></data>
+  <data name="New car for an existing customer" xml:space="preserve"><value>سيارة جديدة لعميل موجود</value></data>
+  <data name="New customer" xml:space="preserve"><value>عميل جديد</value></data>
+  <data name="Skipped: this plate is already in your shop" xml:space="preserve"><value>تم التخطي: هذه اللوحة موجودة بالفعل في ورشتك</value></data>
+  <data name="Skipped: this plate appears earlier in the file" xml:space="preserve"><value>تم التخطي: هذه اللوحة مكررة في الملف</value></data>
+  <data name="Skipped: this customer already exists" xml:space="preserve"><value>تم التخطي: هذا العميل موجود بالفعل</value></data>
 </root>

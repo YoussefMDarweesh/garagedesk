@@ -159,6 +159,7 @@
                 <div class="d-flex flex-wrap gap-2">
                     <button type="submit" class="btn btn-primary">@L["Save and continue"]</button>
                     <a class="btn btn-outline-secondary" asp-page="Onboarding" asp-route-step="1">@L["Back"]</a>
+                    <a class="btn btn-link" asp-page="/Import">@L["Import customers and cars"]</a>
                 </div>
             </form>
         </section>
@@ -202,6 +203,7 @@
             </div>
             <div class="quick-actions mt-3">
                 <a class="quick-action" asp-page="/Index"><span class="icon-tile"><partial name="_Icon" model='"grid"' /></span>@L["Go to the dashboard"]</a>
+                <a class="quick-action" asp-page="/Import"><span class="icon-tile"><partial name="_Icon" model='"users"' /></span>@L["Import customers and cars"]</a>
                 <a class="quick-action" asp-page="/Staff/Index"><span class="icon-tile"><partial name="_Icon" model='"user"' /></span>@L["Invite your team"]</a>
                 <a class="quick-action" asp-page="/Reminders/Create"><span class="icon-tile"><partial name="_Icon" model='"bell"' /></span>@L["Add reminder"]</a>
             </div>
