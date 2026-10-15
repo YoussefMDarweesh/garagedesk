@@ -1,0 +1,150 @@
+@page
+@model GarageDesk.Web.Pages.Parts.IndexModel
+@using GarageDesk.Web.Services
+@{
+    ViewData["Title"] = L["Parts"].Value;
+    var searching = !string.IsNullOrWhiteSpace(Model.Q);
+    var show = Model.Show ?? "";
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="visually-hidden">@L["Parts"]</h1>
+        <p class="page-sub mt-0">@L["{0} parts", Model.Total]</p>
+    </div>
+    <div class="page-actions">
+        @if (Model.IsOwner)
+        {
+            <a class="btn btn-primary" asp-page="Create"><partial name="_Icon" model='"plus"' />@L["Add part"]</a>
+        }
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.StatusMessage))
+{
+    <div class="toast-source" data-toast="success" role="status">@Model.StatusMessage</div>
+}
+
+<div class="row g-3 mb-3">
+    <div class="col-6 col-lg-3">
+        <a class="stat-card" asp-page="Index" asp-route-show="low" data-low-stock-card>
+            <div class="stat-top"><span class="stat-label">@L["Running low"]</span><span class="icon-tile"><partial name="_Icon" model='"alert"' /></span></div>
+            <p class="stat-value">@Model.LowCount</p>
+            <p class="stat-sub">@L["Parts at or below their alert level"]</p>
+        </a>
+    </div>
+    @if (Model.IsOwner && Model.StockValue is decimal value)
+    {
+        <div class="col-6 col-lg-3">
+            <div class="stat-card" data-stock-value title="@L["Quantity on hand times cost price, over all active parts."]">
+                <div class="stat-top"><span class="stat-label">@L["Stock value (at cost)"]</span><span class="icon-tile"><partial name="_Icon" model='"coins"' /></span></div>
+                <p class="stat-value"><span class="ltr">@MoneyFormat.Amount(value)</span> <small class="fs-6 text-secondary">@L["EGP"]</small></p>
+                <p class="stat-sub">@L["Quantity on hand times cost price, over all active parts."]</p>
+            </div>
+        </div>
+    }
+</div>
+
+<form method="get" class="toolbar" role="search">
+    <div class="search-field">
+        <partial name="_Icon" model='"search"' />
+        <input type="search" name="q" value="@Model.Q" class="form-control"
+               placeholder="@L["Search by name or SKU"]" aria-label="@L["Search by name or SKU"]" />
+    </div>
+    <div class="range-pills" role="group" aria-label="@L["Show"]">
+        <button type="submit" name="show" value="" aria-pressed="@(show == "" ? "true" : "false")">@L["Active"]</button>
+        <button type="submit" name="show" value="low" aria-pressed="@(show == "low" ? "true" : "false")">@L["Running low"]</button>
+        <button type="submit" name="show" value="archived" aria-pressed="@(show == "archived" ? "true" : "false")">@L["Archived"]</button>
+    </div>
+    <div class="page-actions">
+        <button type="submit" class="btn btn-outline-secondary">@L["Search"]</button>
+        @if (searching)
+        {
+            <a class="btn btn-outline-secondary" asp-page="Index" asp-route-show="@Model.Show">@L["Clear"]</a>
+        }
+    </div>
+</form>
+
+@if (Model.Parts.Count == 0)
+{
+    <section class="panel">
+        <div class="empty">
+            <span class="icon-tile"><partial name="_Icon" model='"package"' /></span>
+            @if (searching || show != "")
+            {
+                <h2>@L["No parts match."]</h2>
+            }
+            else
+            {
+                <h2>@L["No parts yet."]</h2>
+                <p>@L["Add the parts you stock so job cards can take them from the shelf."]</p>
+                @if (Model.IsOwner)
+                {
+                    <a class="btn btn-primary mt-2" asp-page="Create">@L["Add part"]</a>
+                }
+            }
+        </div>
+    </section>
+}
+else
+{
+    <section class="panel">
+        <div class="data-table-wrap">
+            <table class="data-table" data-parts>
+                <thead>
+                    <tr>
+                        <th scope="col">@L["Name"]</th>
+                        <th scope="col">@L["SKU"]</th>
+                        <th scope="col" class="cell-end">@L["In stock"]</th>
+                        <th scope="col" class="cell-end">@L["Sell price (EGP)"]</th>
+                        @if (Model.IsOwner)
+                        {
+                            <th scope="col" class="cell-end">@L["Cost price (EGP)"]</th>
+                            <th scope="col" class="cell-end">@L["Stock value (at cost)"]</th>
+                            <th scope="col"><span class="visually-hidden">@L["Edit"]</span></th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var part in Model.Parts)
+                {
+                    <tr data-part="@part.Name">
+                        <td class="fw-semibold">
+                            @part.Name
+                            @if (!part.IsActive) { <span class="chip">@L["Archived"]</span> }
+                            @if (part.IsLow) { <span class="chip chip-warn" data-low>@L["Running low"]</span> }
+                        </td>
+                        <td><span class="ltr num">@part.Sku</span></td>
+                        <td class="cell-end num"><span class="ltr">@part.Quantity.ToString("0.##")</span> @part.Unit</td>
+                        <td class="cell-end"><partial name="_Money" model="part.SellPrice" /></td>
+                        @if (Model.IsOwner)
+                        {
+                            <td class="cell-end"><partial name="_Money" model="part.CostPrice ?? 0m" /></td>
+                            <td class="cell-end"><partial name="_Money" model="part.StockValue ?? 0m" /></td>
+                            <td class="cell-end">
+                                <a class="btn btn-sm btn-outline-secondary" asp-page="Stock" asp-route-id="@part.Id">@L["Stock"]</a>
+                                <a class="icon-btn" asp-page="Edit" asp-route-id="@part.Id" title="@L["Edit"]" aria-label="@L["Edit"]"><partial name="_Icon" model='"edit"' /></a>
+                            </td>
+                        }
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <partial name="_Pager" model="Model.Pager" />
+}
+
+@if (Model.IsOwner)
+{
+    <section class="panel panel-pad mt-4" aria-labelledby="neg-heading">
+        <h2 id="neg-heading" class="panel-title">@L["Negative stock"]</h2>
+        <p class="text-secondary small">@L["Off: a part cannot be put on a job card if the shelf does not hold enough of it. On: it can, and the quantity goes below zero until you receive stock."]</p>
+        <form method="post" asp-page-handler="AllowNegative" asp-route-allow="@(!Model.AllowNegativeStock)">
+            <button type="submit" class="btn btn-outline-secondary btn-sm" data-allow-negative>
+                @(Model.AllowNegativeStock ? L["Do not allow negative stock"] : L["Allow negative stock"])
+            </button>
+        </form>
+    </section>
+}

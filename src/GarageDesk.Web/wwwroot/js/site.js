@@ -302,3 +302,36 @@
     host.classList.add("is-ready");
   }
 })();
+
+// v1-4-stock-profit: the catalog part picker on the "add a line" forms (job card, estimate, technician page).
+// Without JavaScript the select alone works: the server fills in the name and the price from the catalog.
+(function () {
+  document.querySelectorAll("[data-part-picker]").forEach((select) => {
+    const form = select.closest("form");
+    if (!form) { return; }
+    const description = form.querySelector("[data-part-description]");
+    const price = form.querySelector("[data-part-price]");
+    const type = form.querySelector("[data-part-type]");
+
+    select.addEventListener("change", () => {
+      const option = select.selectedOptions[0];
+      if (!option || !option.value) { return; }
+      if (description) { description.value = option.dataset.name || ""; }
+      if (price && option.dataset.price !== undefined) { price.value = option.dataset.price; }
+      if (type) { type.value = "Part"; }
+    });
+
+    // Typing a catalog name exactly (the browser offers the names as suggestions) picks that part.
+    if (description) {
+      description.addEventListener("input", () => {
+        const typed = description.value.trim().toLowerCase();
+        if (!typed) { return; }
+        const match = Array.from(select.options).find((o) => o.value && (o.dataset.name || "").toLowerCase() === typed);
+        if (match && select.value !== match.value) {
+          select.value = match.value;
+          select.dispatchEvent(new Event("change"));
+        }
+      });
+    }
+  });
+})();

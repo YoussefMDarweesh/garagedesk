@@ -572,4 +572,98 @@
   <data name="That change could not be saved." xml:space="preserve"><value>تعذّر حفظ هذا التغيير.</value></data>
   <data name="You are already signed in" xml:space="preserve"><value>أنت مسجّل الدخول بالفعل</value></data>
   <data name="Log out first, then open the invitation link again." xml:space="preserve"><value>سجّل الخروج أولًا ثم افتح رابط الدعوة مرة أخرى.</value></data>
+  <!-- v1-4-stock-profit: parts catalog, stock, expenses, profit, cash close, export -->
+  <data name="From stock" xml:space="preserve"><value>من المخزون</value></data>
+  <data name="Cost" xml:space="preserve"><value>التكلفة</value></data>
+  <data name="Not from the catalog (free text)" xml:space="preserve"><value>ليست من الكتالوج (نص حر)</value></data>
+  <data name="Choosing a part takes it from stock and fills in its price." xml:space="preserve"><value>اختيار قطعة يخصمها من المخزون ويملأ سعرها.</value></data>
+  <data name="Choosing a part takes it from stock." xml:space="preserve"><value>اختيار قطعة يخصمها من المخزون.</value></data>
+  <data name="Quoting a catalog part does not touch stock. It is taken from stock when the estimate becomes a job card." xml:space="preserve"><value>إدراج قطعة من الكتالوج في عرض السعر لا يمس المخزون. تُخصم من المخزون عندما يتحول العرض إلى أمر شغل.</value></data>
+  <data name="Catalog part" xml:space="preserve"><value>قطعة من الكتالوج</value></data>
+  <data name="Profit on this job" xml:space="preserve"><value>الربح في هذا الأمر</value></data>
+  <data name="Revenue (before VAT)" xml:space="preserve"><value>الإيراد (قبل الضريبة)</value></data>
+  <data name="Part cost" xml:space="preserve"><value>تكلفة القطع</value></data>
+  <data name="Profit" xml:space="preserve"><value>الربح</value></data>
+  <data name="Profit = subtotal minus discount, minus the cost of the parts taken from stock. Labor has no cost. VAT is not income." xml:space="preserve"><value>الربح = الإجمالي الفرعي ناقص الخصم، ناقص تكلفة القطع المأخوذة من المخزون. المصنعية بلا تكلفة. ضريبة القيمة المضافة ليست دخلًا.</value></data>
+  <data name="{0} part lines are free text, so their cost is not known." xml:space="preserve"><value>{0} من بنود القطع نص حر، لذلك تكلفتها غير معروفة.</value></data>
+  <data name="{0} x {1} taken from stock" xml:space="preserve"><value>تم أخذ {0} × {1} من المخزون</value></data>
+  <data name="{0} x {1} put back in stock" xml:space="preserve"><value>تمت إعادة {0} × {1} إلى المخزون</value></data>
+  <data name="That part is not in your catalog." xml:space="preserve"><value>هذه القطعة غير موجودة في الكتالوج الخاص بك.</value></data>
+  <data name="Not enough in stock: {0} left of {1}." xml:space="preserve"><value>لا يوجد مخزون كافٍ: المتبقي {0} من {1}.</value></data>
+  <data name="The stock changed while you were saving. Please try again." xml:space="preserve"><value>تغيّر المخزون أثناء الحفظ. حاول مرة أخرى.</value></data>
+  <data name="Not enough stock of {0} to start this job ({1} left, {2} needed). Receive stock first, or allow negative stock on the Parts page." xml:space="preserve"><value>لا يوجد مخزون كافٍ من {0} لبدء هذا الأمر (المتبقي {1}، المطلوب {2}). استلم مخزونًا أولًا أو اسمح بالمخزون السالب في صفحة القطع.</value></data>
+  <data name="That would take the stock below zero. Allow negative stock on the Parts page if you really need that." xml:space="preserve"><value>هذا سيجعل المخزون أقل من صفر. اسمح بالمخزون السالب في صفحة القطع إن كنت تحتاج ذلك فعلًا.</value></data>
+  <data name="SKU (optional)" xml:space="preserve"><value>رمز الصنف (اختياري)</value></data>
+  <data name="SKU" xml:space="preserve"><value>رمز الصنف</value></data>
+  <data name="Unit" xml:space="preserve"><value>الوحدة</value></data>
+  <data name="Cost price (EGP)" xml:space="preserve"><value>سعر التكلفة (جنيه)</value></data>
+  <data name="Sell price (EGP)" xml:space="preserve"><value>سعر البيع (جنيه)</value></data>
+  <data name="Quantity on hand" xml:space="preserve"><value>الكمية المتاحة</value></data>
+  <data name="Low-stock alert at" xml:space="preserve"><value>تنبيه عند نقص المخزون إلى</value></data>
+  <data name="Supplier (optional)" xml:space="preserve"><value>المورّد (اختياري)</value></data>
+  <data name="You already have a part with this name." xml:space="preserve"><value>لديك قطعة بهذا الاسم بالفعل.</value></data>
+  <data name="You already have a part with this SKU." xml:space="preserve"><value>لديك قطعة بهذا الرمز بالفعل.</value></data>
+  <data name="Part saved." xml:space="preserve"><value>تم حفظ القطعة.</value></data>
+  <data name="Part archived. It can no longer be picked on new lines." xml:space="preserve"><value>تمت أرشفة القطعة. لم يعد ممكنًا اختيارها في بنود جديدة.</value></data>
+  <data name="Part restored." xml:space="preserve"><value>تمت استعادة القطعة.</value></data>
+  <data name="Prices" xml:space="preserve"><value>الأسعار</value></data>
+  <data name="What you pay your supplier. Only the owner sees it." xml:space="preserve"><value>ما تدفعه للمورّد. يراه المالك فقط.</value></data>
+  <data name="What the customer is charged. It is filled in when the part is picked on a job card." xml:space="preserve"><value>ما يُحاسَب به العميل. يُملأ عند اختيار القطعة في أمر الشغل.</value></data>
+  <data name="Stock" xml:space="preserve"><value>المخزون</value></data>
+  <data name="Leave empty for no alert." xml:space="preserve"><value>اتركه فارغًا لإلغاء التنبيه.</value></data>
+  <data name="Add part" xml:space="preserve"><value>إضافة قطعة</value></data>
+  <data name="Edit part" xml:space="preserve"><value>تعديل قطعة</value></data>
+  <data name="In stock" xml:space="preserve"><value>في المخزون</value></data>
+  <data name="Receive or adjust stock" xml:space="preserve"><value>استلام المخزون أو تصحيحه</value></data>
+  <data name="Archive this part? It can no longer be picked on new lines, and old job cards keep it." xml:space="preserve"><value>أرشفة هذه القطعة؟ لن يمكن اختيارها في بنود جديدة، وتحتفظ بها أوامر الشغل القديمة.</value></data>
+  <data name="Archive part" xml:space="preserve"><value>أرشفة القطعة</value></data>
+  <data name="Restore part" xml:space="preserve"><value>استعادة القطعة</value></data>
+  <data name="{0} parts" xml:space="preserve"><value>{0} قطعة</value></data>
+  <data name="Running low" xml:space="preserve"><value>مخزون منخفض</value></data>
+  <data name="Parts at or below their alert level" xml:space="preserve"><value>قطع وصلت إلى حد التنبيه أو أقل</value></data>
+  <data name="Stock value (at cost)" xml:space="preserve"><value>قيمة المخزون (بالتكلفة)</value></data>
+  <data name="Quantity on hand times cost price, over all active parts." xml:space="preserve"><value>الكمية المتاحة × سعر التكلفة، لجميع القطع النشطة.</value></data>
+  <data name="Search by name or SKU" xml:space="preserve"><value>ابحث بالاسم أو رمز الصنف</value></data>
+  <data name="Archived" xml:space="preserve"><value>مؤرشفة</value></data>
+  <data name="No parts match." xml:space="preserve"><value>لا توجد قطع مطابقة.</value></data>
+  <data name="No parts yet." xml:space="preserve"><value>لا توجد قطع بعد.</value></data>
+  <data name="Add the parts you stock so job cards can take them from the shelf." xml:space="preserve"><value>أضف القطع التي تحتفظ بها في المخزون ليتمكن أمر الشغل من أخذها من الرف.</value></data>
+  <data name="Negative stock" xml:space="preserve"><value>المخزون السالب</value></data>
+  <data name="Off: a part cannot be put on a job card if the shelf does not hold enough of it. On: it can, and the quantity goes below zero until you receive stock." xml:space="preserve"><value>متوقف: لا يمكن إضافة قطعة إلى أمر الشغل إن لم يكفِ ما على الرف. مفعّل: يمكن ذلك، وتنزل الكمية تحت الصفر حتى تستلم مخزونًا.</value></data>
+  <data name="Do not allow negative stock" xml:space="preserve"><value>عدم السماح بالمخزون السالب</value></data>
+  <data name="Allow negative stock" xml:space="preserve"><value>السماح بالمخزون السالب</value></data>
+  <data name="Negative stock is now allowed." xml:space="preserve"><value>أصبح المخزون السالب مسموحًا.</value></data>
+  <data name="Negative stock is no longer allowed." xml:space="preserve"><value>لم يعد المخزون السالب مسموحًا.</value></data>
+  <data name="Quantity received" xml:space="preserve"><value>الكمية المستلمة</value></data>
+  <data name="Cost per unit (EGP)" xml:space="preserve"><value>التكلفة للوحدة (جنيه)</value></data>
+  <data name="Also record it as an expense (Parts purchase)" xml:space="preserve"><value>سجّلها أيضًا كمصروف (شراء قطع)</value></data>
+  <data name="Change (use a minus to take stock away)" xml:space="preserve"><value>التغيير (استخدم علامة ناقص لخصم المخزون)</value></data>
+  <data name="Reason" xml:space="preserve"><value>السبب</value></data>
+  <data name="Receive stock" xml:space="preserve"><value>استلام مخزون</value></data>
+  <data name="This becomes the part's cost price for job cards added from now on." xml:space="preserve"><value>يصبح هذا سعر تكلفة القطعة لأوامر الشغل التي تُضاف من الآن.</value></data>
+  <data name="Correct the count" xml:space="preserve"><value>تصحيح الجرد</value></data>
+  <data name="After counting the shelf, or for a loss. Use a minus to take stock away." xml:space="preserve"><value>بعد جرد الرف، أو عند وجود فاقد. استخدم علامة ناقص لخصم المخزون.</value></data>
+  <data name="Save correction" xml:space="preserve"><value>حفظ التصحيح</value></data>
+  <data name="Stock movements" xml:space="preserve"><value>حركات المخزون</value></data>
+  <data name="Nothing has moved yet." xml:space="preserve"><value>لم تحدث أي حركة بعد.</value></data>
+  <data name="What happened" xml:space="preserve"><value>ما حدث</value></data>
+  <data name="Change" xml:space="preserve"><value>التغيير</value></data>
+  <data name="Quantity after" xml:space="preserve"><value>الكمية بعد الحركة</value></data>
+  <data name="By" xml:space="preserve"><value>بواسطة</value></data>
+  <data name="Opening stock" xml:space="preserve"><value>رصيد افتتاحي</value></data>
+  <data name="Received from supplier" xml:space="preserve"><value>استلام من المورّد</value></data>
+  <data name="Used on a job card" xml:space="preserve"><value>استُخدمت في أمر شغل</value></data>
+  <data name="Put back from a job card" xml:space="preserve"><value>أُعيدت من أمر شغل</value></data>
+  <data name="Correction" xml:space="preserve"><value>تصحيح</value></data>
+  <data name="Enter a quantity above zero and a cost of zero or more." xml:space="preserve"><value>أدخل كمية أكبر من صفر وتكلفة صفرًا أو أكثر.</value></data>
+  <data name="Enter the change and a reason." xml:space="preserve"><value>أدخل التغيير والسبب.</value></data>
+  <data name="Stock received." xml:space="preserve"><value>تم استلام المخزون.</value></data>
+  <data name="Stock corrected." xml:space="preserve"><value>تم تصحيح المخزون.</value></data>
+  <data name="Money" xml:space="preserve"><value>المال</value></data>
+  <data name="Rent" xml:space="preserve"><value>الإيجار</value></data>
+  <data name="Salaries" xml:space="preserve"><value>المرتبات</value></data>
+  <data name="Parts purchase" xml:space="preserve"><value>شراء قطع</value></data>
+  <data name="Utilities" xml:space="preserve"><value>المرافق</value></data>
+  <data name="Other" xml:space="preserve"><value>أخرى</value></data>
+  <!-- end v1-4-stock-profit -->
 </root>
