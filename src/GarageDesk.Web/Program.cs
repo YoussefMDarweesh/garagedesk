@@ -46,6 +46,8 @@ builder.Services.ConfigureApplicationCookie(options =>
     // A signed-in user who may not open a page gets a real 403, not a redirect to a login or "not found" page.
     options.Events.OnRedirectToAccessDenied = context => ForbiddenResponse.WriteAsync(context.HttpContext);
 });
+// The public invitation page (/Join) gets its own per-address rate limit, next to v1.2's share-link one.
+builder.Services.AddInviteRateLimit(builder.Configuration);
 // Re-check the login cookie against the database (security stamp) every minute instead of every 30 minutes, so a
 // deactivated user's old cookie stops working quickly. (The policies above already refuse them on every request.)
 builder.Services.Configure<SecurityStampValidatorOptions>(options => options.ValidationInterval = TimeSpan.FromMinutes(1));

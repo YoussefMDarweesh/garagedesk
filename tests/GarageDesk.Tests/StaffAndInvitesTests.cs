@@ -257,6 +257,36 @@ public partial class StaffAndInvitesTests(GarageDeskWebFactory factory) : IClass
         Assert.Empty(await db.StaffInvites.ToListAsync());
     }
 
+    // ---------------------------------------------------------------- rate limit
+
+    private sealed class LimitedFactory : GarageDeskWebFactory
+    {
+        protected override void ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder builder)
+        {
+            base.ConfigureWebHost(builder);
+            builder.UseSetting("Invites:PermitPerMinute", "3");
+        }
+    }
+
+    [Fact]
+    public async Task The_invitation_page_is_rate_limited_per_visitor()
+    {
+        using var limited = new LimitedFactory();
+        var client = limited.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        var (guess, _) = InviteTokens.Create();
+
+        var statuses = new List<HttpStatusCode>();
+        for (var i = 0; i < 6; i++)
+        {
+            statuses.Add((await client.GetAsync($"/Join/{guess}")).StatusCode);
+        }
+
+        // The first three get the ordinary answer for a dead link, then the limiter answers 429.
+        Assert.Equal(3, statuses.Count(s => s == HttpStatusCode.NotFound));
+        Assert.Equal(3, statuses.Count(s => s == HttpStatusCode.TooManyRequests));
+        Assert.Equal(HttpStatusCode.TooManyRequests, statuses[^1]);
+    }
+
     // ---------------------------------------------------------------- roles, activation, last owner
 
     private static async Task<HttpResponseMessage> PostTeamAsync(HttpClient owner, string handler, string userId, params (string, string)[] fields)

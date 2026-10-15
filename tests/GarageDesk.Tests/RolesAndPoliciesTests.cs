@@ -22,6 +22,8 @@ public class RolesAndPoliciesTests(GarageDeskWebFactory factory) : IClassFixture
         "/Error",
         "/SetCulture", // the language switcher works before sign-in
         "/Join",       // an invited person has no account yet; the link's secret token is the credential
+        "/Share/Open", // v1.2: the customer's public page /s/{token}; no login, the secret token is the credential,
+                       // read-only, rate limited. Deliberately outside every role and ActiveMember policy.
     };
 
     // Pages of the Identity UI package that carry no attribute at all. This one only prints a fixed message
@@ -181,6 +183,31 @@ public class RolesAndPoliciesTests(GarageDeskWebFactory factory) : IClassFixture
 
         // The owner of the same shop is unaffected.
         Assert.Equal(HttpStatusCode.OK, (await factory.CreateClientFor(ownerId, shop).GetAsync("/Customers")).StatusCode);
+    }
+
+    [Fact]
+    public async Task The_public_share_page_ignores_roles_and_policies_for_everyone_who_opens_it()
+    {
+        var (owner, shop) = await TestData.CreateOwnerAsync(factory, "Public Share");
+        var deactivated = await TestData.CreateStaffAsync(factory, shop, ShopRole.Technician, active: false);
+        var job = await TestData.SeedJobAsync(factory, shop, JobStatus.Done);
+        var token = ShareTokens.Generate();
+        using (var db = factory.CreateContextFor(shop))
+        {
+            db.ShareLinks.Add(new ShareLink
+            {
+                Kind = ShareLinkKind.Status, TargetId = job, TokenHash = ShareTokens.Hash(token), Language = "en",
+                CreatedAtUtc = DateTime.UtcNow, ExpiresAtUtc = DateTime.UtcNow.AddDays(30),
+            });
+            await db.SaveChangesAsync();
+        }
+
+        var anonymous = factory.CreateClient(new Microsoft.AspNetCore.Mvc.Testing.WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        Assert.Equal(HttpStatusCode.OK, (await anonymous.GetAsync($"/s/{token}")).StatusCode);
+
+        // A browser that happens to hold a deactivated staff login (or any other) still just sees the customer page.
+        Assert.Equal(HttpStatusCode.OK, (await factory.CreateClientFor(deactivated, shop).GetAsync($"/s/{token}")).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await factory.CreateClientFor(owner, shop).GetAsync($"/s/{token}")).StatusCode);
     }
 
     [Fact]

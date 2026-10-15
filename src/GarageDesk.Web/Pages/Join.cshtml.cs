@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 
@@ -39,6 +40,7 @@ public class JoinInput
 /// the invitation is consumed atomically (it works once, even if two requests race), and the page is never cached.
 /// </summary>
 [AllowAnonymous]
+[EnableRateLimiting(InviteRateLimit.Policy)]
 [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 public class JoinModel(
     ApplicationDbContext db,
