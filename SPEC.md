@@ -94,7 +94,7 @@ Online payments, inventory/stock, multi-branch, staff roles, mobile app, SMS, em
 | Languages | Built-in ASP.NET Core localization, one `.resx` table (English default, Arabic) | No extra packages |
 | Theme | Bootstrap 5.3 `data-bs-theme` (light/dark) | No extra CSS framework |
 | Multi-tenancy | `ShopId` on every shop-owned table + EF Core global query filter | Simplest safe SaaS pattern |
-| Hosting | Not chosen yet. The app is packaged as a Docker container, ready for a host such as Render (guide: docs/DEPLOY.md) | A card-free free tier is the constraint; the database stays on Neon |
+| Hosting | MonsterASP.NET free plan (IIS, .NET 10, `*.runasp.net`), guide: docs/DEPLOY.md. The Docker image stays for Docker hosts (docs/DEPLOY-DOCKER.md) | A card-free free tier is the constraint (Render did not accept the card); the database stays on Neon, on a separate production branch |
 | CI | GitHub Actions: build + test on every push | Free for public repos |
 | Tests | xUnit | Standard for .NET |
 
@@ -135,3 +135,15 @@ No new tables and no migrations: everything below is derived from existing data.
 - **CSV import (`/Import`, owner only).** One row per car with its owner (`Customer name, Phone, Notes, Plate, Make, Model, Year, Mileage, VIN`; English or Arabic headers; the car columns may be empty for a customer with no car). UTF-8 with or without a BOM, comma or semicolon, Excel quoting, at most 512 KB and 2,000 rows. Step 1 reads the file and shows every row's result (new customer and car, new car for an existing customer, new customer, skipped duplicate, error) and why; nothing is written. Step 2 plans the file again against the data as it is then and writes all importable rows in one transaction. Customers are matched by normalized phone and cars by normalized plate, in the shop and within the file, so uploading the same file again adds nothing. Existing customers are never changed. A cell that starts with `=`, `+`, `-` or `@` makes its row an error, and the downloadable report neutralizes such cells with a leading apostrophe.
 - **Installable app.** Web manifest, icons, and a service worker that caches static files only and never a page, the customer share pages, the invitation page or the sign-in pages; an offline page; a once-per-device install banner. Details: `docs/PWA.md`.
 - **Public landing page (`/`, logged-out visitors).** Hero, nine feature tiles, screenshots, how it works, sign-up and sign-in links, English or Arabic. A "talk to us on WhatsApp" button appears only when `Landing:WhatsAppNumber` is set. It reads no shop data. Signed-in users keep the dashboard at `/`.
+
+## 10. M9 — Go live (MonsterASP.NET free + Neon)
+Goal: the app running on a public HTTPS address for 0 cost, without a payment card, and safe to put real shops on.
+
+- **Host:** MonsterASP.NET's free plan (no card; ASP.NET Core on IIS, InProcess; a free `*.runasp.net` subdomain; 256 MB RAM, Europe only). Render was the first choice but did not accept the card. Published from Visual Studio with the host's Web Deploy profile, which is never committed (`*.publishSettings` is git-ignored).
+- **Secrets:** `ConnectionStrings__Default` and `ASPNETCORE_ENVIRONMENT=Production` are environment variables in MonsterASP's control panel, outside the published files. Nothing secret is in the repository or in GitHub.
+- **Database:** a separate Neon `production` branch (or a new Frankfurt project when the dev project is outside Europe), never the development database. Migrations are applied by hand from a developer machine before each publish, never at startup.
+- **Login keys in the database:** the ASP.NET Core Data Protection key ring (login cookies, form tokens, share-link tokens) is stored in a `DataProtectionKeys` table (package `Microsoft.AspNetCore.DataProtection.EntityFrameworkCore`, application name `GarageDesk`). A restart, redeploy or IIS recycle no longer logs anyone out or breaks share links. The table is app-wide, not shop-owned, so it has no `ShopId` or query filter. A test proves the keys are in the database and still work after a "restart".
+- **HTTPS:** requested from MonsterASP support (free plan); no real accounts before it works.
+- **Updates and safety:** Dependabot opens weekly grouped PRs for NuGet, GitHub Actions and the Docker base image; CI checks them. Backups are a Neon branch made before every migration and weekly (keep the last 3), because the free plan only restores the last 6 hours.
+- Step by step: `docs/DEPLOY.md`.
+- Not included: automatic deploys from GitHub (a paid MonsterASP feature, and it would put a deploy secret in GitHub), a custom domain, email sending, automated off-site backups.
