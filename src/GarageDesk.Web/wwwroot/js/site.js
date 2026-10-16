@@ -46,6 +46,46 @@
     });
   }
 
+  // ---- ui-polish-v2: collapsible navigation sections, remembered per browser ----
+  // The server renders every section in its default state and the inline script in _Sidebar applies what was
+  // remembered; here we only handle clicks. The section that holds the current page always stays open.
+  const NAV_KEY = "gd-nav";
+  const readNav = () => { try { return JSON.parse(localStorage.getItem(NAV_KEY) || "{}") || {}; } catch { return {}; } };
+  document.addEventListener("click", (event) => {
+    const toggle = event.target.closest(".rail-group-toggle");
+    if (!toggle || toggle.tagName !== "BUTTON") return;
+    const group = toggle.closest(".rail-group");
+    if (!group) return;
+    const open = !group.classList.contains("is-open");
+    group.classList.toggle("is-open", open);
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    const state = readNav();
+    state[group.dataset.group] = open;
+    try { localStorage.setItem(NAV_KEY, JSON.stringify(state)); } catch { /* storage blocked: it just resets next visit */ }
+  });
+
+  // ---- ui-polish-v2: the phone "More" sheet ----
+  const moreSheet = document.getElementById("more-sheet");
+  const moreTrigger = document.getElementById("more-trigger");
+  if (moreSheet && moreTrigger) {
+    const setMore = (open) => {
+      moreSheet.hidden = !open;
+      moreTrigger.setAttribute("aria-expanded", open ? "true" : "false");
+      document.body.classList.toggle("more-open", open);
+      if (open) {
+        const first = moreSheet.querySelector(".more-link");
+        if (first) first.focus();
+      } else {
+        moreTrigger.focus();
+      }
+    };
+    moreTrigger.addEventListener("click", (event) => { event.preventDefault(); setMore(moreSheet.hidden); });
+    moreSheet.querySelectorAll("[data-more-close]").forEach((el) => el.addEventListener("click", (event) => { event.preventDefault(); setMore(false); }));
+    document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !moreSheet.hidden) setMore(false); });
+    // Following a link from the sheet leaves the page anyway; this keeps the sheet closed if it is restored from the back/forward cache.
+    window.addEventListener("pageshow", () => { if (!moreSheet.hidden) setMore(false); });
+  }
+
   // ---- toasts ----
   const toasts = document.getElementById("toasts");
   const icons = {
@@ -161,7 +201,7 @@
     const state = { metric: "revenue", range: 12, index: -1 };
     const canvas = host.querySelector(".chart-canvas");
     const tip = host.querySelector(".chart-tip");
-    const W = 760, H = 270, PAD = { l: 22, r: 22, t: 24, b: 34 };
+    const W = 760, H = 300, PAD = { l: 22, r: 22, t: 24, b: 34 };
 
     const labelFor = {
       revenue: host.dataset.labelRevenue || "Revenue",
@@ -257,11 +297,15 @@
 
       const box = svg.getBoundingClientRect();
       const wrap = canvas.getBoundingClientRect();
-      tip.style.left = `${(p.x / W) * box.width + (box.left - wrap.left)}px`;
-      tip.style.top = `${(p.y / H) * box.height + (box.top - wrap.top)}px`;
       tip.innerHTML = `<span></span><strong></strong>`;
       tip.querySelector("span").textContent = `${rows[index].long} · ${labelFor[state.metric]}`;
       tip.querySelector("strong").textContent = format(rows[index].value);
+      // The tooltip is centred on the point; near the first or last month that would hang outside the chart and, on a
+      // phone, widen the whole page. Keep it inside.
+      const half = tip.offsetWidth / 2;
+      const x = (p.x / W) * box.width + (box.left - wrap.left);
+      tip.style.left = `${Math.min(Math.max(x, half), Math.max(half, wrap.width - half))}px`;
+      tip.style.top = `${(p.y / H) * box.height + (box.top - wrap.top)}px`;
       tip.classList.add("show");
     }
 
