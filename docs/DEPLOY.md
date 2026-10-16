@@ -1,117 +1,145 @@
-# Deploying GarageDesk with Docker (guide written for Render)
+# Going live on MonsterASP.NET (free, no card)
 
-> **Status: not deployed.** No host has been chosen yet, so GarageDesk is not running anywhere online and there is
-> no live URL. This guide is written so that deploying is quick **when you decide to**. Nothing in it has been
-> run against a real Render account, so treat the dashboard labels as a guide, not a guarantee.
+> **Status: written before the first deploy.** The steps follow MonsterASP's own help pages (October 2026), but
+> nothing here has been run against a real MonsterASP account yet. Labels in their control panel may differ a little.
+> For a Docker host instead (Render and similar), see [DEPLOY-DOCKER.md](DEPLOY-DOCKER.md).
 
-The app is packaged as a **Docker container** (see the `Dockerfile`) and uses a **Neon database**.
-On Render's free web service, Render builds the container from this repository and redeploys on every push to
-`main`, so no deploy secrets live in GitHub: Render pulls the code itself.
+**Why this host:** the free plan needs no payment card, runs ASP.NET Core on .NET 10 the normal way (IIS, no Docker),
+and gives a free `https://<name>.runasp.net` address. The database stays on **Neon**. Total cost: **0**.
 
-You would do this setup once, by hand.
+**What the free plan gives you:** 1 website, 256 MB RAM, limited traffic, servers in Europe only, no email sending.
+MonsterASP says the free plan is meant for testing and learning; a paid plan (about $2/month) removes the limits
+when real shops depend on it.
 
-> **Stop rule:** a free instance should not need payment details. If any host (Render or another) asks you for a
-> card or payment details, **stop**: close the page and do not enter anything. Being card-free is a hard
-> requirement for this project; a host that needs a card is simply not an option.
+> **Stop rules**
+> - If any page asks for a payment card, **stop**. The free plan does not need one.
+> - Until HTTPS works (step 6), **do not sign up real users or type real passwords** on the site: without HTTPS,
+>   a password travels over the internet unencrypted.
+> - The Neon connection string and the `.publishSettings` file are passwords. They never go into the repository,
+>   a chat, or a screenshot.
 
 ## 0. What you need
 
-- A GitHub account (you have one) and this repository.
-- Your Neon connection string (the one in your user-secrets). Treat it like a password: type or paste it only into Render's dashboard, never into the repository or a chat.
+- Your Neon account, and Visual Studio (the one you already build this project with).
+- This repository with `main` up to date, and the `dotnet ef` tool (you already use it).
+- **Two-factor sign-in turned on** for GitHub, Neon and (once you have it) MonsterASP. Anyone who gets into one of
+  these accounts gets your customers' data.
 
-## 1. Create the Render account
+## 1. A separate production database in Neon
 
-1. Go to https://render.com and click **Get Started**.
-2. Choose **GitHub** to sign up. Allow Render to read your repositories. When GitHub asks which repositories, choose **Only select repositories** and pick `garagedesk`.
+Your PC's development data and the live site's real data must never be the same database.
 
-## 2. Create the web service
+1. Neon console -> your project. Check the **region** (e.g. `aws-eu-central-1`, Frankfurt).
+   - **In Europe:** go to **Branches** -> **Create branch**, name it `production`, parent `main`. If Neon offers
+     **schema only** (no data), choose it: production then starts empty, without your test shops.
+   - **Not in Europe** (e.g. a US region): create a **new project** named `garagedesk-production` in a Frankfurt
+     region instead. MonsterASP's servers are in Europe, and every page runs several queries, so a database on
+     another continent would make every page slow. A region can't be changed later.
+2. Open the new branch (or project) -> **Connect** -> copy the connection string in the .NET format. Keep
+   `SSL Mode=Require` in it. Paste it into a password manager, nowhere else.
 
-Render dashboard -> **New +** -> **Web Service** -> **Build and deploy from a Git repository** -> select `garagedesk` -> **Connect**.
+## 2. Create the tables in the production database (from your PC)
 
-| Field | Value |
-|---|---|
-| Name | something unique, e.g. `garagedesk-youssef`. It becomes `https://<name>.onrender.com` |
-| Language / Runtime | **Docker** (Render finds the `Dockerfile` at the repo root by itself) |
-| Branch | `main` |
-| Region | the one closest to your Neon database (check the region in the Neon dashboard) |
-| Instance Type | **Free** |
+Stop the local dev server first. Then, in **PowerShell** at the repository root:
 
-Leave "Root Directory", "Dockerfile Path" and the commands empty.
-
-## 3. Environment variables
-
-On the same page open **Environment Variables** (or later: the service -> **Environment**) and add:
-
-| Key | Value |
-|---|---|
-| `ConnectionStrings__Default` | your Neon connection string (note the **two** underscores; ASP.NET turns `__` into `:`) |
-| `ASPNETCORE_FORWARDEDHEADERS_ENABLED` | `true` (so the app knows the visitor is on HTTPS; the Docker image already sets it, this keeps it explicit) |
-
-This is the Render counterpart of `dotnet user-secrets`: the string lives in Render, never in the repository and never inside the Docker image.
-
-## 4. Health check and auto-deploy
-
-Open **Settings** of the service and check:
-
-- **Health Check Path**: `/healthz`. It answers `ok` without using the database, so a sleeping Neon database never makes Render think the app is down.
-- **Auto-Deploy**: **On Commit** (this is the default). Every push to `main` redeploys.
-
-Then click **Create Web Service** (or **Save Changes**). The first build takes a few minutes; watch the **Logs** tab until you see the service is **Live**.
-
-## 5. Create the tables and the demo data (from your PC)
-
-The deployed app and your PC share one Neon database, so you only do this once, from your machine.
-Stop the local dev server first if it is running.
-
-```bash
+```powershell
+$env:ConnectionStrings__Default = Read-Host "Production connection string"
 dotnet ef database update --project src/GarageDesk.Web
-dotnet run --project src/GarageDesk.Web -- --seed-demo
+Remove-Item Env:ConnectionStrings__Default
 ```
 
-The second command creates the **Demo Motors** shop (10 customers, 15 cars, a year of job history and due reminders),
-then exits without starting the website. It prints the demo login and a random password **once**. Save it.
+- `Read-Host` asks for the string, so it is **not saved** in PowerShell's history (typing it straight into a
+  command would be).
+- The environment variable wins over your user-secrets for this one window only, so the migrations go to
+  production and not to your development database. The last line removes it again.
+- All migrations run, including `AddDataProtectionKeys` (see "Why the keys table" below).
 
-To choose the login and password yourself, set them before running it:
+**Optional: a public demo shop.** Only if you want a demo login on the live site. Strangers can change a public
+demo shop, but the tenant filter keeps them out of every other shop. Same window, before the `Remove-Item` line:
+`dotnet run --project src/GarageDesk.Web -- --seed-demo` (it prints the demo password once).
 
-```bash
-dotnet user-secrets set "Demo:Email" "demo@garagedesk.app" --project src/GarageDesk.Web
-dotnet user-secrets set "Demo:Password" "<a password you choose>" --project src/GarageDesk.Web
-```
+## 3. Create the MonsterASP account and the website
 
-Running `--seed-demo` again is harmless: a shop that already has data is left alone, and an existing password is never changed.
+1. Go to https://www.monsterasp.net and sign up for the **Free** plan (no card).
+2. In the Control Panel: **Websites** -> create a website and choose a free subdomain, e.g.
+   `garagedesk.runasp.net`.
+3. Website -> **Scripting**:
+   - ASP.NET / .NET: choose **modern .NET (ASP.NET Core)**, not .NET Framework. **Save**.
+   - ASP.NET Core hosting model: **InProcess**.
+4. Website -> **Scripting** -> **Environment variables**. Add these, then click **Restart application**:
 
-Now open `https://<name>.onrender.com` and sign in with the demo login.
+   | Name | Value |
+   |---|---|
+   | `ConnectionStrings__Default` | the **production** connection string from step 1 (two underscores) |
+   | `ASPNETCORE_ENVIRONMENT` | `Production` (never `Development`: that shows error details to visitors) |
+   | `Landing__WhatsAppNumber` | optional, your WhatsApp number for the landing page button |
 
-## Optional tip: a separate Neon branch for the public demo
+   These stay in MonsterASP's panel, outside the published files, so publishing again never overwrites or exposes them.
 
-The demo login is meant to be shared, so strangers can change what is in the demo shop.
-To keep that away from your own data, give the public site its own copy of the database:
+## 4. Publish from Visual Studio
 
-1. Neon dashboard -> your project -> **Branches** -> **Create branch** (e.g. `demo`). It is free and copies the schema.
-2. Copy the connection string **of that branch** and use it as `ConnectionStrings__Default` in Render (step 3).
-3. Run step 5 once against that branch: temporarily set it with
-   `dotnet user-secrets set "ConnectionStrings:Default" "<the demo branch string>" --project src/GarageDesk.Web`,
-   run the two commands, then set your own development string back.
+1. Website -> **Deploy** -> **Visual Studio access**: switch **WebDeploy** to **Enabled**, then
+   **Download publish profile**. Save the `.publishSettings` file **outside the repository** (e.g. in Documents).
+   It holds the deploy password. Git ignores `*.publishSettings` anyway, as a safety net.
+2. Visual Studio -> right-click **GarageDesk.Web** -> **Publish** -> **Import profile** -> pick that file.
+3. Check the profile uses the **Release** configuration, then click **Publish**. The site restarts by itself.
 
-Your daily work then stays in your main branch and the public demo lives in its own.
+## 5. Check that it works
 
-## What to expect on the free plan
+1. `http://<name>.runasp.net/healthz` answers `ok`. This proves the app started. (It doesn't touch the database.)
+2. `http://<name>.runasp.net/` shows the landing page, and **Register** opens. Don't submit a real account yet.
+3. The first real database test is creating a test account with a throw-away password after HTTPS works (step 6).
 
-- The service **goes to sleep after about 15 minutes** without visitors. The next request wakes it and takes **about a minute** (a "cold start"). Open the link before you show it to someone.
-- Neon's free database also sleeps when idle, so the first page after a quiet period can be slow too.
-- The container's disk is **ephemeral** (wiped on every restart and deploy). That is fine here: everything, including shop logos, lives in the database.
-- Free instances have a monthly hours allowance and limited CPU and memory. Plenty for a demo.
-- The demo login is public, so anyone can change the demo data. `--seed-demo` only fills an *empty* shop, so to start over you would first delete the demo shop's rows (or recreate the Neon branch). A "reset demo" command is a good later addition.
+If step 1 fails, see the table at the end.
+
+## 6. Turn on HTTPS (support ticket)
+
+On the free plan, HTTPS is turned on by MonsterASP's support, not by a button:
+
+1. Control Panel -> **Support** -> new ticket: *"Please enable HTTPS (Let's Encrypt) for my free website
+   `<name>.runasp.net`. The site is published and running."*
+2. When they confirm, open `https://<name>.runasp.net/healthz`, and check the browser shows the padlock.
+3. Then turn on the panel's **HTTPS redirect** (MonsterASP's advice: only after `https://` works).
+4. Now sign up with a throw-away test account and create a customer. If that works, the app reaches Neon.
+   You are live.
+
+## Every later update
+
+1. Merge the PR into `main` (CI green), then `git checkout main` and `git pull`.
+2. **Backup first** (below), if the update has a migration.
+3. If the PR added a migration: run step 2 again (migrations **before** the new code, never after).
+4. Publish (step 4, the imported profile is remembered).
+5. Check `/healthz` and sign in.
+
+## Backups
+
+Neon's free plan can restore the last **6 hours** only. That doesn't help if you notice a problem the next day. So:
+
+- **Before every migration, and once a week:** Neon -> **Branches** -> **Create branch**, parent `production`,
+  name it `backup-2026-10-23` (today's date). It takes a second and costs nothing extra until data changes.
+- Keep the **last 3** backup branches and delete older ones. The free plan allows 10 branches per project.
+- To restore: put the backup branch's connection string in `ConnectionStrings__Default` in MonsterASP and
+  **Restart application**. The site then runs on the backup.
+- A backup branch shares storage with its parent until the data changes, so it barely counts against the 1 GB limit.
+
+## Why the keys table
+
+Login cookies, form tokens and share-link tokens are signed with secret keys (ASP.NET Core "Data Protection").
+Kept only on the server, those keys are lost on a restart, a redeploy or a recycle by IIS (which can happen often on
+shared hosting). Everyone would be logged out, forms would fail with "Bad request", and existing share links would stop
+opening. The keys are now stored in the database (`DataProtectionKeys` table), so they survive all of that. The table
+is app-wide, not per shop, and the app reads it itself; it needs no attention.
 
 ## If something goes wrong
 
 | Symptom | Likely cause |
 |---|---|
-| Build fails in the Render logs | read the last lines of the build log. The same `docker build .` runs in GitHub Actions on every push, so look at the CI run's "docker-build" job first |
-| Deploy "failed" / service restarts in a loop, logs show `Connection string 'Default' not found` | the `ConnectionStrings__Default` variable is missing or misspelled (two underscores, exact capitals) |
-| Logs show `password authentication failed` or `SSL` errors | the Neon string was copied wrongly; copy it again from your user-secrets. Keep `SSL Mode=Require` in it |
-| Site opens but pages show an error / `relation "..." does not exist` | the migrations were not applied to that Neon database (step 5) |
-| "Application failed to respond" or "No open ports detected" | the container did not start. Check the Logs tab for the real error, usually one of the two rows above |
-| Redirect loop / "too many redirects" | `ASPNETCORE_FORWARDEDHEADERS_ENABLED` is not `true` |
-| First load takes a minute, later loads are fast | normal: the free instance was asleep |
-| Render asks for a credit card or payment details | stop and do not enter anything. You should not need them for the free instance |
+| **HTTP Error 500.30**, "app failed to start" | Usually `ConnectionStrings__Default` is missing or misspelled (two underscores). Open the panel's **Logs** for the real error, fix the variable, **Restart application** |
+| **HTTP Error 500.31** or "framework not found" | The website is set to .NET Framework or an older .NET. Scripting -> choose modern .NET (.NET 10), save |
+| `/healthz` works, but pages that use data time out or show a connection error | MonsterASP may block outgoing connections to port 5432 (PostgreSQL). Ask support: *"Please allow outbound TCP 5432 to `*.neon.tech` for `<name>.runasp.net`."* If they can't, the free plan won't work with Neon |
+| `relation "..." does not exist` | The migrations didn't run against the **production** database. Repeat step 2 |
+| `password authentication failed` / SSL errors | The connection string was copied wrongly. Copy it again from Neon, keep `SSL Mode=Require` |
+| Everyone gets logged out after a publish | The `DataProtectionKeys` table is missing (step 2 not run after this update) |
+| First page after a quiet hour is slow | Normal: IIS and Neon both sleep when idle. The second page is fast |
+| Site stops answering mid-month | The free plan's traffic limit. Check the panel; a paid plan removes it |
+| Any page asks for a payment card | Stop. The free plan doesn't need one |

@@ -1,6 +1,7 @@
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,12 +19,19 @@ var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 2 * 1024 * 1024);
 
 // Add services to the container.
-// Local: dotnet user-secrets. Azure: the ConnectionStrings__Default environment variable.
+// Local: dotnet user-secrets. Hosted: the ConnectionStrings__Default environment variable (MonsterASP control panel).
 var connectionString = builder.Configuration.GetConnectionString("Default")
     ?? throw new InvalidOperationException("Connection string 'Default' not found. Set it with: dotnet user-secrets set \"ConnectionStrings:Default\" \"<your Neon connection string>\" --project src/GarageDesk.Web");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+// The key ring behind login cookies, form tokens and share links lives in the database (the DataProtectionKeys table).
+// Kept only in memory or on the server's disk, a restart or redeploy would make new keys: everyone would be logged out
+// and existing share links could no longer be opened. The fixed name keeps the keys valid wherever the app runs from.
+builder.Services.AddDataProtection()
+    .SetApplicationName("GarageDesk")
+    .PersistKeysToDbContext<ApplicationDbContext>();
 
 // The shop of the signed-in user, read from their login cookie, used by the DbContext's query filters.
 builder.Services.AddHttpContextAccessor();

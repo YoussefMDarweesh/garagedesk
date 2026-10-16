@@ -28,6 +28,8 @@ Dockerfile
 # Anything that could hold secrets or local settings
 **/secrets.json
 **/appsettings.*.local.json
+**/appsettings.Production.json
+*.publishSettings
 **/appsettings.Development.json
 **/Properties/launchSettings.json
 *.pubxml

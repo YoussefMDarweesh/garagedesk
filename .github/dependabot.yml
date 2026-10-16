@@ -1,0 +1,25 @@
+# Dependabot opens a pull request when a package, GitHub Action or Docker base image has an update,
+# security fixes included. CI runs on each PR as usual, so an update is only merged when build and tests are green.
+# Updates are grouped into one PR per ecosystem per week, to keep the noise down.
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      nuget:
+        patterns: ["*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly

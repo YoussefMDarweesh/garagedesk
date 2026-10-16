@@ -7,7 +7,7 @@
 
 ![GarageDesk dashboard for the demo shop "Demo Motors": revenue this month, open job cards, customers and vehicles, an activity chart and the reminders that are due.](docs/screenshots/demo-dashboard-light-en.jpg)
 
-> **Status:** all eight milestones are built and tested, and the app is **deployment-ready but not deployed**: there is no live site. You run it locally in a few minutes ([how](#run-it-locally)); the Docker image, health check and deploy guide are in the repo for when a host is chosen ([details](#deployment)).
+> **Status:** all eight milestones are built and tested, and the app is **deployment-ready but not deployed**: there is no live site. You run it locally in a few minutes ([how](#run-it-locally)). The host is chosen (MonsterASP.NET's free plan) and the deploy guide is in the repo ([details](#deployment)).
 >
 > **Demo video:** _coming soon (link goes here)_
 
@@ -155,13 +155,16 @@ dotnet test
 ```
 
 ## Deployment
-**Status: deployment-ready, not deployed.** There is no live site yet, and nothing here claims one.
+**Status: host chosen, not deployed yet.** There is no live site yet, and nothing here claims one.
 
-What exists, so that deploying is a few clicks once a host is chosen:
-- a multi-stage [`Dockerfile`](Dockerfile) and [`.dockerignore`](.dockerignore);
+The chosen host is **MonsterASP.NET's free plan** (no payment card, .NET 10 on IIS, a free `*.runasp.net` address), with the database on a separate **production** Neon branch. Total cost: 0. Step by step: [docs/DEPLOY.md](docs/DEPLOY.md).
+
+What exists:
+- the login and share-link keys stored in the database, so a restart or redeploy logs nobody out (tested);
 - the `/healthz` endpoint and proxy-aware HTTPS handling (tested);
 - the demo seeder;
-- a step-by-step guide for a Docker host ([docs/DEPLOY.md](docs/DEPLOY.md), written for Render's free web service).
+- Dependabot, which opens a weekly PR for package, Action and base-image updates;
+- a multi-stage [`Dockerfile`](Dockerfile) and a guide for Docker hosts such as Render ([docs/DEPLOY-DOCKER.md](docs/DEPLOY-DOCKER.md)).
 
 ## How it's built with AI agents
 This project is built with AI coding agents under my direction, and I want to be specific about what that means.
@@ -172,7 +175,7 @@ This project is built with AI coding agents under my direction, and I want to be
 - **Review.** [AGENTS.md](AGENTS.md) defines Codex as the reviewer, with a checklist in this order: tenant leaks, security, bugs, spec mismatch, simplicity. The workflow in PROMPTS.md has me ask it to review each pull request.
 
 ## Known limitations
-- **Not hosted.** There is no live demo; run it locally (see above).
+- **Not hosted yet.** There is no live demo; run it locally (see above). The free host has limits (256 MB RAM, limited traffic, HTTPS on request, Neon keeps only 6 hours of restore history, so backups are a manual weekly step); see [docs/DEPLOY.md](docs/DEPLOY.md).
 - **Invoice and estimate numbers are per shop (v1.1)** (`INV-0001`, `EST-0001`), given once when a document is issued. They are never reused, so a cancelled document leaves a gap.
 - **Money is simple (v1.1).** One optional VAT percent per shop, one discount per job card (an amount or a percent), payments by cash, card, transfer or wallet. No tax invoices with registration numbers, no refunds flow, and no stock or profit yet.
 - **CSV import is one file shape.** One row per car with its owner; the phone number identifies a customer and the normalized plate identifies a car. Existing customers are never updated by an import (only skipped), there is no Excel (.xlsx) reader (save as CSV UTF-8), and a file is limited to 2,000 rows and 512 KB.
@@ -182,7 +185,6 @@ This project is built with AI coding agents under my direction, and I want to be
 - **English and Arabic only,** and one currency (EGP).
 - **Team and roles are new (v1.3).** Three fixed roles, no custom permissions; one role per person and one shop per person. Commission uses a person's *current* percent, so changing it also changes past months in the report. Free-text job notes are shown to technicians as typed, so do not put prices in them.
 - **Stock and profit are new (v1.4).** The catalog picker is a select with name suggestions, not a search-as-you-type box, so a very large catalog is clumsy. Taking stock happens when a line is added, not when the job is finished. Receiving stock sets the part's cost to the latest price (no average cost). Expenses have no payment method beyond "paid from the drawer". The cash close does not know about cash you banked or took out of the drawer except through the opening amount you type. Monthly profit is cash basis only: it does not match the job-level profit month by month.
-- **Sessions end when the server restarts** when it runs in a container, because the keys that protect login cookies are not persisted yet.
 - **The demo data is editable.** The demo shop is a normal shop: anything you change stays changed, and there is no "reset demo" command.
 - **Print layout was verified by emulation,** with tests and by applying the print rules to the page at A4 width. I have not checked a printed PDF from every browser.
 
@@ -196,6 +198,7 @@ This project is built with AI coding agents under my direction, and I want to be
 - [x] M6: Printable invoice
 - [x] M7: Demo data and deployment packaging (seeder, Docker image, health check and deploy guide are done; the app is not hosted anywhere yet)
 - [x] M8: Screenshots, demo script and final README (the demo video is recorded by hand; see [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md))
+- [ ] M9: Go live (keys in the database, Dependabot and the MonsterASP guide are done; the first deploy is next)
 
 Full scope and acceptance criteria: [SPEC.md](SPEC.md)
 
