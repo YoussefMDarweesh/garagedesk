@@ -1,4 +1,5 @@
 @page
+@using System.Globalization
 @using GarageDesk.Web.Models
 @using GarageDesk.Web.Services
 @model IndexModel
@@ -18,19 +19,59 @@
 }
 else
 {
-    @* ------------------------------------------------ the dashboard ------------------------------------------------ *@
-    <div class="page-head">
-        <div>
-            <p class="eyebrow mb-1">@L["Your shop"]</p>
-            <h1>@(Model.ShopName ?? L["Welcome"].Value)</h1>
-            <p class="page-sub">@L["Here's what is happening in your garage today."]</p>
+    var arabic = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+    var dateText = Model.Today.ToString("dddd d MMMM yyyy", new CultureInfo(arabic ? "ar-EG" : "en-GB"));
+    var greeting = Model.DayPart switch
+    {
+        "morning" => L["Good morning, {0}", Model.GreetingName].Value,
+        "afternoon" => L["Good afternoon, {0}", Model.GreetingName].Value,
+        _ => L["Good evening, {0}", Model.GreetingName].Value,
+    };
+    var waiting = Model.OverdueReminderCount + Model.ReadyForPickupCount + (Model.OutstandingTotal > 0 ? 1 : 0);
+
+    @* ------------------------------------------------ today at the shop ------------------------------------------------ *@
+    <section class="hero" aria-labelledby="hero-title" data-hero>
+        <div class="hero-main">
+            <p class="hero-date"><span class="ltr">@dateText</span></p>
+            <h1 id="hero-title">@L["Today at {0}", Model.ShopName ?? L["Welcome"].Value]</h1>
+            <p class="hero-sub">@greeting. @(waiting > 0 ? L["Here is what needs you now."] : L["Nothing is waiting on you right now."])</p>
+            <div class="hero-actions">
+                <a class="btn btn-primary" asp-page="/Jobs/Create"><partial name="_Icon" model='"plus"' />@L["New job card"]</a>
+                <a class="btn btn-hero" asp-page="/Customers/Create"><partial name="_Icon" model='"plus"' />@L["Add customer"]</a>
+                <a class="btn btn-hero" asp-page="/Estimates/Create"><partial name="_Icon" model='"plus"' />@L["New estimate"]</a>
+            </div>
         </div>
-        <div class="page-actions">
-            <a class="btn btn-outline-secondary" asp-page="/Customers/Create"><partial name="_Icon" model='"plus"' />@L["Add customer"]</a>
-            <a class="btn btn-outline-secondary" asp-page="/Estimates/Create"><partial name="_Icon" model='"plus"' />@L["New estimate"]</a>
-            <a class="btn btn-primary" asp-page="/Jobs/Create"><partial name="_Icon" model='"plus"' />@L["New job card"]</a>
-        </div>
-    </div>
+        <ul class="hero-chips" aria-label="@L["Needs attention"]">
+            <li>
+                <a class="attn @(Model.InShopCount > 0 ? "attn-accent" : "attn-calm")" asp-page="/Jobs/Index" asp-route-status="InProgress" data-attn="in-shop">
+                    <span class="attn-icon"><partial name="_Icon" model='"tool"' /></span>
+                    <span class="attn-num num">@Model.InShopCount</span>
+                    <span class="attn-label">@L["Cars in the shop"]</span>
+                </a>
+            </li>
+            <li>
+                <a class="attn @(Model.ReadyForPickupCount > 0 ? "attn-info" : "attn-calm")" asp-page="/Jobs/Index" asp-route-status="Done" data-attn="ready">
+                    <span class="attn-icon"><partial name="_Icon" model='"check-circle"' /></span>
+                    <span class="attn-num num">@Model.ReadyForPickupCount</span>
+                    <span class="attn-label">@L["Ready for pickup"]</span>
+                </a>
+            </li>
+            <li>
+                <a class="attn @(Model.OverdueReminderCount > 0 ? "attn-bad" : "attn-calm")" asp-page="/Reminders/Index" data-attn="overdue">
+                    <span class="attn-icon"><partial name="_Icon" model='"bell"' /></span>
+                    <span class="attn-num num">@Model.OverdueReminderCount</span>
+                    <span class="attn-label">@L["Overdue reminders"]</span>
+                </a>
+            </li>
+            <li>
+                <a class="attn @(Model.OutstandingTotal > 0 ? "attn-warn" : "attn-calm")" asp-page="/Receivables/Index" data-attn="collect">
+                    <span class="attn-icon"><partial name="_Icon" model='"coins"' /></span>
+                    <span class="attn-num attn-money"><span class="ltr num">@MoneyFormat.Amount(Model.OutstandingTotal)</span><small>@L["EGP"]</small></span>
+                    <span class="attn-label">@L["Money to collect"]</span>
+                </a>
+            </li>
+        </ul>
+    </section>
 
     @* Derived from the shop's real data on every request (see SetupProgress), so it survives a refresh. *@
     @if (!Model.Setup.CoreDone)
@@ -38,17 +79,18 @@ else
         <partial name="_SetupChecklist" model="new SetupChecklistModel(Model.Setup, Model.CanSeeReports)" />
     }
 
-    <div class="row g-3 g-lg-4 mb-4">
+    @* ---- the money that matters: big, with the currency on the same line as the number ---- *@
+    <div class="kpi-row" data-kpi-row>
         @if (Model.CanSeeReports)
         {
-        <div class="col-6 col-xl">
-            <a class="stat-card" asp-page="/Jobs/Index" asp-route-status="Paid">
-                <div class="stat-top"><span class="stat-label">@L["Revenue this month"]</span><span class="icon-tile"><partial name="_Icon" model='"coins"' /></span></div>
-                <p class="stat-value"><span class="ltr">@MoneyFormat.Amount(Model.RevenueThisMonth)</span> <small class="fs-6 text-secondary">@L["EGP"]</small></p>
+        <a class="kpi" asp-page="/Jobs/Index" asp-route-status="Paid" data-kpi="revenue">
+            <div class="stat-top"><span class="stat-label">@L["Revenue this month"]</span><span class="icon-tile"><partial name="_Icon" model='"coins"' /></span></div>
+            <p class="kpi-value stat-value"><span class="ltr">@MoneyFormat.Amount(Model.RevenueThisMonth)</span> <small class="stat-unit">@L["EGP"]</small></p>
+            <div class="kpi-foot">
                 <p class="stat-sub">
                     @if (Model.RevenueChangePercent is int change)
                     {
-                        <span class="@(change >= 0 ? "trend-up" : "trend-down")"><span class="ltr">@(change >= 0 ? "+" : "")@change%</span></span>
+                        <partial name="_Trend" model="change" />
                         @L["vs last month"]
                     }
                     else
@@ -56,42 +98,86 @@ else
                         @L["From {0} paid job cards", Model.PaidThisMonthCount]
                     }
                 </p>
-            </a>
-        </div>
-        <div class="col-6 col-xl">
-            <a class="stat-card" asp-page="/Money/Profit" data-profit-card title="@L["Payments received this month, minus expenses paid this month."]">
-                <div class="stat-top"><span class="stat-label">@L["Profit this month"]</span><span class="icon-tile"><partial name="_Icon" model='"trending-up"' /></span></div>
-                <p class="stat-value @(Model.ProfitThisMonth < 0 ? "figure-negative" : "")" data-profit><span class="ltr">@MoneyFormat.Amount(Model.ProfitThisMonth)</span> <small class="fs-6 text-secondary">@L["EGP"]</small></p>
-                <p class="stat-sub">@L["Cash basis: received minus expenses"]</p>
-            </a>
-        </div>
+                @if (Model.RevenueSpark is { } revenueSpark) { <partial name="_Spark" model="revenueSpark" /> }
+            </div>
+        </a>
+        <a class="kpi" asp-page="/Money/Profit" data-profit-card data-kpi="profit" title="@L["Payments received this month, minus expenses paid this month."]">
+            <div class="stat-top"><span class="stat-label">@L["Profit this month"]</span><span class="icon-tile"><partial name="_Icon" model='"trending-up"' /></span></div>
+            <p class="kpi-value stat-value @(Model.ProfitThisMonth < 0 ? "figure-negative" : "")" data-profit><span class="ltr">@MoneyFormat.Amount(Model.ProfitThisMonth)</span> <small class="stat-unit">@L["EGP"]</small></p>
+            <div class="kpi-foot">
+                <p class="stat-sub">
+                    @if (Model.ProfitChangePercent is int profitChange)
+                    {
+                        <partial name="_Trend" model="profitChange" />
+                        @L["vs last month"]
+                    }
+                    else
+                    {
+                        @L["Cash basis: received minus expenses"]
+                    }
+                </p>
+                @if (Model.ProfitSpark is { } profitSpark) { <partial name="_Spark" model="profitSpark" /> }
+            </div>
+        </a>
         }
-        <div class="col-6 col-xl">
-            <a class="stat-card" asp-page="/Jobs/Index">
-                <div class="stat-top"><span class="stat-label">@L["Open job cards"]</span><span class="icon-tile"><partial name="_Icon" model='"clipboard"' /></span></div>
+        <a class="kpi" asp-page="/Receivables/Index" data-kpi="outstanding">
+            <div class="stat-top"><span class="stat-label">@L["Outstanding"]</span><span class="icon-tile"><partial name="_Icon" model='"alert"' /></span></div>
+            <p class="kpi-value stat-value" data-outstanding><span class="ltr">@MoneyFormat.Amount(Model.OutstandingTotal)</span> <small class="stat-unit">@L["EGP"]</small></p>
+            <div class="kpi-foot">
+                <p class="stat-sub">
+                    @L["Unpaid job cards"]: <span class="ltr num">@Model.OutstandingCustomers</span>
+                    @if (Model.OutstandingOldestDays is int oldest && oldest > 0)
+                    {
+                        <span class="stat-dot" aria-hidden="true">&middot;</span> @L["oldest {0} days", oldest]
+                    }
+                </p>
+            </div>
+        </a>
+        @if (!Model.CanSeeReports)
+        {
+        <a class="kpi" asp-page="/Jobs/Index">
+            <div class="stat-top"><span class="stat-label">@L["Open job cards"]</span><span class="icon-tile"><partial name="_Icon" model='"clipboard"' /></span></div>
+            <p class="kpi-value stat-value">@Model.OpenJobCount</p>
+            <div class="kpi-foot"><p class="stat-sub">@L["{0} booked · {1} in progress · {2} done", Model.BookedCount, Model.InProgressCount, Model.DoneCount]</p></div>
+        </a>
+        }
+    </div>
+
+    @* ---- the counts: quieter, one line each ---- *@
+    <div class="stat-row">
+        @if (Model.CanSeeReports)
+        {
+        <a class="stat-card stat-compact" asp-page="/Jobs/Index">
+            <span class="icon-tile"><partial name="_Icon" model='"clipboard"' /></span>
+            <div class="min-w-0">
+                <span class="stat-label">@L["Open job cards"]</span>
                 <p class="stat-value">@Model.OpenJobCount</p>
                 <p class="stat-sub">@L["{0} booked · {1} in progress · {2} done", Model.BookedCount, Model.InProgressCount, Model.DoneCount]</p>
-            </a>
-        </div>
-        <div class="col-6 col-xl">
-            <a class="stat-card" asp-page="/Customers/Index">
-                <div class="stat-top"><span class="stat-label">@L["Customers"]</span><span class="icon-tile"><partial name="_Icon" model='"users"' /></span></div>
+            </div>
+        </a>
+        }
+        <a class="stat-card stat-compact" asp-page="/Customers/Index">
+            <span class="icon-tile"><partial name="_Icon" model='"users"' /></span>
+            <div class="min-w-0">
+                <span class="stat-label">@L["Customers"]</span>
                 <p class="stat-value">@Model.CustomerCount</p>
                 <p class="stat-sub">@L["Registered in your shop"]</p>
-            </a>
-        </div>
-        <div class="col-6 col-xl">
-            <a class="stat-card" asp-page="/Vehicles/Index">
-                <div class="stat-top"><span class="stat-label">@L["Vehicles"]</span><span class="icon-tile"><partial name="_Icon" model='"car"' /></span></div>
+            </div>
+        </a>
+        <a class="stat-card stat-compact" asp-page="/Vehicles/Index">
+            <span class="icon-tile"><partial name="_Icon" model='"car"' /></span>
+            <div class="min-w-0">
+                <span class="stat-label">@L["Vehicles"]</span>
                 <p class="stat-value">@Model.VehicleCount</p>
                 <p class="stat-sub">@L["Across {0} customers", Model.CustomerCount]</p>
-            </a>
-        </div>
+            </div>
+        </a>
         @if (Model.Stock.PartCount > 0)
         {
-        <div class="col-6 col-xl">
-            <a class="stat-card" asp-page="/Parts/Index" asp-route-show="@(Model.Stock.LowCount > 0 ? "low" : null)" data-stock-card>
-                <div class="stat-top"><span class="stat-label">@L["Running low"]</span><span class="icon-tile"><partial name="_Icon" model='"package"' /></span></div>
+        <a class="stat-card stat-compact @(Model.Stock.LowCount > 0 ? "stat-warn" : "")" asp-page="/Parts/Index" asp-route-show="@(Model.Stock.LowCount > 0 ? "low" : null)" data-stock-card>
+            <span class="icon-tile"><partial name="_Icon" model='"package"' /></span>
+            <div class="min-w-0">
+                <span class="stat-label">@L["Running low"]</span>
                 <p class="stat-value" data-low-count>@Model.Stock.LowCount</p>
                 <p class="stat-sub">
                     @if (Model.Stock.StockValue is decimal stockValue)
@@ -107,16 +193,9 @@ else
                         @L["Parts at or below their alert level"]
                     }
                 </p>
-            </a>
-        </div>
+            </div>
+        </a>
         }
-        <div class="col-12 col-xl">
-            <a class="stat-card" asp-page="/Receivables/Index">
-                <div class="stat-top"><span class="stat-label">@L["Outstanding"]</span><span class="icon-tile"><partial name="_Icon" model='"alert"' /></span></div>
-                <p class="stat-value" data-outstanding><span class="ltr">@MoneyFormat.Amount(Model.OutstandingTotal)</span> <small class="fs-6 text-secondary">@L["EGP"]</small></p>
-                <p class="stat-sub">@L["Unpaid job cards"]: <span class="ltr num">@Model.OutstandingCustomers</span></p>
-            </a>
-        </div>
     </div>
 
     <div class="row g-3 g-lg-4 mb-4">
@@ -125,7 +204,16 @@ else
         <div class="col-xl-8">
             <section class="panel panel-pad h-100" aria-labelledby="activity-heading">
                 <div class="panel-head">
-                    <h2 id="activity-heading" class="panel-title">@L["Activity"]</h2>
+                    <div>
+                        <h2 id="activity-heading" class="panel-title">@L["Activity"]</h2>
+                        @if (Model.HasChartData)
+                        {
+                            <p class="panel-sub">
+                                <span class="ltr num">@MoneyFormat.Amount(Model.YearRevenue)</span> @L["EGP"] <span class="stat-dot" aria-hidden="true">&middot;</span>
+                                @L["{0} job cards in {1} months", Model.YearJobs, Model.Months.Count]
+                            </p>
+                        }
+                    </div>
                     @if (Model.HasChartData)
                     {
                         <div class="d-flex flex-wrap gap-2">
@@ -147,7 +235,7 @@ else
                     <div data-chart data-currency="@L["EGP"]" data-label-revenue="@L["Revenue"]" data-label-jobs="@L["Job cards"]">
                         <div class="chart-wrap" dir="ltr">
                             <div class="chart-canvas" tabindex="0" aria-label="@L["Activity chart. Use the left and right arrow keys to move between months."]">
-                                <div class="skeleton" style="height: 15rem"></div>
+                                <div class="skeleton" style="height: 17rem"></div>
                             </div>
                             <div class="chart-tip" aria-hidden="true"></div>
                         </div>
@@ -225,6 +313,7 @@ else
                         <span class="icon-tile"><partial name="_Icon" model='"clock"' /></span>
                         <h3>@L["No service history yet"]</h3>
                         <p>@L["Every job card you open appears here, newest first."]</p>
+                        <a class="btn btn-primary btn-sm mt-2" asp-page="/Jobs/Create">@L["New job card"]</a>
                     </div>
                 }
                 else
@@ -255,7 +344,7 @@ else
                                 <div class="min-w-0">
                                     <p class="tl-title"><a class="text-reset" asp-page="/Jobs/Details" asp-route-id="@job.Id">@summary</a></p>
                                     <p class="tl-meta">
-                                        <span class="plate" dir="auto">@job.Vehicle?.Plate</span>
+                                        <span class="plate">@PlateFormat.Html(job.Vehicle?.Plate)</span>
                                         @job.Vehicle?.Make @job.Vehicle?.Model &middot; @job.Vehicle?.Customer?.Name
                                     </p>
                                 </div>

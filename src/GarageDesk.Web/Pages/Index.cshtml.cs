@@ -86,6 +86,41 @@ public class IndexModel(ApplicationDbContext db, ICurrentStaff currentStaff) : P
     /// <summary>v1.4: the stock card. Everyone who sees the dashboard sees what is running low; the value at cost is the owner's.</summary>
     public StockSummary Stock { get; private set; } = new(0, 0, [], null);
 
+    // ---- ui-polish-v2: "Today at <shop>" and the money cards (all worked out from the same real data) ----
+
+    /// <summary>"morning", "afternoon" or "evening" by the shop's wall clock (Cairo).</summary>
+    public string DayPart { get; private set; } = "morning";
+
+    public string GreetingName { get; private set; } = "";
+
+    /// <summary>Overdue reminders, counted over the whole shop (the list below shows only the first few).</summary>
+    public int OverdueReminderCount { get; private set; }
+
+    /// <summary>Cars being worked on right now (status In progress).</summary>
+    public int InShopCount => InProgressCount;
+
+    /// <summary>Finished, waiting for the customer (status Done). They are also what "Outstanding" adds up.</summary>
+    public int ReadyForPickupCount => DoneCount;
+
+    public int? OutstandingOldestDays { get; private set; }
+
+    public decimal ProfitLastMonth { get; private set; }
+
+    public int? ProfitChangePercent =>
+        ProfitLastMonth != 0 ? (int)Math.Round((ProfitThisMonth - ProfitLastMonth) / Math.Abs(ProfitLastMonth) * 100) : null;
+
+    /// <summary>The last months of revenue and profit for the small trend lines (owner only; null when there is too little to draw).</summary>
+    public Sparkline? RevenueSpark { get; private set; }
+
+    public Sparkline? ProfitSpark { get; private set; }
+
+    public const int SparkMonths = 6;
+
+    /// <summary>Revenue and job cards over the chart's months, for the line above the chart.</summary>
+    public decimal YearRevenue => Months.Sum(m => m.Revenue);
+
+    public int YearJobs => Months.Sum(m => m.Jobs);
+
     public async Task<IActionResult> OnGetAsync()
     {
         if (User.Identity?.IsAuthenticated != true)
@@ -108,6 +143,9 @@ public class IndexModel(ApplicationDbContext db, ICurrentStaff currentStaff) : P
 
         CanSeeReports = staff.IsOwner;
         Today = ShopClock.Today();
+        var hour = ShopClock.ToShopTime(DateTime.UtcNow).Hour;
+        DayPart = hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening";
+        GreetingName = staff.DisplayName;
         ShopName = await db.Shops.Select(s => s.Name).FirstOrDefaultAsync();
 
         CustomerCount = await db.Customers.CountAsync();
@@ -123,6 +161,7 @@ public class IndexModel(ApplicationDbContext db, ICurrentStaff currentStaff) : P
         var owed = await OutstandingBalances.LoadAsync(db);
         OutstandingTotal = owed.Sum(b => b.Owed);
         OutstandingCustomers = owed.Count;
+        OutstandingOldestDays = owed.Count > 0 ? Math.Max(0, Today.DayNumber - owed.Min(b => b.Oldest).DayNumber) : null;
 
         if (CanSeeReports)
         {
@@ -133,6 +172,12 @@ public class IndexModel(ApplicationDbContext db, ICurrentStaff currentStaff) : P
             ReceivedThisMonth = received.Total;
             ExpensesThisMonth = spent;
             ProfitThisMonth = received.Total - spent;
+
+            // The small trend lines and last month's profit, from the same definitions (owner only: it is money).
+            var profitSeries = await ProfitReport.MonthlyProfitAsync(db, Today, SparkMonths);
+            ProfitLastMonth = profitSeries.Count > 1 ? profitSeries[^2] : 0;
+            ProfitSpark = Sparkline.From(profitSeries);
+            RevenueSpark = Sparkline.From(Months.TakeLast(SparkMonths).Select(m => m.Revenue).ToList());
         }
         await LoadRemindersAsync();
         Stock = await StockSummary.LoadAsync(db, includeCost: CanSeeReports);
@@ -190,6 +235,8 @@ public class IndexModel(ApplicationDbContext db, ICurrentStaff currentStaff) : P
             .Include(r => r.Vehicle).ThenInclude(v => v!.Customer)
             .Take(200)
             .ToListAsync();
+
+        OverdueReminderCount = due.Count(r => r.StatusFor(Today, r.Vehicle?.Mileage ?? 0) == ReminderStatus.Overdue);
 
         DueReminders = due
             .OrderByDescending(r => r.StatusFor(Today, r.Vehicle?.Mileage ?? 0))

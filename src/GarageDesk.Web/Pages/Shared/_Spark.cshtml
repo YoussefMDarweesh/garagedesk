@@ -1,0 +1,7 @@
+@* The tiny trend line on a money card. Drawn from real monthly figures (see Sparkline); purely decorative, the numbers are printed beside it. *@
+@model GarageDesk.Web.Services.Sparkline
+<svg class="spark" viewBox="0 0 @GarageDesk.Web.Services.Sparkline.Width @GarageDesk.Web.Services.Sparkline.Height" aria-hidden="true" focusable="false" dir="ltr">
+    <path class="spark-area" d="@Model.Area" />
+    <path class="spark-line" d="@Model.Line" />
+    <circle class="spark-end" cx="@Model.EndX.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" cy="@Model.EndY.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" r="2.8" />
+</svg>
