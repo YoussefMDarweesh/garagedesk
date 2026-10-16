@@ -288,6 +288,32 @@ public class UiPolishV2Tests(GarageDeskWebFactory factory) : IClassFixture<Garag
         Assert.DoesNotMatch(@"\.sidebar \{[^}]*\b(left|right):", css);
     }
 
+    [Fact]
+    public async Task The_rail_starts_open_on_wide_screens_and_the_pin_button_choice_always_wins()
+    {
+        var (client, _, _) = await SignedInAsync(ShopRole.Owner);
+        var html = await TestData.BodyAsync(await client.GetAsync("/"));
+        var root = RepoRoot();
+        var js = File.ReadAllText(Path.Combine(root, "src", "GarageDesk.Web", "wwwroot", "js", "site.js"));
+        var css = File.ReadAllText(Path.Combine(root, "src", "GarageDesk.Web", "wwwroot", "css", "site.css"));
+
+        // Decided before first paint, by the inline script in <head> (so the page never jumps)...
+        var head = html[..html.IndexOf("</head>", StringComparison.Ordinal)];
+        Assert.Contains("(min-width: 1280px)", head);
+        Assert.Contains("choice === \"pinned\" || (choice !== \"collapsed\"", head);
+        Assert.Contains("data-sidebar", head);
+        Assert.Contains("aria-pressed=\"false\"", html); // the pin button is a toggle; site.js sets the real state
+
+        // ...a stored choice ("pinned" or "collapsed") is written by the button and beats the width default...
+        Assert.Contains("localStorage.setItem(\"gd-sidebar\", pinned ? \"collapsed\" : \"pinned\")", js);
+        Assert.Contains("choice === \"pinned\" || choice === \"collapsed\"", js);
+        Assert.Contains("try { return localStorage.getItem(\"gd-sidebar\"); } catch { return null; }", js); // storage may be blocked
+
+        // ...and the open rail pushes the page content aside with logical properties (so it is on the right in Arabic).
+        Assert.Matches(@"html\[data-sidebar=""pinned""\] \.app-main \{[^}]*margin-inline-start: calc\(var\(--rail-w-open\)", css);
+        Assert.Matches(@"\.sidebar:hover,\s*\.sidebar:focus-within,\s*html\[data-sidebar=""pinned""\] \.sidebar \{\s*width: var\(--rail-w-open\)", css);
+    }
+
     // ---------------------------------------------------------------- the dashboard
 
     [Fact]

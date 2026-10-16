@@ -38,12 +38,23 @@
   if (pin) {
     const syncPin = () => pin.setAttribute("aria-pressed", String(root.getAttribute("data-sidebar") === "pinned"));
     syncPin();
+    // The button expands or collapses the rail and remembers the choice; with no choice the width decides (wide = open).
+    const wide = window.matchMedia("(min-width: 1280px)");
+    const stored = () => { try { return localStorage.getItem("gd-sidebar"); } catch { return null; } };
     pin.addEventListener("click", () => {
       const pinned = root.getAttribute("data-sidebar") === "pinned";
       if (pinned) root.removeAttribute("data-sidebar"); else root.setAttribute("data-sidebar", "pinned");
-      try { localStorage.setItem("gd-sidebar", pinned ? "" : "pinned"); } catch { /* ignore */ }
+      try { localStorage.setItem("gd-sidebar", pinned ? "collapsed" : "pinned"); } catch { /* ignore */ }
       syncPin();
     });
+    // Only while the person has made no choice: follow the window when it crosses 1280 px.
+    const follow = () => {
+      const choice = stored();
+      if (choice === "pinned" || choice === "collapsed") return;
+      if (wide.matches) root.setAttribute("data-sidebar", "pinned"); else root.removeAttribute("data-sidebar");
+      syncPin();
+    };
+    if (wide.addEventListener) wide.addEventListener("change", follow); else if (wide.addListener) wide.addListener(follow);
   }
 
   // ---- ui-polish-v2: collapsible navigation sections, remembered per browser ----

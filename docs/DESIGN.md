@@ -117,6 +117,7 @@ Why these five: they follow the owner's day. *Workshop* is what happens to cars;
 * **Collapsible.** Click a header to fold or open it; the choice is remembered per browser (`localStorage`, wrapped in
   try/catch). The section holding the current page is always open. A small menu (the cashier's) opens everything; the
   owner's starts with Overview and Workshop open. Without JavaScript every section is open.
+* **Open by default on wide screens.** From 1280 px up the rail starts expanded, so the section headings are visible without hovering; below that it is icon-only. The pin button now collapses or expands it and the choice ("pinned" or "collapsed") is remembered per browser and always beats the width default. It is decided by the inline script in the head before first paint (no jump) and follows the window across 1280 px only while no choice was made. ![expanded, Arabic, dark](screenshots/ui-v2-after-ar-dark-expanded.jpg)
 * **Narrow (icon-only) rail.** An open section shows as a thin divider, a closed one as its own icon, so the rail has the
   same height whether it is narrow or open (no jumping when you hover it).
 * **Scrolls by itself.** Only the middle of the rail scrolls (a thin scrollbar); the brand and the pin button stay put.

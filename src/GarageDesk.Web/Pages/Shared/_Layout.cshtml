@@ -62,8 +62,16 @@
                 var theme = localStorage.getItem("gd-theme");
                 if (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches) { theme = "dark"; }
                 if (theme) { root.setAttribute("data-bs-theme", theme); }
-                if (localStorage.getItem("gd-sidebar") === "pinned") { root.setAttribute("data-sidebar", "pinned"); }
             } catch (e) { }
+            // The rail starts open (labels and section headings visible) on wide screens and icon-only on narrow ones.
+            // A choice the person made with the pin button ("pinned" or "collapsed") always wins over that default.
+            try {
+                var choice = localStorage.getItem("gd-sidebar");
+                var open = choice === "pinned" || (choice !== "collapsed" && window.matchMedia("(min-width: 1280px)").matches);
+                if (open) { document.documentElement.setAttribute("data-sidebar", "pinned"); }
+            } catch (e) {
+                if (window.matchMedia("(min-width: 1280px)").matches) { document.documentElement.setAttribute("data-sidebar", "pinned"); }
+            }
         })();
     </script>
     <link rel="icon" href="~/favicon.ico" sizes="any" />
