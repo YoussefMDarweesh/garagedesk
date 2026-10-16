@@ -24,6 +24,12 @@ public class ShopSettingsModel(
 
     public bool HasLogo { get; private set; }
 
+    /// <summary>The stored logo's pixel size, read from its file header (null when there is no logo or the header cannot be read).</summary>
+    public (int Width, int Height)? LogoSize { get; private set; }
+
+    /// <summary>True when the logo's shorter side is under 256 px: the page shows a gentle "may look blurry" hint. An upload is never blocked.</summary>
+    public bool LogoIsSmall => LogoSize is { } size && ImageSize.IsSmall(size.Width, size.Height);
+
     /// <summary>The shop's accent colour preset (Accents.Default when none was chosen).</summary>
     public string Accent { get; private set; } = Accents.Default;
 
@@ -41,7 +47,7 @@ public class ShopSettingsModel(
 
     private async Task LoadAsync()
     {
-        HasLogo = await db.ShopLogos.AnyAsync();
+        await LoadLogoAsync();
         var accent = await db.Shops.Select(s => s.AccentColor).FirstOrDefaultAsync();
         Accent = Accents.IsPreset(accent) ? accent! : Accents.Default;
         VatPercent = await db.Shops.Select(s => s.VatPercent).FirstOrDefaultAsync();
@@ -189,8 +195,16 @@ public class ShopSettingsModel(
     private async Task<IActionResult> RejectAsync(string englishMessage)
     {
         ModelState.AddModelError(string.Empty, localizer[englishMessage]);
-        HasLogo = await db.ShopLogos.AnyAsync();
+        await LoadLogoAsync();
         return Page();
+    }
+
+    // The bytes are read only here (an owner-only page, at most 512 KB) so the header can tell us the pixel size.
+    private async Task LoadLogoAsync()
+    {
+        var bytes = await db.ShopLogos.Select(l => l.Bytes).FirstOrDefaultAsync();
+        HasLogo = bytes is not null;
+        LogoSize = bytes is null ? null : ImageSize.TryRead(bytes);
     }
 
     // The navbar reads "has a logo" from the login cookie, so re-issue the cookie after a change.

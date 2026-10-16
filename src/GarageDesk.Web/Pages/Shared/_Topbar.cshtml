@@ -1,7 +1,11 @@
 @* Page title on the start side (with its section above it); search and the reminders bell, then one small
    preferences pill (language and theme) and the user menu on the other side. The long email lives in the menu, not on the bar. *@
 @model GarageDesk.Web.Services.ShellModel
+@using GarageDesk.Web.Services
 @{
+    var logoView = Model.LogoVersion is null
+        ? null
+        : new ShopLogoView(Url.Content("~" + ShopLogoEndpoint.Path) + "?v=" + Model.LogoVersion, Model.ShopName ?? "", "sm");
     var who = !string.IsNullOrWhiteSpace(Model.DisplayName) ? Model.DisplayName! : Model.UserName ?? "";
     var initial = string.IsNullOrEmpty(who) ? "?" : char.ToUpperInvariant(who[0]).ToString();
     var roleLabel = Model.Role switch
@@ -12,6 +16,17 @@
     };
 }
 <header class="topbar">
+    @* brand-logo: on a phone there is no rail, so the shop (its logo, or the GarageDesk mark) sits at the start of the bar. *@
+    <a class="topbar-brand" asp-area="" asp-page="/Index" aria-label="@(Model.ShopName ?? "GarageDesk")">
+        @if (logoView is not null)
+        {
+            <partial name="_ShopLogo" model="logoView" />
+        }
+        else
+        {
+            <span class="topbar-mark"><partial name="_BrandMark" model='"tile"' /></span>
+        }
+    </a>
     <div class="topbar-heading">
         @if (!string.IsNullOrEmpty(Model.GroupLabel))
         {

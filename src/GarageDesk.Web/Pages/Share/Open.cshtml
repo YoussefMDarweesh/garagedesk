@@ -8,6 +8,7 @@
     var isEstimate = v.Kind == ShareLinkKind.Estimate;
     var isStatus = v.Kind == ShareLinkKind.Status;
     var logoUrl = $"{Model.Request.PathBase}{Model.Request.Path}?handler=logo";
+    var shareLogo = new ShopLogoView(logoUrl, v.ShopName, "card");
     var phoneHref = "tel:" + new string(v.ShopPhone.Where(c => char.IsAsciiDigit(c) || c == '+').ToArray());
     ViewData["Accent"] = v.ShopAccent;
     ViewData["ShopName"] = v.ShopName;
@@ -24,7 +25,7 @@
         <header class="share-brand">
             @if (v.HasLogo)
             {
-                <img class="share-logo" src="@logoUrl" alt="@v.ShopName" />
+                <partial name="_ShopLogo" model="shareLogo" />
             }
             <div>
                 <p class="share-shop" dir="auto">@v.ShopName</p>
