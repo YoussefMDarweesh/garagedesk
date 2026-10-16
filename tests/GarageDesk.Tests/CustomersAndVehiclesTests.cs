@@ -93,7 +93,9 @@ public class CustomersAndVehiclesTests(GarageDeskWebFactory factory) : IClassFix
         // The customer's page lists both cars.
         var details = await TestData.BodyAsync(await client.GetAsync($"/Customers/Details/{customerId}"));
         Assert.Contains("ABC-1234", details);
-        Assert.Contains("أ ب ج 5678", details);
+        // ui-polish-v2: an Arabic plate is drawn as its letters, then its digits (see PlateFormat), so both parts are checked.
+        Assert.Contains(">أ ب ج</bdi>", details);
+        Assert.Contains(">5678</bdi>", details);
 
         // Either car is found by its plate, typed loosely (case, spaces, dashes, Arabic digits).
         foreach (var search in new[] { "abc 1234", "ABC1234", "bc-12", "ابج٥٦٧٨", "ا ب ج 5678", "5678" })

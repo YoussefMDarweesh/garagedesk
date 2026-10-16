@@ -1,12 +1,17 @@
-@* The phone version of the rail: a bottom tab bar with the five everyday pages. (Shop settings is in the user menu.) *@
+@* The phone version of the rail: a bottom tab bar with the everyday pages, and a "More" sheet that lists every other
+   section the person is allowed to open (the same entries as the desktop rail, minus the ones already on the bar).
+   Without JavaScript the "More" link jumps to the sheet (CSS :target), so nothing is lost. *@
 @model GarageDesk.Web.Services.ShellModel
+@using GarageDesk.Web.Services
+@{
+    var bar = NavBuilder.PhoneBar(Model.Groups);
+    var more = NavBuilder.PhoneMore(Model.Groups);
+    var moreActive = more.Any(g => g.HasActive);
+}
 <nav class="tabbar" aria-label="@L["Main navigation"]">
-    @foreach (var item in Model.Items.Where(i => !i.OwnerOnly))
+    @foreach (var item in bar)
     {
-        var active = item.Page == "/Index"
-            ? Model.CurrentPage == "/Index"
-            : Model.CurrentPage.StartsWith(item.Prefix, StringComparison.Ordinal);
-        <a class="tab-link @(active ? "active" : "")" asp-area="" asp-page="@item.Page" aria-current="@(active ? "page" : null)">
+        <a class="tab-link @(item.Active ? "active" : "")" asp-area="" asp-page="@item.Page" asp-all-route-data="@(item.Route ?? new Dictionary<string, string>())" aria-current="@(item.Active ? "page" : null)">
             <partial name="_Icon" model="item.Icon" />
             <span>@item.Label</span>
             @if (item.Badge > 0)
@@ -15,4 +20,45 @@
             }
         </a>
     }
+    @if (more.Count > 0)
+    {
+        <a class="tab-link tab-more @(moreActive ? "active" : "")" href="#more-sheet" id="more-trigger" aria-controls="more-sheet" aria-expanded="false" role="button">
+            <partial name="_Icon" model='"more"' />
+            <span>@L["More"]</span>
+        </a>
+    }
 </nav>
+
+@if (more.Count > 0)
+{
+    <div class="more-sheet" id="more-sheet" role="dialog" aria-label="@L["All sections"]" hidden>
+        <a class="more-backdrop" href="#" tabindex="-1" aria-hidden="true" data-more-close></a>
+        <div class="more-panel">
+            <div class="more-head">
+                <h2>@L["All sections"]</h2>
+                <button type="button" class="icon-btn" data-more-close aria-label="@L["Close"]"><partial name="_Icon" model='"x"' /></button>
+            </div>
+            @foreach (var group in more)
+            {
+                <section class="more-group" data-group="@group.Key">
+                    <h3>@group.Label</h3>
+                    <ul>
+                        @foreach (var item in group.Items)
+                        {
+                            <li>
+                                <a class="more-link @(item.Active ? "active" : "")" asp-area="" asp-page="@item.Page" asp-all-route-data="@(item.Route ?? new Dictionary<string, string>())" aria-current="@(item.Active ? "page" : null)">
+                                    <span class="icon-tile"><partial name="_Icon" model="item.Icon" /></span>
+                                    <span>@item.Label</span>
+                                    @if (item.Badge > 0)
+                                    {
+                                        <span class="count num">@item.Badge</span>
+                                    }
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </section>
+            }
+        </div>
+    </div>
+}

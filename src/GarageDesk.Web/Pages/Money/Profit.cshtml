@@ -120,7 +120,7 @@
                             <a asp-page="/Jobs/Details" asp-route-id="@job.JobId" class="ltr num">#@job.JobId</a>
                             @if (job.InvoiceLabel is not null) { <span class="chip chip-info ltr num">@job.InvoiceLabel</span> }
                         </td>
-                        <td><span class="plate" dir="auto">@job.Plate</span></td>
+                        <td><span class="plate">@PlateFormat.Html(job.Plate)</span></td>
                         <td class="cell-end"><partial name="_Money" model="job.Revenue" /></td>
                         <td class="cell-end"><partial name="_Money" model="job.PartCost" /></td>
                         <td class="cell-end fw-bold @(job.Profit < 0 ? "figure-negative" : "")" data-job-profit-value>

@@ -86,8 +86,8 @@ else
                             @foreach (var vehicle in customer.Vehicles)
                             {
                                 var matched = Model.PlateKey.Length > 0 && vehicle.PlateKey.Contains(Model.PlateKey);
-                                <a class="plate @(matched ? "plate-match" : "")" dir="auto"
-                                   asp-page="/Vehicles/Details" asp-route-id="@vehicle.Id">@vehicle.Plate</a>
+                                <a class="plate @(matched ? "plate-match" : "")"
+                                   asp-page="/Vehicles/Details" asp-route-id="@vehicle.Id">@PlateFormat.Html(vehicle.Plate)</a>
                             }
                         </td>
                     </tr>

@@ -31,37 +31,18 @@
         // The role comes from the database (see ICurrentStaff), so the menu always matches what the server allows.
         var staff = await CurrentStaff.GetAsync();
         var role = staff?.Role ?? ShopRole.Technician; // unknown or deactivated: show the least
-        var items = new List<NavItem>();
         var dueCount = 0;
-        if (role == ShopRole.Technician)
-        {
-            // A technician's whole world: the jobs assigned to them. No money, no customers list, no reminders.
-            items.Add(new("/Work/Index", "/Work", L["My jobs"].Value, "clipboard"));
-        }
-        else
+        if (role != ShopRole.Technician)
         {
             // One small count for the bell. It goes through the DbContext's tenant filter like every other query.
             dueCount = await Db.Reminders.DueOrOverdue(ShopClock.Today()).CountAsync();
-            items.Add(new("/Index", "/Index", L["Dashboard"].Value, "grid"));
-            items.Add(new("/Customers/Index", "/Customers", L["Customers"].Value, "users"));
-            items.Add(new("/Vehicles/Index", "/Vehicles", L["Vehicles"].Value, "car"));
-            items.Add(new("/Jobs/Index", "/Jobs", L["Job cards"].Value, "clipboard"));
-            items.Add(new("/Estimates/Index", "/Estimates", L["Estimates"].Value, "file-text"));
-            items.Add(new("/Reminders/Index", "/Reminders", L["Reminders"].Value, "bell", dueCount));
-            items.Add(new("/Receivables/Index", "/Receivables", L["Who owes me"].Value, "coins"));
-            // v1.4: the parts catalog (cashiers may look; cost and stock value are owner-only inside) and, for owners, Money.
-            items.Add(new("/Parts/Index", "/Parts", L["Parts"].Value, "package", 0, OwnerOnly: true));
-            if (role == ShopRole.Owner)
-            {
-                items.Add(new("/Money/Profit", "/Money", L["Money"].Value, "bar-chart", 0, OwnerOnly: true));
-                items.Add(new("/Reports/Commissions", "/Reports", L["Commissions"].Value, "trending-up", 0, OwnerOnly: true));
-                items.Add(new("/Staff/Index", "/Staff", L["My team"].Value, "users", 0, OwnerOnly: true));
-                items.Add(new("/ShopSettings", "/ShopSettings", L["Shop settings"].Value, "sliders", 0, OwnerOnly: true));
-            }
         }
-        var section = items.FirstOrDefault(i => currentPage.StartsWith(i.Prefix, StringComparison.Ordinal))?.Label
-                      ?? ViewData["Title"]?.ToString() ?? "GarageDesk";
-        shell = new ShellModel(currentPage, section, items, dueCount, shopName, logoVersion, User.Identity?.Name, currentUrl, role);
+        // ui-polish-v2: the menu is grouped (Overview, Workshop, Money, Stock, Admin); see NavBuilder for the role rules.
+        var groups = NavBuilder.Build(role, currentPage, Context.Request.Query["show"].FirstOrDefault(), dueCount, L);
+        var here = groups.SelectMany(g => g.Items.Select(i => (Group: g, Item: i))).FirstOrDefault(x => x.Item.Active);
+        var section = here.Item?.Label ?? ViewData["Title"]?.ToString() ?? "GarageDesk";
+        var groupLabel = here.Group is { Collapsible: true } ? here.Group.Label : null;
+        shell = new ShellModel(currentPage, section, groups, dueCount, shopName, logoVersion, User.Identity?.Name, currentUrl, role, groupLabel, staff?.DisplayName);
     }
 }
 <!DOCTYPE html>
@@ -81,8 +62,16 @@
                 var theme = localStorage.getItem("gd-theme");
                 if (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches) { theme = "dark"; }
                 if (theme) { root.setAttribute("data-bs-theme", theme); }
-                if (localStorage.getItem("gd-sidebar") === "pinned") { root.setAttribute("data-sidebar", "pinned"); }
             } catch (e) { }
+            // The rail starts open (labels and section headings visible) on wide screens and icon-only on narrow ones.
+            // A choice the person made with the pin button ("pinned" or "collapsed") always wins over that default.
+            try {
+                var choice = localStorage.getItem("gd-sidebar");
+                var open = choice === "pinned" || (choice !== "collapsed" && window.matchMedia("(min-width: 1280px)").matches);
+                if (open) { document.documentElement.setAttribute("data-sidebar", "pinned"); }
+            } catch (e) {
+                if (window.matchMedia("(min-width: 1280px)").matches) { document.documentElement.setAttribute("data-sidebar", "pinned"); }
+            }
         })();
     </script>
     <link rel="icon" href="~/favicon.ico" sizes="any" />
@@ -94,6 +83,12 @@
     <meta name="gd-sw" content="@Url.Content("~/sw.js")" data-scope="@Url.Content("~/")"
           data-install-title="@L["Install GarageDesk on this device"]" data-install-action="@L["Install"]"
           data-install-dismiss="@L["Not now"]" data-install-ios="@L["To install: tap Share, then Add to Home Screen."]" />
+    @* ui-polish-v2: self-hosted fonts (wwwroot/fonts, OFL). Only the file this page's language needs is fetched early. *@
+    <link rel="preload" as="font" type="font/woff2" href="~/fonts/Inter-latin-var.woff2" crossorigin />
+    @if (isRtl)
+    {
+        <link rel="preload" as="font" type="font/woff2" href="~/fonts/IBMPlexSansArabic-500-arabic.woff2" crossorigin />
+    }
     <link rel="stylesheet" href="@bootstrapCss" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>

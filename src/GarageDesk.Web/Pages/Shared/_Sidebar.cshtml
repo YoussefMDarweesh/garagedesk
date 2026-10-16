@@ -1,8 +1,11 @@
 @* The floating navy rail. Icons only until hovered, focused or pinned; then the labels slide out.
-   It sits at the inline-start edge, so in Arabic it is on the right without any extra CSS. *@
+   It sits at the inline-start edge, so in Arabic it is on the right without any extra CSS.
+   ui-polish-v2: the links are grouped into labelled, collapsible sections (see NavBuilder for who sees what).
+   The brand and the pin button stay in place; only the middle scrolls when the window is short.
+   Without JavaScript every section is simply open. *@
 @model GarageDesk.Web.Services.ShellModel
 @using GarageDesk.Web.Services
-<aside class="sidebar" id="sidebar" aria-label="@L["Main navigation"]">
+<aside class="sidebar" id="sidebar">
     <a class="sidebar-brand" asp-area="" asp-page="/Index">
         @if (Model.LogoVersion is not null)
         {
@@ -18,25 +21,49 @@
         </span>
     </a>
 
-    <ul class="rail-nav">
-        @foreach (var item in Model.Items)
+    <nav class="rail-scroll" aria-label="@L["Main navigation"]">
+        @foreach (var group in Model.Groups)
         {
-            var active = item.Page == "/Index"
-                ? Model.CurrentPage == "/Index"
-                : Model.CurrentPage.StartsWith(item.Prefix, StringComparison.Ordinal);
-            <li>
-                <a class="rail-link @(active ? "active" : "")" asp-area="" asp-page="@item.Page"
-                   aria-current="@(active ? "page" : null)" title="@item.Label">
-                    <partial name="_Icon" model="item.Icon" />
-                    <span class="rail-text">@item.Label</span>
-                    @if (item.Badge > 0)
+            var open = group.DefaultOpen || group.HasActive || !group.Collapsible;
+            var listId = $"rail-{group.Key}";
+            <div class="rail-group @(open ? "is-open" : "") @(group.HasActive ? "has-active" : "")" data-group="@group.Key">
+                @if (group.Collapsible)
+                {
+                    <button type="button" class="rail-group-toggle" aria-expanded="@(open ? "true" : "false")" aria-controls="@listId" title="@group.Label">
+                        <span class="rail-group-icon"><partial name="_Icon" model="group.Icon" /></span>
+                        <span class="rail-text rail-group-label">@group.Label</span>
+                        @if (group.Badge > 0)
+                        {
+                            <span class="rail-badge rail-group-badge rail-text num">@group.Badge</span>
+                        }
+                        <span class="rail-text rail-chevron"><partial name="_Icon" model='"chevron-down"' /></span>
+                    </button>
+                }
+                else
+                {
+                    <p class="rail-group-toggle rail-group-static"><span class="rail-text rail-group-label">@group.Label</span></p>
+                }
+                <ul class="rail-nav" id="@listId">
+                    @foreach (var item in group.Items)
                     {
-                        <span class="rail-badge rail-text num">@item.Badge</span>
+                        <li>
+                            <a class="rail-link @(item.Active ? "active" : "")" asp-area="" asp-page="@item.Page" asp-all-route-data="@(item.Route ?? new Dictionary<string, string>())"
+                               aria-current="@(item.Active ? "page" : null)" title="@item.Label">
+                                <partial name="_Icon" model="item.Icon" />
+                                <span class="rail-text">@item.Label</span>
+                                @if (item.Badge > 0)
+                                {
+                                    <span class="rail-badge rail-text num">@item.Badge</span>
+                                }
+                            </a>
+                        </li>
                     }
-                </a>
-            </li>
+                </ul>
+            </div>
         }
-    </ul>
+    </nav>
+    @* Apply the remembered open/closed sections right away, before the page paints (the active section always stays open). *@
+    <script>(function(){try{var s=JSON.parse(localStorage.getItem("gd-nav")||"{}");document.querySelectorAll(".rail-group[data-group]").forEach(function(g){var k=g.getAttribute("data-group");if(g.classList.contains("has-active")||!(k in s)){return;}var o=!!s[k];g.classList.toggle("is-open",o);var b=g.querySelector(".rail-group-toggle");if(b){b.setAttribute("aria-expanded",o?"true":"false");}});}catch(e){}})();</script>
 
     <div class="rail-foot">
         <button type="button" class="rail-link rail-pin" id="sidebar-pin" aria-pressed="false" title="@L["Keep the menu open"]">

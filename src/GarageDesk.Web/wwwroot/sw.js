@@ -20,7 +20,7 @@ const OFFLINE_URL = "/offline.html";
 const MAX_ENTRIES = 80;
 
 // Only files under these folders are ever cached (they are the same for every user of the site).
-const STATIC_PREFIXES = ["/css/", "/js/", "/lib/", "/icons/"];
+const STATIC_PREFIXES = ["/css/", "/js/", "/lib/", "/icons/", "/fonts/"];
 
 // Never handled by the service worker at all. (Checked first, so it wins over everything else.)
 const NEVER_EXACT = ["/s", "/join", "/identity", "/shop", "/healthz", "/setculture"];

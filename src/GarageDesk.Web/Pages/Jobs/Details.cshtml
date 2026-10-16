@@ -393,7 +393,7 @@
             <dl class="mb-0">
                 <dt class="text-secondary fw-normal">@L["Vehicle"]</dt>
                 <dd>
-                    <a class="plate" dir="auto" asp-page="/Vehicles/Details" asp-route-id="@job.VehicleId">@vehicle?.Plate</a>
+                    <a class="plate" asp-page="/Vehicles/Details" asp-route-id="@job.VehicleId">@PlateFormat.Html(vehicle?.Plate)</a>
                     <span class="ms-1">@vehicle?.Make @vehicle?.Model</span>
                 </dd>
                 <dt class="text-secondary fw-normal">@L["Owner"]</dt>

@@ -110,7 +110,7 @@ public partial class PwaTests(GarageDeskWebFactory factory) : IClassFixture<Gara
         Assert.Contains("Set-Cookie", sw);
 
         // ...only these folders are "static", and the page navigation branch has no cache write in it.
-        Assert.Contains("[\"/css/\", \"/js/\", \"/lib/\", \"/icons/\"]", sw);
+        Assert.Contains("[\"/css/\", \"/js/\", \"/lib/\", \"/icons/\", \"/fonts/\"]", sw);
         var navigateBranch = sw[sw.IndexOf("request.mode === \"navigate\"", StringComparison.Ordinal)..];
         navigateBranch = navigateBranch[..navigateBranch.IndexOf("return;", StringComparison.Ordinal)];
         Assert.DoesNotContain("put(", navigateBranch);

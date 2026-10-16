@@ -1,0 +1,10 @@
+@* A small "up 12% / down 5%" badge. The model is the whole-number percentage change. The sign is also written, so it is
+   readable without the colour. *@
+@model int
+@{
+    var up = Model >= 0;
+}
+<span class="trend-badge @(up ? "trend-up" : "trend-down")">
+    <partial name="_Icon" model='up ? "arrow-up-right" : "arrow-down-right"' />
+    <span class="ltr">@(up ? "+" : "")@Model%</span>
+</span>

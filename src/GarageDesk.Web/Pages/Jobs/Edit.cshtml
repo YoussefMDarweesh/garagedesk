@@ -13,7 +13,7 @@
             <partial name="_FormErrors" />
 
             <div class="mb-3 p-3 rounded border">
-                <span class="plate" dir="auto">@vehicle?.Plate</span>
+                <span class="plate">@PlateFormat.Html(vehicle?.Plate)</span>
                 <span class="ms-1">@vehicle?.Make @vehicle?.Model</span>
                 <div class="text-secondary small mt-1">@vehicle?.Customer?.Name</div>
             </div>

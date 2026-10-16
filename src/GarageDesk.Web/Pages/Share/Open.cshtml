@@ -34,7 +34,7 @@
 
         <h1 id="share-title" class="share-title">@L["Your car"]</h1>
         <p class="share-vehicle">
-            <span class="plate" dir="auto">@v.Plate</span>
+            <span class="plate">@PlateFormat.Html(v.Plate)</span>
             <span dir="auto">@v.VehicleTitle</span>
         </p>
 
@@ -128,7 +128,7 @@ else
             <div>
                 <h2 class="inv-label">@L["Vehicle"]</h2>
                 <p class="inv-strong">@v.VehicleTitle <span class="ltr">@v.VehicleYear</span></p>
-                <p class="mb-0">@L["Plate number"]: <span class="inv-plate" dir="auto">@v.Plate</span></p>
+                <p class="mb-0">@L["Plate number"]: <span class="inv-plate">@PlateFormat.Html(v.Plate)</span></p>
             </div>
         </section>
 

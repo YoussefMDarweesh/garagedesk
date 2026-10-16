@@ -83,6 +83,35 @@ public static class ProfitReport
         return (MethodTotals.From(payments.Select(p => (p.Method, p.Amount))), expenses.Sum());
     }
 
+    /// <summary>
+    /// The cash-basis profit of each of the last <paramref name="months"/> months, oldest first, ending with the month that
+    /// contains <paramref name="today"/>. Same definition as the card (received minus expenses), two queries in all.
+    /// Used for the dashboard's small trend line and the "vs last month" badge.
+    /// </summary>
+    public static async Task<List<decimal>> MonthlyProfitAsync(ApplicationDbContext db, DateOnly today, int months)
+    {
+        var thisMonth = new DateOnly(today.Year, today.Month, 1);
+        var first = thisMonth.AddMonths(-(months - 1));
+        var end = thisMonth.AddMonths(1);
+
+        var payments = await db.Payments.AsNoTracking()
+            .Where(p => p.PaidOn >= first && p.PaidOn < end)
+            .Select(p => new { p.PaidOn, p.Amount })
+            .ToListAsync();
+        var expenses = await db.Expenses.AsNoTracking()
+            .Where(e => e.Date >= first && e.Date < end)
+            .Select(e => new { e.Date, e.Amount })
+            .ToListAsync();
+
+        var result = new List<decimal>();
+        for (var m = first; m < end; m = m.AddMonths(1))
+        {
+            result.Add(payments.Where(p => p.PaidOn.Year == m.Year && p.PaidOn.Month == m.Month).Sum(p => p.Amount)
+                       - expenses.Where(e => e.Date.Year == m.Year && e.Date.Month == m.Month).Sum(e => e.Amount));
+        }
+        return result;
+    }
+
     public static async Task<MonthProfit> MonthAsync(ApplicationDbContext db, DateOnly firstOfMonth)
     {
         var next = firstOfMonth.AddMonths(1);

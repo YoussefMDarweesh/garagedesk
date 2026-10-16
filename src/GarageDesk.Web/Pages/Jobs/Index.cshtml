@@ -99,7 +99,7 @@ else
                         <td><a class="identity-name" asp-page="Details" asp-route-id="@job.Id"><span class="ltr num">#@job.Id</span></a>@if (job.InvoiceLabel is not null) { <div class="small text-secondary ltr num">@job.InvoiceLabel</div> }</td>
                         <td><span class="ltr num">@job.DateIn.ToString("yyyy-MM-dd")</span></td>
                         <td>
-                            <span class="plate" dir="auto">@job.Vehicle?.Plate</span>
+                            <span class="plate">@PlateFormat.Html(job.Vehicle?.Plate)</span>
                             <span class="text-secondary ms-1">@job.Vehicle?.Make @job.Vehicle?.Model</span>
                         </td>
                         <td>

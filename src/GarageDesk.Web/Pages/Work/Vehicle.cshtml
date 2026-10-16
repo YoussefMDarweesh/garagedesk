@@ -12,7 +12,7 @@
 <section class="vehicle-hero mb-4">
     <div>
         <p class="hero-kicker">@Model.Make @Model.ModelName &middot; <span class="num">@Model.Year</span></p>
-        <h1><span class="plate plate-lg" dir="auto">@Model.Plate</span></h1>
+        <h1><span class="plate plate-lg">@PlateFormat.Html(Model.Plate)</span></h1>
         <p class="mb-0">@Model.OwnerName</p>
 
         <dl class="hero-stats">
