@@ -899,4 +899,17 @@
   <data name="Money to collect" xml:space="preserve"><value>مبالغ للتحصيل</value></data>
   <data name="oldest {0} days" xml:space="preserve"><value>أقدمها منذ {0} يوم</value></data>
   <data name="{0} job cards in {1} months" xml:space="preserve"><value>{0} أمر شغل في {1} شهر</value></data>
+
+  <!-- brand-logo: logo preview and upload guidance on Shop settings -->
+  <data name="Logo preview" xml:space="preserve"><value>معاينة الشعار</value></data>
+  <data name="In the dark menu" xml:space="preserve"><value>في القائمة الداكنة</value></data>
+  <data name="On the light plate" xml:space="preserve"><value>على اللوحة الفاتحة</value></data>
+  <data name="On an invoice" xml:space="preserve"><value>على الفاتورة</value></data>
+  <data name="On a phone" xml:space="preserve"><value>على الهاتف</value></data>
+  <data name="Upload tips" xml:space="preserve"><value>نصائح للرفع</value></data>
+  <data name="Best: a transparent PNG, at least 512 × 512 px for a square mark or 1024 × 256 px for a wide wordmark, under 512 KB." xml:space="preserve"><value>الأفضل: صورة PNG شفافة، بحجم 512 × 512 بكسل على الأقل للشعار المربع أو 1024 × 256 بكسل للشعار العريض، وأقل من 512 كيلوبايت.</value></data>
+  <data name="Dark or colourful logos work best. A logo that is only white disappears on the light plate." xml:space="preserve"><value>الشعارات الداكنة أو الملونة تظهر بأفضل شكل. الشعار الأبيض فقط يختفي على اللوحة الفاتحة.</value></data>
+  <data name="Avoid tiny text inside the picture: it cannot be read at menu size." xml:space="preserve"><value>تجنب النصوص الصغيرة داخل الصورة: لا يمكن قراءتها بحجم القائمة.</value></data>
+  <data name="Your logo is {0} × {1} px." xml:space="preserve"><value>حجم شعارك {0} × {1} بكسل.</value></data>
+  <data name="This logo is small and may look blurry. For a sharp result use at least 512 px on its short side." xml:space="preserve"><value>هذا الشعار صغير وقد يظهر غير واضح. للحصول على صورة حادة استخدم 512 بكسل على الأقل في الضلع الأقصر.</value></data>
 </root>

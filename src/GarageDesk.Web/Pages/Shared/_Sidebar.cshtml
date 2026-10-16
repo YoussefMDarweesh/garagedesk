@@ -5,20 +5,42 @@
    Without JavaScript every section is simply open. *@
 @model GarageDesk.Web.Services.ShellModel
 @using GarageDesk.Web.Services
+@{
+    var logoView = Model.LogoVersion is null
+        ? null
+        : new ShopLogoView(Url.Content("~" + ShopLogoEndpoint.Path) + "?v=" + Model.LogoVersion, Model.ShopName ?? "", "rail");
+}
 <aside class="sidebar" id="sidebar">
-    <a class="sidebar-brand" asp-area="" asp-page="/Index">
+    @* brand-logo: the top of the rail has a fixed height, so it never jumps when the rail opens. With a logo, the logo
+       sits on its plate (about 46 px when the rail is icon-only, a wide 56 px plate when open) and the shop name comes
+       under it, with "GarageDesk" as the small second line. Without a logo, the GarageDesk mark (tinted with the shop's
+       accent) and wordmark take its place. *@
+    <a class="sidebar-brand @(Model.LogoVersion is not null ? "has-logo" : "")" asp-area="" asp-page="/Index" title="@Model.ShopName">
         @if (Model.LogoVersion is not null)
         {
-            <span class="brand-tile has-logo"><img src="@Url.Content("~" + ShopLogoEndpoint.Path)?v=@Model.LogoVersion" alt="@Model.ShopName" /></span>
+            <span class="rail-brand-top">
+                <partial name="_ShopLogo" model="logoView" />
+            </span>
+            <span class="rail-brand-row">
+                <span class="rail-brand-mini" aria-hidden="true"><partial name="_BrandMark" model='"tile"' /></span>
+                <span class="rail-text rail-brand-text">
+                    <span class="rail-brand-name"><bdi>@Model.ShopName</bdi></span>
+                    <span class="rail-brand-sub">GarageDesk</span>
+                </span>
+            </span>
         }
         else
         {
-            <span class="brand-tile"><partial name="_Icon" model='"tool"' /></span>
+            <span class="rail-brand-top rail-lockup">
+                <span class="rail-lockup-mark"><partial name="_BrandMark" model='"tile"' /></span>
+                <span class="rail-text rail-lockup-word"><partial name="_BrandWord" /></span>
+            </span>
+            <span class="rail-brand-row">
+                <span class="rail-text rail-brand-text">
+                    <span class="rail-brand-name"><bdi>@Model.ShopName</bdi></span>
+                </span>
+            </span>
         }
-        <span class="rail-text">
-            <span class="rail-brand-name">GarageDesk</span>
-            <span class="rail-brand-sub">@Model.ShopName</span>
-        </span>
     </a>
 
     <nav class="rail-scroll" aria-label="@L["Main navigation"]">

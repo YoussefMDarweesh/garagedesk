@@ -171,3 +171,13 @@ Before: `--text-3` was about 3.5:1 on white and `--ok` / `--warn` badges were 4.
 direction and always draws **letters first in the reading direction of the page** (right in Arabic, left in English),
 with a thin divider. The stored plate and the search key are untouched. A Latin plate, or anything that is not exactly
 one letter group plus one digit group, is shown as typed.
+
+## Brand and logo (branch `brand-logo`)
+
+The owner said the logo "has to be clearer and more modern". Two parts, details and screenshots in [BRAND.md](BRAND.md):
+
+* **Shop logo (A):** the rail header is a fixed-height block with the logo on a light *plate* (`.logo-plate`, `object-fit: contain`, `multiply` for white-background JPEGs), 3.2 rem square when icon-only and full width by 4.5 rem when open, the shop name under it and GarageDesk as the small line. The same plate is used on the phone header, the dashboard hero, share pages and onboarding; invoices keep the logo plate-less (contain, up to 64 x 22 mm). Shop settings has upload tips, a size hint under 256 px (header parser, never blocks) and a four-frame preview. Pure CSS: no logo-background column, no migration.
+* **Product mark (B):** a "G" drawn as a gauge dial with an orange needle, a hand-drawn monoline wordmark, lockups and icons (`wwwroot/brand`, `wwwroot/icons`), inline partials `_BrandMark`, `_BrandWord`, `_BrandLockup`. The shop accent may tint the needle only.
+
+![before](screenshots/brand-before-rail-badge-en-light.jpg)
+![after](screenshots/brand-rail-wordmark-ar-dark.jpg)

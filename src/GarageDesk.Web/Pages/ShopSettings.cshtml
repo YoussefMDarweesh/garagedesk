@@ -5,6 +5,13 @@
     ViewData["Title"] = L["Shop settings"].Value;
     var logoVersion = User.FindFirst(CurrentShop.LogoClaimType)?.Value;
     var shopName = User.FindFirst(CurrentShop.NameClaimType)?.Value;
+    var logoSrc = logoVersion is null ? "" : Url.Content("~" + ShopLogoEndpoint.Path) + "?v=" + logoVersion;
+    var logoView = logoVersion is null ? null : new ShopLogoView(logoSrc, shopName ?? "", "card");
+    var logoXl = new ShopLogoView(logoSrc, shopName ?? "", "xl");
+    var logoRail = new ShopLogoView(logoSrc, shopName ?? "", "rail");
+    var logoTile = new ShopLogoView(logoSrc, shopName ?? "", "tile");
+    var logoCard = new ShopLogoView(logoSrc, shopName ?? "", "card");
+    var logoSm = new ShopLogoView(logoSrc, shopName ?? "", "sm");
 }
 
 <div class="narrow" style="max-width: 46rem">
@@ -20,21 +27,29 @@
         <div class="toast-source" data-toast="success" role="status">@Model.StatusMessage</div>
     }
 
-    <section class="panel panel-pad mb-4" aria-labelledby="logo-heading">
+    <section class="panel panel-pad mb-4" aria-labelledby="logo-heading" data-logo-section>
         <div class="panel-head mb-1"><h2 id="logo-heading" class="panel-title">@L["Shop logo"]</h2></div>
         <p class="text-secondary">@L["PNG, JPEG or WebP, up to 512 KB. It appears in the navigation bar."]</p>
 
-        <div class="mb-4">
-            @if (Model.HasLogo)
+        <div class="logo-current">
+            @if (Model.HasLogo && logoView is not null)
             {
-                <img src="@Url.Content("~" + ShopLogoEndpoint.Path)?v=@logoVersion" alt="@shopName" class="shop-logo shop-logo-lg" />
+                <partial name="_ShopLogo" model="logoXl" />
+                <div class="logo-current-meta">
+                    @if (Model.LogoSize is { } size)
+                    {
+                        <p class="mb-0 small text-secondary" data-logo-size>@L["Your logo is {0} × {1} px.", size.Width, size.Height]</p>
+                    }
+                    @if (Model.LogoIsSmall)
+                    {
+                        <p class="logo-hint" role="note" data-logo-small><partial name="_Icon" model='"alert"' /><span>@L["This logo is small and may look blurry. For a sharp result use at least 512 px on its short side."]</span></p>
+                    }
+                </div>
             }
             else
             {
-                <div class="d-flex align-items-center gap-3 text-secondary">
-                    <span class="brand-tile"><partial name="_Icon" model='"tool"' /></span>
-                    <span>@L["No logo yet."]</span>
-                </div>
+                <span class="topbar-mark" aria-hidden="true"><partial name="_BrandMark" model='"tile"' /></span>
+                <span class="text-secondary">@L["No logo yet."]</span>
             }
         </div>
 
@@ -46,11 +61,78 @@
             <button type="submit" class="btn btn-primary mt-3">@L["Upload"]</button>
         </form>
 
+        <div class="logo-tips" data-logo-tips>
+            <h3>@L["Upload tips"]</h3>
+            <ul>
+                <li>@L["Best: a transparent PNG, at least 512 × 512 px for a square mark or 1024 × 256 px for a wide wordmark, under 512 KB."]</li>
+                <li>@L["Dark or colourful logos work best. A logo that is only white disappears on the light plate."]</li>
+                <li>@L["Avoid tiny text inside the picture: it cannot be read at menu size."]</li>
+            </ul>
+        </div>
+
         @if (Model.HasLogo)
         {
             <form method="post" asp-page-handler="Remove" class="mt-3" data-confirm="@L["Remove the shop logo?"]">
                 <button type="submit" class="btn btn-outline-secondary">@L["Remove logo"]</button>
             </form>
+        }
+
+        @if (Model.HasLogo && logoView is not null)
+        {
+            @* brand-logo: how the logo looks where owners and customers will meet it. Every frame reuses the same /shop/logo URL (one request). *@
+            <div class="logo-preview" data-logo-preview>
+                <h3 class="panel-title mb-3">@L["Logo preview"]</h3>
+                <div class="logo-preview-grid">
+                    <figure class="logo-frame">
+                        <div class="lf-stage lf-dark">
+                            <div class="lf-rail-open">
+                                <partial name="_ShopLogo" model="logoRail" />
+                                <span class="lf-name"><bdi>@shopName</bdi></span>
+                                <span class="lf-sub">GarageDesk</span>
+                            </div>
+                            <div class="lf-rail-icon"><partial name="_ShopLogo" model="logoTile" /></div>
+                        </div>
+                        <figcaption>@L["In the dark menu"]</figcaption>
+                    </figure>
+                    <figure class="logo-frame">
+                        <div class="lf-stage lf-light">
+                            <div class="lf-row">
+                                <partial name="_ShopLogo" model="logoCard" />
+                                <div class="min-w-0"><span class="lf-name"><bdi>@shopName</bdi></span><span class="lf-sub">GarageDesk</span></div>
+                            </div>
+                        </div>
+                        <figcaption>@L["On the light plate"]</figcaption>
+                    </figure>
+                    <figure class="logo-frame">
+                        <div class="lf-stage lf-paper">
+                            <div class="lf-paper-head">
+                                <img class="inv-logo" src="@logoSrc" alt="@shopName" />
+                                <span class="lf-paper-title">@L["Invoice"]</span>
+                            </div>
+                            <span class="lf-name"><bdi>@shopName</bdi></span>
+                            <span class="lf-bar w80"></span>
+                            <span class="lf-bar w60"></span>
+                            <span class="lf-bar w40"></span>
+                        </div>
+                        <figcaption>@L["On an invoice"]</figcaption>
+                    </figure>
+                    <figure class="logo-frame">
+                        <div class="lf-stage lf-phone-wrap">
+                            <div class="lf-phone">
+                                <div class="lf-phone-screen">
+                                    <div class="lf-phone-bar">
+                                        <partial name="_ShopLogo" model="logoSm" />
+                                        <span class="lf-bar"></span>
+                                    </div>
+                                    <span class="lf-phone-card"></span>
+                                    <span class="lf-phone-card"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <figcaption>@L["On a phone"]</figcaption>
+                    </figure>
+                </div>
+            </div>
         }
     </section>
 

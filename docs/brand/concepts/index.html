@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GarageDesk brand concepts</title>
+<style>
+  :root { --ink:#0b1324; --ink2:#131d36; --orange:#f97316; --line:#d9dfec; --muted:#55607a; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:15px/1.5 system-ui,"Segoe UI",sans-serif; color:var(--ink); background:#f4f6fb; padding:32px clamp(16px,4vw,48px) 64px; }
+  h1 { margin:0 0 4px; font-size:26px; }
+  p.lead { margin:0 0 28px; color:var(--muted); max-width:46rem; }
+  .grid { display:grid; gap:20px; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); }
+  .card { background:#fff; border:1px solid var(--line); border-radius:20px; padding:20px; }
+  .card h2 { margin:0; font-size:18px; }
+  .card .why { margin:4px 0 16px; color:var(--muted); font-size:14px; }
+  .big { display:flex; justify-content:center; padding:8px 0 16px; }
+  .big svg { width:168px; height:168px; }
+  .sizes { display:flex; align-items:flex-end; gap:16px; padding:14px; border-radius:14px; }
+  .sizes.light { background:#fff; border:1px solid var(--line); }
+  .sizes.dark { background:var(--ink); margin-top:10px; }
+  .lock { display:flex; align-items:center; gap:12px; padding:14px; border-radius:14px; margin-top:10px; }
+  .lock.light { background:#fff; border:1px solid var(--line); color:var(--ink); }
+  .lock.dark { background:var(--ink); color:#fff; }
+  .lock svg.wm { height:26px; width:auto; }
+  .tag { font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:12px 0 0; }
+  .pick { display:inline-block; font-size:12px; font-weight:700; background:var(--orange); color:#fff; border-radius:99px; padding:2px 10px; margin-inline-start:8px; vertical-align:middle; }
+</style>
+</head>
+<body>
+<!-- shared symbols: the three candidate marks and the hand-drawn monoline wordmark (outlined strokes, no font needed) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="mark-a" viewBox="0 0 64 64">
+    <rect width="64" height="64" rx="17" fill="#101b36"/>
+    <path d="M44 16A20 20 0 1 0 51.9 32H33" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M32 32L48 19" stroke="#f97316" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <circle cx="32" cy="32" r="5.2" fill="#f97316"/><circle cx="32" cy="32" r="2" fill="#101b36"/>
+  </symbol>
+  <symbol id="mark-b" viewBox="0 0 64 64">
+    <rect width="64" height="64" rx="17" fill="#101b36"/>
+    <path d="M15 51V30a17 17 0 0 1 34 0v21z" fill="#fff"/>
+    <path d="M15 32h34M15 39h34M15 46h34" stroke="#101b36" stroke-width="3.2" fill="none"/>
+    <rect x="15" y="46" width="34" height="5" fill="#f97316"/>
+  </symbol>
+  <symbol id="mark-c" viewBox="0 0 64 64">
+    <rect width="64" height="64" rx="17" fill="#f97316"/>
+    <path d="M45.4 18.6A19 19 0 1 0 51 32" fill="none" stroke="#fff" stroke-width="9"/>
+    <path d="M51 32H34" stroke="#0b1324" stroke-width="9" fill="none"/>
+    <circle cx="32" cy="32" r="4" fill="#0b1324"/>
+  </symbol>
+  <symbol id="wordmark" viewBox="-6 -6 622 114">
+    <g fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+      <path transform="translate(0 0)" d="M60 17.2A30.5 30.5 0 1 0 66.5 36H38"/>
+      <g transform="translate(81 0)"><circle cx="26" cy="46" r="20.5"/><path d="M46.5 25.5V66.5"/></g>
+      <path transform="translate(142 0)" d="M5.5 25.5V66.5M5.5 48A22.5 22.5 0 0 1 28 25.5"/>
+      <g transform="translate(184.5 0)"><circle cx="26" cy="46" r="20.5"/><path d="M46.5 25.5V66.5"/></g>
+      <g transform="translate(245.5 0)"><circle cx="26" cy="46" r="20.5"/><path d="M46.5 25.5V80C46.5 91 38 96.5 26 96.5C19 96.5 13 94.5 9 90"/></g>
+      <path transform="translate(306.5 0)" d="M5.5 46H46.5A20.5 20.5 0 1 0 41.7 59.2"/>
+      <path transform="translate(367.5 0)" d="M5.5 5.5V66.5H34A30.5 30.5 0 0 0 34 5.5Z"/>
+      <path transform="translate(446.5 0)" d="M5.5 46H46.5A20.5 20.5 0 1 0 41.7 59.2"/>
+      <path transform="translate(507.5 0)" d="M40 31C37 27 31 25.5 24 25.5C14 25.5 9.5 30 9.5 35.5C9.5 41.5 15 43.5 24 46.5C33 49.5 40 51.5 40 58C40 63 35 66.5 24 66.5C16 66.5 9.5 64 6 59"/>
+      <path transform="translate(562 0)" d="M5.5 5.5V66.5M41.5 25.5L5.5 50M21 40L43 66.5"/>
+    </g>
+  </symbol>
+</svg>
+
+<h1>GarageDesk: three mark concepts</h1>
+<p class="lead">Each candidate is shown big, at 64 / 32 / 16 px on light and dark, and next to the hand-drawn wordmark. See docs/BRAND.md for the choice and why.</p>
+
+<div class="grid">
+  <section class="card">
+    <h2>A. Gauge G <span class="pick">chosen</span></h2>
+    <p class="why">A G drawn as the dial of a gauge, with an orange needle sweeping into the opening of the letter.</p>
+    <div class="big"><svg><use href="#mark-a"/></svg></div>
+    <div class="sizes light"><svg width="64" height="64"><use href="#mark-a"/></svg><svg width="32" height="32"><use href="#mark-a"/></svg><svg width="16" height="16"><use href="#mark-a"/></svg></div>
+    <div class="sizes dark"><svg width="64" height="64"><use href="#mark-a"/></svg><svg width="32" height="32"><use href="#mark-a"/></svg><svg width="16" height="16"><use href="#mark-a"/></svg></div>
+    <div class="lock light"><svg width="40" height="40"><use href="#mark-a"/></svg><svg class="wm" viewBox="-6 -6 622 114"><use href="#wordmark"/></svg></div>
+    <div class="lock dark"><svg width="40" height="40"><use href="#mark-a"/></svg><svg class="wm" viewBox="-6 -6 622 114"><use href="#wordmark"/></svg></div>
+  </section>
+
+  <section class="card">
+    <h2>B. Bay door</h2>
+    <p class="why">An arched workshop door with slats and an orange threshold: literal "garage", also a D for Desk.</p>
+    <div class="big"><svg><use href="#mark-b"/></svg></div>
+    <div class="sizes light"><svg width="64" height="64"><use href="#mark-b"/></svg><svg width="32" height="32"><use href="#mark-b"/></svg><svg width="16" height="16"><use href="#mark-b"/></svg></div>
+    <div class="sizes dark"><svg width="64" height="64"><use href="#mark-b"/></svg><svg width="32" height="32"><use href="#mark-b"/></svg><svg width="16" height="16"><use href="#mark-b"/></svg></div>
+    <div class="lock light"><svg width="40" height="40"><use href="#mark-b"/></svg><svg class="wm" viewBox="-6 -6 622 114"><use href="#wordmark"/></svg></div>
+    <div class="lock dark"><svg width="40" height="40"><use href="#mark-b"/></svg><svg class="wm" viewBox="-6 -6 622 114"><use href="#wordmark"/></svg></div>
+  </section>
+
+  <section class="card">
+    <h2>C. Wrench ring</h2>
+    <p class="why">A ring with an open jaw, like a spanner head or a wheel nut; the jaw makes a G, the dark bar is the tool.</p>
+    <div class="big"><svg><use href="#mark-c"/></svg></div>
+    <div class="sizes light"><svg width="64" height="64"><use href="#mark-c"/></svg><svg width="32" height="32"><use href="#mark-c"/></svg><svg width="16" height="16"><use href="#mark-c"/></svg></div>
+    <div class="sizes dark"><svg width="64" height="64"><use href="#mark-c"/></svg><svg width="32" height="32"><use href="#mark-c"/></svg><svg width="16" height="16"><use href="#mark-c"/></svg></div>
+    <div class="lock light"><svg width="40" height="40"><use href="#mark-c"/></svg><svg class="wm" viewBox="-6 -6 622 114"><use href="#wordmark"/></svg></div>
+    <div class="lock dark"><svg width="40" height="40"><use href="#mark-c"/></svg><svg class="wm" viewBox="-6 -6 622 114"><use href="#wordmark"/></svg></div>
+  </section>
+</div>
+</body>
+</html>

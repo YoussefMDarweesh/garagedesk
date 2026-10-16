@@ -15,7 +15,7 @@
  */
 "use strict";
 
-const CACHE = "gd-static-v1";
+const CACHE = "gd-static-v2";
 const OFFLINE_URL = "/offline.html";
 const MAX_ENTRIES = 80;
 

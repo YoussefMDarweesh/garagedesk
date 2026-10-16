@@ -32,5 +32,5 @@ the navigation branch has none).
 
 ## Updating
 
-Change `CACHE` in `sw.js` (for example `gd-static-v2`) to drop every old cached file at the next visit. File names with a
+Change `CACHE` in `sw.js` (for example `gd-static-v3`; it was bumped to v2 when the brand icons changed) to drop every old cached file at the next visit. File names with a
 `?v=` version (CSS and JavaScript) are cached per version, so normal releases need no change.

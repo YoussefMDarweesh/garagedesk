@@ -1,0 +1,5 @@
+@* A shop's own logo on its "plate": a soft light tile that makes dark badges, transparent marks and white-background
+   JPEGs readable in both themes. The image is shown with object-fit: contain, so it is never cropped or squashed, and
+   it reuses the same /shop/logo URL as every other place on the page (one request). Styles: .logo-plate in site.css. *@
+@model GarageDesk.Web.Services.ShopLogoView
+<span class="logo-plate logo-plate--@Model.Size"><img class="logo-plate-img" src="@Model.Src" alt="@Model.Alt" decoding="async" /></span>

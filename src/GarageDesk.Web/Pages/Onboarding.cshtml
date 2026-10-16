@@ -5,6 +5,7 @@
     ViewData["Title"] = L["Set up your shop"].Value;
     var shopName = User.FindFirst(CurrentShop.NameClaimType)?.Value;
     var logoVersion = User.FindFirst(CurrentShop.LogoClaimType)?.Value;
+    var logoView = logoVersion is null ? null : new ShopLogoView(Url.Content("~" + ShopLogoEndpoint.Path) + "?v=" + logoVersion, shopName ?? "", "xl");
 
     // The step labels, in order. A step is "done" when its real data exists; the current one is highlighted.
     var steps = new (int Number, string Label, bool Done)[]
@@ -52,9 +53,9 @@
             <form method="post" asp-page-handler="Brand" enctype="multipart/form-data" novalidate>
                 <div class="form-section">
                     <p class="form-section-title">@L["Shop logo"]</p>
-                    @if (Model.HasLogo)
+                    @if (Model.HasLogo && logoView is not null)
                     {
-                        <img src="@Url.Content("~" + ShopLogoEndpoint.Path)?v=@logoVersion" alt="@shopName" class="shop-logo shop-logo-lg mb-3" />
+                        <div class="mb-3"><partial name="_ShopLogo" model="logoView" /></div>
                     }
                     <label class="form-label small text-secondary" for="upload">@L["Logo image"]</label>
                     <input id="upload" name="upload" type="file" class="form-control" accept="image/png,image/jpeg,image/webp" />

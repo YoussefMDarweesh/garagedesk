@@ -19,6 +19,8 @@
 }
 else
 {
+    var heroLogoVersion = User.FindFirst(CurrentShop.LogoClaimType)?.Value;
+    var heroLogo = heroLogoVersion is null ? null : new ShopLogoView(Url.Content("~" + ShopLogoEndpoint.Path) + "?v=" + heroLogoVersion, Model.ShopName ?? "", "hero");
     var arabic = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
     var dateText = Model.Today.ToString("dddd d MMMM yyyy", new CultureInfo(arabic ? "ar-EG" : "en-GB"));
     var greeting = Model.DayPart switch
@@ -32,8 +34,17 @@ else
     @* ------------------------------------------------ today at the shop ------------------------------------------------ *@
     <section class="hero" aria-labelledby="hero-title" data-hero>
         <div class="hero-main">
-            <p class="hero-date"><span class="ltr">@dateText</span></p>
-            <h1 id="hero-title">@L["Today at {0}", Model.ShopName ?? L["Welcome"].Value]</h1>
+            @* brand-logo: the shop's logo, on its plate, next to the date and title (same /shop/logo URL as the menu: one request). *@
+            <div class="hero-head">
+                @if (heroLogoVersion is not null)
+                {
+                    <partial name="_ShopLogo" model="heroLogo" />
+                }
+                <div class="hero-head-text">
+                    <p class="hero-date"><span class="ltr">@dateText</span></p>
+                    <h1 id="hero-title">@L["Today at {0}", Model.ShopName ?? L["Welcome"].Value]</h1>
+                </div>
+            </div>
             <p class="hero-sub">@greeting. @(waiting > 0 ? L["Here is what needs you now."] : L["Nothing is waiting on you right now."])</p>
             <div class="hero-actions">
                 <a class="btn btn-primary" asp-page="/Jobs/Create"><partial name="_Icon" model='"plus"' />@L["New job card"]</a>
