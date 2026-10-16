@@ -25,7 +25,14 @@ coverage*/
 *.db-shm
 *.db-wal
 appsettings.*.local.json
+appsettings.Production.json
 .env
+
+# Publish profiles: a host's .publishSettings file holds the deploy password
+*.publishSettings
+*.PublishSettings
+*.pubxml
+*.pubxml.user
 
 # OS
 .DS_Store
