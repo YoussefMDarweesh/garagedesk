@@ -1,10 +1,24 @@
-@* Page title on the left; search, reminders bell, language, theme and the user menu on the right. *@
+@* Page title on the start side (with its section above it); search and the reminders bell, then one small
+   preferences pill (language and theme) and the user menu on the other side. The long email lives in the menu, not on the bar. *@
 @model GarageDesk.Web.Services.ShellModel
 @{
-    var initial = string.IsNullOrEmpty(Model.UserName) ? "?" : char.ToUpperInvariant(Model.UserName[0]).ToString();
+    var who = !string.IsNullOrWhiteSpace(Model.DisplayName) ? Model.DisplayName! : Model.UserName ?? "";
+    var initial = string.IsNullOrEmpty(who) ? "?" : char.ToUpperInvariant(who[0]).ToString();
+    var roleLabel = Model.Role switch
+    {
+        GarageDesk.Web.Models.ShopRole.Owner => L["Owner"].Value,
+        GarageDesk.Web.Models.ShopRole.Cashier => L["Cashier"].Value,
+        _ => L["Technician"].Value,
+    };
 }
 <header class="topbar">
-    <p class="topbar-title">@Model.Section</p>
+    <div class="topbar-heading">
+        @if (!string.IsNullOrEmpty(Model.GroupLabel))
+        {
+            <p class="topbar-crumb">@Model.GroupLabel</p>
+        }
+        <p class="topbar-title">@Model.Section</p>
+    </div>
     <span class="topbar-spacer"></span>
 
     @* Customer search and reminders are for owners and cashiers: a technician must never reach phone numbers. *@
@@ -24,16 +38,22 @@
         </a>
     }
 
-    <span class="desktop-only"><partial name="_LanguageSwitch" model="Model.ReturnUrl" /></span>
-    <span class="desktop-only"><partial name="_ThemeToggle" /></span>
+    <div class="topbar-prefs desktop-only">
+        <partial name="_LanguageSwitch" model="Model.ReturnUrl" />
+        <partial name="_ThemeToggle" />
+    </div>
 
     <div class="dropdown">
         <button class="user-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="@L["Account menu"]">
             <span class="avatar avatar-sm">@initial</span>
-            <span class="desktop-only small fw-semibold text-truncate" style="max-width: 9rem">@Model.UserName</span>
+            <span class="user-meta desktop-only">
+                <span class="user-name">@who</span>
+                <span class="user-role">@roleLabel</span>
+            </span>
+            <span class="desktop-only user-caret"><partial name="_Icon" model='"chevron-down"' /></span>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-            <li><span class="dropdown-item-text small text-secondary">@L["Signed in as"]<br /><strong class="text-body">@Model.UserName</strong></span></li>
+            <li><span class="dropdown-item-text small text-secondary">@L["Signed in as"]<br /><strong class="text-body">@Model.UserName</strong><br /><span class="chip chip-accent mt-1">@roleLabel</span></span></li>
             <li><hr class="dropdown-divider" /></li>
             @if (Model.Role == GarageDesk.Web.Models.ShopRole.Owner)
             {

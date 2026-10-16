@@ -877,4 +877,26 @@
   <data name="Job cards, invoices and WhatsApp updates in a few taps." xml:space="preserve"><value>أوامر شغل وفواتير وتحديثات واتساب بضغطات قليلة.</value></data>
   <data name="Ready to try it?" xml:space="preserve"><value>جاهز للتجربة؟</value></data>
   <data name="Create your shop in a minute. Your data stays yours." xml:space="preserve"><value>أنشئ ورشتك في دقيقة. بياناتك تبقى ملكك.</value></data>
+
+  <!-- ui-polish-v2: grouped navigation, the "Today" hero, money cards -->
+  <data name="Overview" xml:space="preserve"><value>نظرة عامة</value></data>
+  <data name="Workshop" xml:space="preserve"><value>الورشة</value></data>
+  <data name="Admin" xml:space="preserve"><value>الإدارة</value></data>
+  <data name="Low stock" xml:space="preserve"><value>مخزون منخفض</value></data>
+  <data name="More" xml:space="preserve"><value>المزيد</value></data>
+  <data name="All sections" xml:space="preserve"><value>كل الأقسام</value></data>
+  <data name="Close" xml:space="preserve"><value>إغلاق</value></data>
+  <data name="Good morning, {0}" xml:space="preserve"><value>صباح الخير، {0}</value></data>
+  <data name="Good afternoon, {0}" xml:space="preserve"><value>طاب يومك، {0}</value></data>
+  <data name="Good evening, {0}" xml:space="preserve"><value>مساء الخير، {0}</value></data>
+  <data name="Today at {0}" xml:space="preserve"><value>اليوم في {0}</value></data>
+  <data name="Here is what needs you now." xml:space="preserve"><value>هذا ما يحتاج انتباهك الآن.</value></data>
+  <data name="Nothing is waiting on you right now." xml:space="preserve"><value>لا شيء ينتظرك الآن.</value></data>
+  <data name="Needs attention" xml:space="preserve"><value>يحتاج انتباهك</value></data>
+  <data name="Cars in the shop" xml:space="preserve"><value>سيارات في الورشة</value></data>
+  <data name="Ready for pickup" xml:space="preserve"><value>جاهزة للتسليم</value></data>
+  <data name="Overdue reminders" xml:space="preserve"><value>تذكيرات متأخرة</value></data>
+  <data name="Money to collect" xml:space="preserve"><value>مبالغ للتحصيل</value></data>
+  <data name="oldest {0} days" xml:space="preserve"><value>أقدمها منذ {0} يوم</value></data>
+  <data name="{0} job cards in {1} months" xml:space="preserve"><value>{0} أمر شغل في {1} شهر</value></data>
 </root>
