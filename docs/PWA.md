@@ -13,7 +13,7 @@ and no build step: it is a web manifest, a small service worker and a few icons.
 
 ## What the service worker caches (and what it never touches)
 
-* **Caches:** static files only, from `/css/`, `/js/`, `/lib/` and `/icons/`, plus `offline.html`. Stale-while-revalidate,
+* **Caches:** static files only, from `/css/`, `/js/`, `/lib/`, `/icons/` and `/fonts/` (the self-hosted fonts), plus `offline.html`. Stale-while-revalidate,
   at most 80 entries. A response is stored only if it is a normal 200 that is not HTML, not `no-store`/`private` and has no cookie.
 * **Offline:** a page navigation always goes to the network. Only if that fails does the visitor see `offline.html`.
   **No HTML page is ever stored or answered from a cache.** Every page of the app is personal data.
