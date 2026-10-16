@@ -1,12 +1,13 @@
 using System.Reflection;
 using GarageDesk.Web.Models;
 using GarageDesk.Web.Services;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace GarageDesk.Web.Data;
 
-public class ApplicationDbContext : IdentityDbContext<AppUser>
+public class ApplicationDbContext : IdentityDbContext<AppUser>, IDataProtectionKeyContext
 {
     private static readonly MethodInfo ApplyShopFilterMethod = typeof(ApplicationDbContext)
         .GetMethod(nameof(ApplyShopFilter), BindingFlags.Instance | BindingFlags.NonPublic)!;
@@ -64,6 +65,10 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     public DbSet<Expense> Expenses => Set<Expense>();
 
     public DbSet<CashClose> CashCloses => Set<CashClose>();
+
+    // The keys that sign login cookies and encrypt share-link tokens. Kept in the database, not in the server's memory or
+    // disk, so a restart or redeploy doesn't log everyone out. Not shop-owned: the whole app shares one key ring.
+    public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
     // Read by the query filters below. EF evaluates it per context instance, i.e. per request.
     private int? CurrentShopId => _currentShop.ShopId;

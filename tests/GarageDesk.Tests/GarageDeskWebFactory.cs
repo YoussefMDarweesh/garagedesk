@@ -16,7 +16,12 @@ namespace GarageDesk.Tests;
 public class GarageDeskWebFactory : WebApplicationFactory<Program>
 {
     // An in-memory SQLite database lives only as long as its connection, so we keep one open.
-    private readonly SqliteConnection _connection = new("DataSource=:memory:");
+    private readonly SqliteConnection _connection;
+
+    public GarageDeskWebFactory() : this("DataSource=:memory:") { }
+
+    /// <summary>Two factories on the same named, shared in-memory database behave like one server restarted.</summary>
+    protected GarageDeskWebFactory(string sqliteConnectionString) => _connection = new(sqliteConnectionString);
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
