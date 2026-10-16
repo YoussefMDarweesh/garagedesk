@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="256" height="256" role="img" aria-label="GarageDesk concept A: gauge G">
+  <title>Concept A - Gauge G</title>
+  <rect width="64" height="64" rx="17" fill="#101b36"/>
+  <path d="M44 16A20 20 0 1 0 51.9 32H33" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M32 32L48 19" stroke="#f97316" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <circle cx="32" cy="32" r="5.2" fill="#f97316"/><circle cx="32" cy="32" r="2" fill="#101b36"/>
+</svg>

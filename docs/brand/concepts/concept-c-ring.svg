@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="256" height="256" role="img" aria-label="GarageDesk concept C: wrench ring">
+  <title>Concept C - Wrench ring</title>
+  <rect width="64" height="64" rx="17" fill="#f97316"/>
+  <path d="M45.4 18.6A19 19 0 1 0 51 32" fill="none" stroke="#ffffff" stroke-width="9"/>
+  <path d="M51 32H34" stroke="#0b1324" stroke-width="9" fill="none"/>
+  <circle cx="32" cy="32" r="4" fill="#0b1324"/>
+</svg>
