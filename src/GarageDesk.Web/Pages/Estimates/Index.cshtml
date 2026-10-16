@@ -40,7 +40,7 @@ else
                     <td><a class="identity-name" asp-page="Details" asp-route-id="@e.Id"><span class="ltr num">@e.Label</span></a></td>
                     <td><span class="ltr num">@e.CreatedOn.ToString("yyyy-MM-dd")</span></td>
                     <td>@e.Vehicle?.Customer?.Name</td>
-                    <td><span class="plate" dir="auto">@e.Vehicle?.Plate</span> @e.Vehicle?.Make @e.Vehicle?.Model</td>
+                    <td><span class="plate">@PlateFormat.Html(e.Vehicle?.Plate)</span> @e.Vehicle?.Make @e.Vehicle?.Model</td>
                     <td><partial name="_EstimateStatus" model="e.Status" /></td>
                     <td class="cell-end fw-bold"><partial name="_Money" model="e.Total" /></td>
                 </tr>

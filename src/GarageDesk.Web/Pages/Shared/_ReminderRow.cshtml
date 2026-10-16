@@ -36,7 +36,7 @@
                 @if (Model.ShowVehicle && vehicle is not null)
                 {
                     <p class="tl-meta mb-0 text-truncate">
-                        <span class="plate" dir="auto">@vehicle.Plate</span> @customer?.Name
+                        <span class="plate">@PlateFormat.Html(vehicle.Plate)</span> @customer?.Name
                     </p>
                 }
             </div>
@@ -67,7 +67,7 @@ else
                 @if (Model.ShowVehicle && vehicle is not null)
                 {
                     <div class="mt-1">
-                        <a class="plate" dir="auto" asp-page="/Vehicles/Details" asp-route-id="@vehicle.Id">@vehicle.Plate</a>
+                        <a class="plate" asp-page="/Vehicles/Details" asp-route-id="@vehicle.Id">@PlateFormat.Html(vehicle.Plate)</a>
                         <span class="text-secondary">@vehicle.Make @vehicle.Model</span>
                         @if (customer is not null)
                         {

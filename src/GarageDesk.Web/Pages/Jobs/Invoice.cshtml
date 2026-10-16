@@ -70,7 +70,7 @@
             <h2 class="inv-label">@L["Vehicle"]</h2>
             <p class="inv-strong">@vehicle?.Make @vehicle?.Model <span class="ltr">@vehicle?.Year</span></p>
             <p class="mb-0">
-                @L["Plate number"]: <span class="inv-plate" dir="auto">@vehicle?.Plate</span><br />
+                @L["Plate number"]: <span class="inv-plate">@PlateFormat.Html(vehicle?.Plate)</span><br />
                 @L["Mileage at visit (km)"]: <span class="ltr">@job.MileageAtVisit.ToString("N0")</span>
             </p>
         </div>

@@ -9,7 +9,7 @@
     {
         <input type="hidden" asp-for="Input.VehicleId" />
         <div class="d-flex align-items-center gap-2 p-3 rounded-3 border">
-            <span class="plate" dir="auto">@vehicle.Plate</span>
+            <span class="plate">@PlateFormat.Html(vehicle.Plate)</span>
             <span>@vehicle.Make @vehicle.Model</span>
             <span class="text-secondary ms-auto">@vehicle.Customer?.Name</span>
         </div>

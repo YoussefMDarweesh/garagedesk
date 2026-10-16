@@ -21,7 +21,7 @@
 <section class="vehicle-hero mb-4">
     <div>
         <p class="hero-kicker">@vehicle.Make @vehicle.Model &middot; <span class="num">@vehicle.Year</span></p>
-        <h1><span class="plate plate-lg" dir="auto">@vehicle.Plate</span></h1>
+        <h1><span class="plate plate-lg">@PlateFormat.Html(vehicle.Plate)</span></h1>
         @if (owner is not null)
         {
             <p class="mb-0 d-flex flex-wrap align-items-center gap-2">

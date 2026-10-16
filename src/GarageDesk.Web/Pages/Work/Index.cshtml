@@ -53,7 +53,7 @@ else
                         <td><a class="identity-name" asp-page="Job" asp-route-id="@job.Id"><span class="ltr num">#@job.Id</span></a></td>
                         <td><span class="ltr num">@job.DateIn.ToString("yyyy-MM-dd")</span></td>
                         <td>
-                            <span class="plate" dir="auto">@job.Plate</span>
+                            <span class="plate">@PlateFormat.Html(job.Plate)</span>
                             <span class="text-secondary ms-1">@job.Make @job.Model</span>
                         </td>
                         <td>@job.OwnerName</td>

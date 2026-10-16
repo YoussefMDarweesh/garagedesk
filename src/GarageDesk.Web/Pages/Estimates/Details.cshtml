@@ -23,7 +23,7 @@
             <partial name="_EstimateStatus" model="e.Status" />
         </h1>
         <p class="page-sub">
-            <span class="plate" dir="auto">@vehicle?.Plate</span> @vehicle?.Make @vehicle?.Model &middot;
+            <span class="plate">@PlateFormat.Html(vehicle?.Plate)</span> @vehicle?.Make @vehicle?.Model &middot;
             <a asp-page="/Customers/Details" asp-route-id="@vehicle?.CustomerId">@vehicle?.Customer?.Name</a>
         </p>
     </div>
