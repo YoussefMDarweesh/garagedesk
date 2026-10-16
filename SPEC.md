@@ -147,3 +147,11 @@ Goal: the app running on a public HTTPS address for 0 cost, without a payment ca
 - **Updates and safety:** Dependabot opens weekly grouped PRs for NuGet, GitHub Actions and the Docker base image; CI checks them. Backups are a Neon branch made before every migration and weekly (keep the last 3), because the free plan only restores the last 6 hours.
 - Step by step: `docs/DEPLOY.md`.
 - Not included: automatic deploys from GitHub (a paid MonsterASP feature, and it would put a deploy secret in GitHub), a custom domain, email sending, automated off-site backups.
+
+## 11. ui-polish-v2: navigation and dashboard presentation
+Presentation only, no new tables, no migrations, no change to who may open what (details and the audit in `docs/DESIGN.md`).
+
+- **Grouped navigation.** The rail is grouped into Overview, Workshop, Money, Stock and Admin (collapsible, remembered per browser, the section with the current page always open; scrolls by itself on a short window). Sections and links are filtered by role exactly like the page policies; empty sections do not exist. On phones the bottom bar keeps four entries and "More" lists the rest.
+- **Dashboard.** A "Today at <shop>" band with four attention chips (cars in the shop, ready for pickup, overdue reminders, money to collect), a money row for owners (revenue, profit, outstanding: currency on the same line, trend badge versus last month, small trend line from real months) and a quieter row of counts. Only real data; cashiers still see no revenue, profit, cost or chart.
+- **Licence plates** are drawn letters first, then digits, in the reading direction of the page; the stored plate and its search key are unchanged.
+- **Fonts.** Inter and IBM Plex Sans Arabic are self-hosted (SIL OFL) under `wwwroot/fonts/`, with the system fonts as fallback.
