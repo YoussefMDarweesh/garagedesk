@@ -1,0 +1,21 @@
+@* The GarageDesk product mark: a "G" drawn as a gauge dial, with an orange needle sweeping into its opening (docs/BRAND.md).
+   Inline SVG, driven by CSS variables (--gd-tile, --gd-arc, --gd-needle in site.css), so the same markup works on light
+   and dark pages and a shop accent can tint the needle (.brand-mark--tint). Decorative: hidden from screen readers; put
+   the name next to it or on the link.
+   Usage: <partial name="_BrandMark" model='"tile"' />  (navy rounded tile)  or  model='"bare"'  (the glyph alone). *@
+@model string
+@{
+    var bare = Model == "bare";
+}
+<svg class="brand-mark@(bare ? " brand-mark--bare" : "")" viewBox="@(bare ? "4 4 56 56" : "0 0 64 64")" aria-hidden="true" focusable="false">
+    @if (!bare)
+    {
+        <rect class="gd-tile" width="64" height="64" rx="17" />
+        <rect class="gd-edge" x=".5" y=".5" width="63" height="63" rx="16.5" />
+    }
+    <g transform="translate(32 32) scale(@(bare ? "1" : "0.9")) translate(-32 -32)">
+        <path class="gd-arc" d="M44 16A20 20 0 1 0 51.9 32H33" />
+        <path class="gd-needle" d="M35.1 29.5L48 19" />
+        <circle class="gd-hub" cx="32" cy="32" r="3.6" />
+    </g>
+</svg>
